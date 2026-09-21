@@ -1,0 +1,52 @@
+/* forest scenes: gallery (4×4 small multiples) + vote (full probability surface). */
+
+/* ── Scene 5: gallery ───────────────────────────────────────────────── */
+
+svg .gallery-cell .gallery-cell-border {
+  fill: var(--panel);
+  stroke: var(--rule);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+svg .gallery-cell.hover .gallery-cell-border {
+  stroke: var(--highlight);
+  stroke-width: 1.5;
+}
+
+svg .gallery-cell .gallery-cell-hit {
+  fill: transparent;
+  stroke: none;
+  pointer-events: all;
+  cursor: crosshair;
+}
+
+svg .gallery-cell .point {
+  stroke: var(--panel);
+  stroke-width: 0.4;
+}
+
+svg .tree-label {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 10px;
+  fill: var(--muted);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Slightly reduce region tint inside small multiples so points stay legible. */
+svg .gallery-cell .region-cell {
+  fill-opacity: 0.18;
+  shape-rendering: crispEdges;
+}
+
+/* ── Scene 6: vote ──────────────────────────────────────────────────── */
+
+svg .forest-prob .prob-cell {
+  shape-rendering: crispEdges;
+}
+
+svg .forest-points .point {
+  stroke: var(--bg);
+  stroke-width: 0.8;
+}

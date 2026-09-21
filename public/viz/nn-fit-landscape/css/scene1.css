@@ -1,0 +1,20 @@
+/* Scene 1, the data and the straight line. */
+
+.scene1-panels { grid-template-columns: minmax(0, 1.52fr) minmax(0, 1fr); }
+
+.scene1-text {
+  display: flex; flex-direction: column; justify-content: flex-start;
+  gap: 10px; min-width: 0; overflow: hidden;
+}
+
+.text-card {
+  border-left: 2px solid var(--rule);
+  padding: 2px 0 2px 12px;
+  opacity: 0.22;
+  transition: opacity var(--t-med), border-color var(--t-med);
+}
+.text-card.is-on { opacity: 1; border-color: var(--accent); }
+.text-card h3 { margin-bottom: 3px; }
+.text-card p { font-size: 13.5px; margin-bottom: 6px; }
+.text-card p.small { font-size: 12px; }
+.text-card .stat-strip { margin: 6px 0 8px; }

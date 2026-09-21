@@ -1,0 +1,69 @@
+/* Scene 4. Fitting everything. The crash, part one.
+ *
+ * Two stacked chart panels on one shared x axis, a slider under them, and the
+ * reading matter in the right column. Scene 5 uses the same card, the same
+ * rule weights and the same annotation styles: the two are one tonal unit. */
+
+.crash-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.crash-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* The shell gives every .viz-wrap a 240px floor, which two stacked panels
+   cannot both honour inside one 1280x800 stage. */
+.crash-panels .viz-wrap { min-height: 0; }
+.crash-panel-top { flex: 1.5 1 0; }
+.crash-panel-deep { flex: 1 1 0; }
+
+#stage .scene[data-scene="4"] .controls-row { margin: 8px 0 0; gap: 26px; }
+#stage .scene[data-scene="4"] .controls-row .stat-strip { margin: 0; gap: 22px; }
+#stage .scene[data-scene="4"] .controls-row .stat-value { font-size: 19px; }
+/* Top aligned where the column is nearly full, centred where the wider
+   lecture viewport leaves it short. */
+#stage .scene[data-scene="4"] .text-col { justify-content: flex-start; }
+@media (min-height: 900px) {
+  #stage .scene[data-scene="4"] .text-col { justify-content: center; }
+}
+#stage .scene[data-scene="4"] .text-col > p { margin-bottom: 10px; }
+#stage .scene[data-scene="4"] .notation { margin: 6px 0; padding: 8px 12px; }
+#stage .scene[data-scene="4"] .notation-row { padding: 2px 0; }
+#stage .scene[data-scene="4"] .stat-strip { margin: 12px 0 6px; }
+#stage .scene[data-scene="4"] .sidebar-note { margin: 8px 0 0; padding: 9px 12px; }
+
+/* Where the slider currently sits, carried across both panels. */
+svg .crash-sel {
+  stroke: var(--ink);
+  stroke-width: 1.3;
+  opacity: 0.4;
+  fill: none;
+}
+
+svg .crash-dot { stroke: var(--bg); stroke-width: 1.4; }
+
+svg .crash-lead { stroke: var(--muted); stroke-width: 1; fill: none; }
+
+/* The minimum of the whole sweep is the subject of the lower panel, so its
+   annotation sits in the ink colour rather than the muted caption colour. */
+svg .crash-worst {
+  fill: var(--ink);
+  font-style: normal;
+  font-size: 12px;
+}
+
+svg .crash-vlabel { fill: var(--muted); }
+
+/* A stage shorter than the lecture viewport leaves the right column no room
+   to breathe; drop the closing note before the chart gives anything up. */
+@media (max-height: 700px) {
+  #stage .scene[data-scene="4"] .text-col .sidebar-note:last-child { display: none; }
+}

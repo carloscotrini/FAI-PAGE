@@ -1,0 +1,29 @@
+/* Scene 2, the training film. */
+
+.scene2-panels { grid-template-columns: minmax(0, 1.94fr) minmax(0, 1fr); }
+
+/* THE CONTROL ROW MUST STAY ONE ROW, IN EVERY STATE.
+   The play button swaps its label to "Pause", which is 11px wider than
+   "Play". At 1280 by 720 the row had 5px of slack, so the first press of the
+   one control the lecturer actually uses wrapped the readouts onto a second
+   line, pushed the panels 45px down and cut the foot of the landscape panel
+   off the stage. The button now reserves the room for the wider label, the
+   gaps give the row 23px of slack, and nothing here may wrap or shrink. */
+.scene2-bar { justify-content: flex-start; flex-wrap: nowrap; gap: 12px; }
+.scene2-bar .control { flex: 0 0 auto; }
+.scene2-bar .control label {
+  font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.scene2-bar .btn.primary { min-width: 58px; }
+.scene2-readouts { margin-left: auto; gap: 14px; flex-wrap: nowrap; }
+.scene2-readouts .stat { flex: 0 0 auto; }
+.scene2-readouts .stat-label { white-space: nowrap; }
+.scene2-readouts .stat-value { font-size: 17px; }
+
+.scene2-right { align-items: stretch; }
+.scene2-map { margin-top: 2px; }
+.scene2-key { margin-top: -2px; }
+.scene2-loss { margin-top: 2px; }
+.scene2-right .panel-note { margin-top: 4px; }
+
+.panel-note { line-height: 1.35; }

@@ -1,0 +1,9 @@
+/* Scene 2. Three ramps make a bump. */
+
+.s2-slopes { margin: 10px 0 4px; }
+.s2-slopes td, .s2-slopes th { font-size: 14px; }
+
+/* The third step writes the longest closing paragraph of the scene, and with
+   the house margin the column overflows the fold by a few pixels, which is
+   enough to raise a scrollbar and clip the bottom of the note. */
+#stage .scene[data-scene="2"] .text-col p { margin-bottom: 9px; }

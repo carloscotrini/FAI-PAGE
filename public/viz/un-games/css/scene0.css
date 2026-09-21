@@ -1,0 +1,28 @@
+/* Scene 0. The title card. */
+
+#stage .scene[data-scene="0"] .scene-layout { align-items: center; }
+
+.title-wrap {
+  max-width: 78ch;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.title-line { margin-bottom: 18px; max-width: 20ch; }
+
+.hook {
+  font-size: 17px;
+  color: var(--ink-soft);
+  max-width: 66ch;
+  margin-bottom: 18px;
+}
+
+.title-legend { margin-bottom: 14px; }
+.title-legend .role-legend { flex-direction: column; gap: 7px; align-items: flex-start; }
+.title-legend .role-key { gap: 9px; }
+.title-legend .role-name { min-width: 88px; }
+
+.title-foot { max-width: 66ch; }

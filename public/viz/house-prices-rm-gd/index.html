@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>House prices, learned two ways</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/scene1.css">
+  <link rel="stylesheet" href="css/scene2.css">
+  <link rel="stylesheet" href="css/scene3.css">
+  <link rel="stylesheet" href="css/scene4.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <span class="brand">Foundations of AI</span>
+    <span class="brand-sep">/</span>
+    <span class="brand-title">house prices, learned two ways</span>
+    <span class="scene-title" id="scene-title"></span>
+    <span class="topbar-right">
+      <button id="theme-toggle" class="btn" type="button">Light / dark</button>
+      <span class="dots" id="dots" aria-label="Scene pager"></span>
+    </span>
+  </header>
+
+  <main class="stage" id="stage"></main>
+
+  <footer class="footer">
+    <button id="prev-btn" class="btn" type="button">Previous</button>
+    <span class="kbd-hint">
+      <kbd>&larr;</kbd> <kbd>&rarr;</kbd> for the scenes, <kbd>t</kbd> for light or dark
+    </span>
+    <button id="next-btn" class="btn primary" type="button">Next</button>
+  </footer>
+
+  <!-- Vendored, never a CDN: this page opens from file:// on a laptop with no
+       network in a lecture hall. -->
+  <script src="vendor/d3.v7.min.js"></script>
+
+  <script src="js/theme.js"></script>
+  <script src="js/fmt.js"></script>
+  <script src="js/algos.js"></script>
+  <script src="js/hopper.js"></script>
+  <script src="js/plot.js"></script>
+  <script src="js/ui.js"></script>
+
+  <!-- The ten synthetic houses, written by precompute/make_houses.py -->
+  <script src="data/houses.js"></script>
+
+  <script>window.scenes = {};</script>
+  <script src="js/scenes/scene1.js"></script>
+  <script src="js/scenes/scene2.js"></script>
+  <script src="js/scenes/scene3.js"></script>
+  <script src="js/scenes/scene4.js"></script>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

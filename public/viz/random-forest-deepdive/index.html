@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The forest grows. — Random Forests · SML</title>
+  <link rel="stylesheet" href="vendor/katex.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/moons.css">
+  <link rel="stylesheet" href="css/variance.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/forest.css">
+  <link rel="stylesheet" href="css/diagnostics.css">
+  <link rel="stylesheet" href="css/showdown.css">
+</head>
+<body>
+
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+    <span class="theme-label-light">Light</span><span class="theme-sep">/</span><span class="theme-label-dark">Dark</span>
+  </button>
+
+  <header class="hero">
+    <h1>The forest grows.</h1>
+    <p class="subtitle">Trees can't draw spirals. A hundred of them, averaged, can.</p>
+    <p class="hint">Scroll, or press <kbd>→</kbd> · <kbd>t</kbd> for theme</p>
+  </header>
+
+  <main class="scrolly">
+    <div class="viz-column">
+      <div class="viz-stage">
+        <svg id="viz" aria-label="Random forest visualization"></svg>
+        <div id="viz-overlay" class="viz-overlay"></div>
+      </div>
+      <div id="viz-controls" class="viz-controls"></div>
+      <div id="viz-readout" class="viz-readout"></div>
+    </div>
+
+    <div class="prose-column">
+
+      <article class="scene" data-scene="1" data-viz="moons" data-sub="hook">
+        <h2>Two spirals.</h2>
+        <p>Two hundred points. A blue arm and a red arm, twisting around each other for two and a half turns. The class boundary is the most non-axis-aligned shape we can draw on a plane.</p>
+        <p>Where would you cut?</p>
+      </article>
+
+      <article class="scene" data-scene="2" data-viz="moons" data-sub="depth">
+        <h2>A tree can only cut one way.</h2>
+        <p>Decision trees split with axis-aligned cuts — vertical or horizontal lines, never diagonal. To approximate a spiral they have to step.</p>
+        <p>Drag the depth slider. Below depth 5 the tree is hopelessly underfit; the boundary looks nothing like a spiral. Past depth 8 it fragments, carving rectangles around small clusters of training points. Train accuracy climbs to 100%; test accuracy plateaus near 88%.</p>
+        <p>That eleven-point gap between train and test is overfitting in miniature. Now imagine the test set were noisier, or smaller. The gap explodes — and that's where the forest starts to matter.</p>
+      </article>
+
+      <article class="scene" data-scene="3" data-viz="variance" data-sub="perturb">
+        <h2>The same data, jittered, gives a different tree.</h2>
+        <p>Resample the spirals with a fresh seed. Fit a fresh tree. The boundary doesn't shift politely — it <em>flips</em>, often committing to a different arm at the very first split.</p>
+        <p>Across the five reseeds, more than a third of the plane gets a different prediction depending on which one you pick. A tree is a high-variance estimator. We want its prediction without its volatility.</p>
+      </article>
+
+      <article class="scene" data-scene="4" data-viz="bootstrap" data-sub="sample">
+        <h2>Sample with replacement.</h2>
+        <p>Draw 200 points from the 200-point training set, with replacement. About 63% of the originals show up at least once — some twice, some three times. The remaining 37% don't show up at all.</p>
+        <p>Those leftover points are <em>out of bag</em>. They've never been seen by this tree, so we can score the tree on them honestly. Every tree comes with its own free held-out validation set.</p>
+      </article>
+
+      <article class="scene" data-scene="5" data-viz="forest" data-sub="gallery">
+        <h2>Sixteen trees, sixteen staircases.</h2>
+        <p>Each tree is grown on its own bootstrap of the data. None of them looks like a spiral — they all look like staircases, but with different arms confidently extended in different directions.</p>
+        <p>None of these trees is the answer. But every one is a <em>vote</em>.</p>
+      </article>
+
+      <article class="scene" data-scene="6" data-viz="forest" data-sub="vote">
+        <h2>Average the votes.</h2>
+        <p>Take a query point. Run it through all 200 trees. Count the votes for class 1. The fraction is a probability — and across the plane, that fraction traces a soft spiral that no single tree could draw.</p>
+        <p>The staircases cancel. The spiral emerges.</p>
+      </article>
+
+      <article class="scene" data-scene="7" data-viz="diagnostics" data-sub="convergence">
+        <h2>How many trees is enough?</h2>
+        <p>Add trees one at a time and watch test error fall from above 30% down to about 8%. After thirty trees the curve plateaus — adding more is cheap insurance, not a real gain.</p>
+        <p>The purple line is <em>out-of-bag error</em>, computed from each tree's own untouched 37%. It runs higher than test here — at this small training size, generalizing back onto the specific training points is genuinely harder than predicting fresh draws — but it converges in lockstep, and it costs nothing.</p>
+      </article>
+
+      <article class="scene" data-scene="8" data-viz="showdown" data-sub="reseeds">
+        <h2>The diversity ladder.</h2>
+        <p>Fifty reseeds, three models on each. A deep single tree. A standard random forest, where each split picks from a random feature. And <em>extra-trees</em>, where the threshold is also picked at random.</p>
+        <p>Each rung adds one more dice roll. Each rung lowers the floor.</p>
+        <p>The single tree column is a wide cloud — sometimes lucky, sometimes terrible, more than three percentage points of standard deviation. RF cuts that variance to a third and shaves about nine points off the average. Extra-trees adds a third source of randomness — the random thresholds — and shaves another seven. From single tree to extra-trees: a sixteen-point drop, and the variance collapses to a fifth of where it started.</p>
+        <p>The principle is the variance formula for an averaged ensemble: <em>ρσ² + (1−ρ)/B · σ²</em>. Once you have enough trees the second term dies. The first — the floor — is set by tree correlation. More randomization → less correlation → lower floor. Until the bias takes over and trees genuinely can't draw a curve, no matter how many.</p>
+      </article>
+
+    </div>
+  </main>
+
+  <nav class="scene-nav" id="scene-nav" aria-label="Scene navigation">
+    <button data-scene-target="1">1</button><button data-scene-target="2">2</button><button data-scene-target="3">3</button><button data-scene-target="4">4</button><button data-scene-target="5">5</button><button data-scene-target="6">6</button><button data-scene-target="7">7</button><button data-scene-target="8">8</button>
+  </nav>
+
+  <!-- Vendored libs -->
+  <script src="vendor/d3.v7.min.js"></script>
+  <script src="vendor/scrollama.min.js"></script>
+  <script src="vendor/katex.min.js"></script>
+
+  <!-- Foundation -->
+  <script src="js/theme.js"></script>
+  <script src="js/rf.js"></script>
+
+  <!-- Pre-canned data (generated by precompute/build_data.py) -->
+  <script src="data/datasets.js"></script>
+
+  <!-- Scene handlers (one file per viz kind) -->
+  <script>window.SCENES = {};</script>
+  <script src="js/scenes/moons.js"></script>
+  <script src="js/scenes/variance.js"></script>
+  <script src="js/scenes/bootstrap.js"></script>
+  <script src="js/scenes/forest.js"></script>
+  <script src="js/scenes/diagnostics.js"></script>
+  <script src="js/scenes/showdown.js"></script>
+
+  <!-- Driver (scrollama + dispatch + keyboard nav + hash routing) -->
+  <script src="js/main.js"></script>
+</body>
+</html>

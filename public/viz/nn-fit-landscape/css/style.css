@@ -1,0 +1,428 @@
+/* ==========================================================================
+   The curve and the landscape: theme tokens, the scene shell, the shared
+   chart vocabulary.
+
+   NO COLOUR IS EVER WRITTEN IN JAVASCRIPT. Every fill and stroke on this page
+   arrives through one of the classes below, so a theme switch is one attribute
+   on <html> and every panel follows. precompute/check_palette.py reads the hex
+   values out of THIS FILE and fails if two colours that share a panel collapse
+   together under protanopia, deuteranopia or tritanopia.
+
+   The categorical colours are Okabe and Ito's eight colour palette, which was
+   designed for dichromats. Red and green are never a contrasting pair here:
+   the two models are Okabe-Ito blue and vermillion, and the bluish green
+   belongs to the grasshopper alone, which never shares a panel with the
+   vermillion.
+   ========================================================================== */
+
+:root {
+  /* ground and chrome, light is the lecture default */
+  --bg: #F9F7F1;
+  --panel: #FFFFFF;
+  --panel-2: #FDFBF5;
+  --ink: #1A1A1A;
+  --ink-soft: #33302A;
+  --muted: #6B6B6B;
+  --faint: #9A9488;
+  --rule: #D8D4CA;
+  --rule-strong: #C4BFB2;
+  --accent: #1A1A1A;
+
+  /* the actors */
+  --data: #1A1A1A;             /* the measured averages */
+  --data-faint: #B4AEA2;       /* the forty single days behind them */
+  --line-fit: #D55E00;         /* Okabe-Ito vermillion, the straight line */
+  --net-fit: #0072B2;          /* Okabe-Ito blue, the network */
+  /* The grasshopper and the finish are Okabe-Ito bluish green and orange, each
+     darkened until it clears the pale end of the ground it stands on under
+     every dichromacy. The hues are unchanged; precompute/check_palette.py
+     holds the measurements. */
+  --hopper: #00795C;           /* Okabe-Ito bluish green, darkened */
+  --hopper-dark: #004A38;
+  --hopper-ring: #FFFDF8;
+  --trail: #1A1A1A;            /* where it has already been */
+  --trail-casing: #FFFDF8;
+  --finish: #D08E00;           /* Okabe-Ito orange, darkened */
+
+  /* the ground of the loss landscape, low to high, monotone in lightness so
+     every dichromacy reads it as the same ordered scale */
+  --land-0: #FCFAF3;
+  --land-1: #F8F2E3;
+  --land-2: #F4E9D3;
+  --land-3: #EDDEBF;
+  --land-4: #E6D2AA;
+  --land-5: #DCC596;
+  --land-6: #D2B683;
+  --land-7: #C5A772;
+  --land-8: #B89862;
+  --land-9: #A98954;
+  --land-10: #997B48;
+  --land-11: #896C3D;
+  --land-12: #775D33;
+  --land-13: #654F29;
+  --land-14: #524021;
+  --land-15: #40311A;
+
+  --grid-line: rgba(0, 0, 0, 0.07);
+  --t-fast: 150ms;
+  --t-med: 340ms;
+}
+
+[data-theme="dark"] {
+  --bg: #181612;
+  --panel: #201D18;
+  --panel-2: #262219;
+  --ink: #ECE7D9;
+  --ink-soft: #D6D0C0;
+  --muted: #8A8579;
+  --faint: #6B6759;
+  --rule: #383530;
+  --rule-strong: #4A463F;
+  --accent: #ECE7D9;
+
+  --data: #ECE7D9;
+  --data-faint: #5E5A4F;
+  --line-fit: #EE7733;
+  --net-fit: #56B4E9;
+  --hopper: #27A681;
+  --hopper-dark: #7FE0C0;
+  --hopper-ring: #181612;
+  --trail: #ECE7D9;
+  --trail-casing: #181612;
+  --finish: #F0B33A;
+
+  /* The fills sit above the ground here rather than below it. In the light
+     theme high ground is darker than the paper; mirroring that into a dark
+     theme would push the high ground into the background and erase it, so the
+     direction flips and the legend says which end is which. */
+  --land-0: #1C1A15;
+  --land-1: #23201A;
+  --land-2: #2B271F;
+  --land-3: #332E25;
+  --land-4: #3C362A;
+  --land-5: #463F31;
+  --land-6: #514938;
+  --land-7: #5D543F;
+  --land-8: #6A5F47;
+  --land-9: #776C50;
+  --land-10: #857959;
+  --land-11: #938663;
+  --land-12: #A2946F;
+  --land-13: #B1A37B;
+  --land-14: #C0B38A;
+  --land-15: #D0C399;
+
+  --grid-line: rgba(236, 231, 217, 0.07);
+}
+
+/* ============================================================ base */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  height: 100vh;
+  overflow: hidden;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+h1, h2, h3 {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+h1 { font-size: clamp(34px, 4.6vw, 58px); line-height: 1.06; letter-spacing: -0.025em; }
+h2 { font-size: clamp(21px, 2.1vw, 28px); line-height: 1.16; }
+h3 { font-size: clamp(15px, 1.3vw, 18px); line-height: 1.25; }
+
+p { margin-bottom: 9px; max-width: 64ch; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.tabular { font-variant-numeric: tabular-nums; }
+strong { font-weight: 600; }
+
+.mono, code {
+  font-family: "SF Mono", Menlo, "JetBrains Mono", monospace;
+  font-size: 0.92em;
+}
+
+kbd {
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 0.78em;
+  padding: 1px 5px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--panel);
+  color: var(--ink-soft);
+}
+
+/* ============================================================ topbar */
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 9px 24px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg);
+  font-size: 13.5px;
+  z-index: 10;
+}
+.topbar-left { justify-self: start; display: flex; gap: 8px; align-items: baseline; }
+.topbar-center { justify-self: center; }
+.topbar-right { justify-self: end; display: flex; gap: 14px; align-items: center; }
+
+.brand {
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-weight: 500; font-size: 15px; letter-spacing: 0.02em;
+}
+.brand-sep, .brand-title { color: var(--muted); font-size: 13.5px; }
+
+.scene-title {
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-style: italic; color: var(--muted); font-size: 14.5px;
+}
+
+.theme-toggle {
+  font: inherit; font-size: 11.5px; color: var(--muted);
+  background: transparent; border: 1px solid var(--rule);
+  padding: 3px 9px; border-radius: 4px; cursor: pointer;
+}
+.theme-toggle:hover { border-color: var(--ink); color: var(--ink); }
+.theme-toggle .theme-sep { margin: 0 4px; opacity: 0.5; }
+[data-theme="light"] .theme-label-dark { color: var(--ink); font-weight: 600; }
+[data-theme="dark"] .theme-label-light { color: var(--ink); font-weight: 600; }
+
+.dots { display: flex; gap: 6px; }
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 1px solid var(--rule-strong); background: transparent;
+  padding: 0; cursor: pointer;
+}
+.dot:hover { border-color: var(--accent); }
+.dot.active { background: var(--accent); border-color: var(--accent); }
+
+/* ============================================================ stage */
+
+.stage { position: relative; overflow: hidden; }
+
+.scene {
+  position: absolute; inset: 0;
+  padding: 14px 24px 10px;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--t-med);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.scene.active { opacity: 1; pointer-events: auto; }
+
+.scene-stub {
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; height: 100%; color: var(--muted);
+}
+
+.scene-head { width: 100%; max-width: var(--content-w); margin: 0 auto 8px; flex: 0 0 auto; }
+.scene-head h2 { margin-bottom: 2px; }
+.scene-head .lede { color: var(--muted); font-size: 14.5px; max-width: 108ch; margin: 0; }
+
+.scene-foot {
+  width: 100%; max-width: var(--content-w); margin: 6px auto 0; flex: 0 0 auto;
+  color: var(--muted); font-size: 12.5px;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif; font-style: italic;
+}
+
+/* ONE WIDTH PER SCENE, AND THE HEIGHT DECIDES IT. Every panel is an svg with a
+   viewBox and width: 100%, so the width of this block sets the height of the
+   whole scene. A projector at 1280 by 720 leaves about 480px for the panels of
+   scene 2, which is what the first value buys; a taller screen gets a bigger
+   picture rather than more empty paper. */
+.scene { --content-w: 1180px; }
+.scene[data-scene="2"] { --content-w: 1020px; }
+@media (min-height: 860px) {
+  .scene { --content-w: 1400px; }
+  .scene[data-scene="2"] { --content-w: 1240px; }
+}
+@media (min-height: 1000px) {
+  .scene { --content-w: 1560px; }
+  .scene[data-scene="2"] { --content-w: 1500px; }
+}
+
+/* ============================================================ footer */
+
+.controls {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 24px; border-top: 1px solid var(--rule);
+  background: var(--bg); z-index: 10;
+}
+.kbd-hint { color: var(--muted); font-size: 12px; }
+
+.btn {
+  font: inherit; font-size: 13.5px; color: var(--ink);
+  background: transparent; border: 1px solid var(--rule-strong);
+  padding: 5px 14px; border-radius: 4px; cursor: pointer;
+}
+.btn:hover:not(:disabled) { background: var(--panel-2); border-color: var(--ink); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.small { font-size: 12.5px; padding: 4px 10px; }
+
+/* ============================================================ panels */
+
+.panels {
+  display: grid; gap: 20px;
+  width: 100%; max-width: var(--content-w); margin: 0 auto;
+  flex: 0 1 auto; min-height: 0;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 8px 10px 6px;
+  display: flex; flex-direction: column; min-width: 0;
+}
+.panel-title {
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 13.5px; color: var(--ink-soft); margin-bottom: 2px;
+}
+.panel-note { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.panel svg { display: block; width: 100%; height: auto; }
+
+/* ============================================================ chart ink */
+
+svg .axis-line { stroke: var(--rule-strong); stroke-width: 1; fill: none; }
+svg .tick-line { stroke: var(--rule-strong); stroke-width: 1; }
+svg .grid-line { stroke: var(--grid-line); stroke-width: 1; }
+svg .tick-text { fill: var(--muted); font-size: 11px; }
+svg .axis-title {
+  fill: var(--muted); font-size: 11.5px;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif; font-style: italic;
+}
+svg .panel-frame { fill: none; stroke: var(--rule); stroke-width: 1; }
+svg .series-label { font-size: 12px; font-weight: 600; }
+svg .note-text { fill: var(--muted); font-size: 11.5px; }
+svg .ink-text { fill: var(--ink); font-size: 12px; }
+
+svg .dot-day { fill: var(--data-faint); }
+svg .dot-mean { fill: var(--data); }
+svg .dot-mean-ring { fill: none; stroke: var(--panel); stroke-width: 1; }
+
+svg .fit-line { fill: none; stroke: var(--line-fit); stroke-width: 2.2; stroke-linejoin: round; }
+svg .fit-line.thin { stroke-width: 1.5; stroke-dasharray: 6 4; }
+svg text.fit-line-text { fill: var(--line-fit); stroke: none; }
+
+svg .fit-net { fill: none; stroke: var(--net-fit); stroke-width: 2.4; stroke-linejoin: round; }
+svg .fit-net.ghost { stroke-width: 1.2; opacity: 0.45; }
+svg text.fit-net-text { fill: var(--net-fit); stroke: none; }
+
+svg .miss-stick { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 2; }
+
+/* the ground of the landscape, low to high */
+svg .land-0  { fill: var(--land-0); }
+svg .land-1  { fill: var(--land-1); }
+svg .land-2  { fill: var(--land-2); }
+svg .land-3  { fill: var(--land-3); }
+svg .land-4  { fill: var(--land-4); }
+svg .land-5  { fill: var(--land-5); }
+svg .land-6  { fill: var(--land-6); }
+svg .land-7  { fill: var(--land-7); }
+svg .land-8  { fill: var(--land-8); }
+svg .land-9  { fill: var(--land-9); }
+svg .land-10 { fill: var(--land-10); }
+svg .land-11 { fill: var(--land-11); }
+svg .land-12 { fill: var(--land-12); }
+svg .land-13 { fill: var(--land-13); }
+svg .land-14 { fill: var(--land-14); }
+svg .land-15 { fill: var(--land-15); }
+svg .land-edge { fill: none; stroke: var(--grid-line); stroke-width: 0.6; }
+
+/* the path the run took, cased so it reads on pale and on dark ground alike */
+svg .trail-casing { fill: none; stroke: var(--trail-casing); stroke-width: 3.4; stroke-opacity: 0.8; stroke-linejoin: round; }
+svg .trail-line { fill: none; stroke: var(--trail); stroke-width: 1.5; stroke-linejoin: round; }
+svg .trail-dot { fill: var(--trail); stroke: var(--trail-casing); stroke-width: 0.8; }
+svg .hop-arc { fill: none; stroke: var(--trail); stroke-width: 1.3; stroke-opacity: 0.85; }
+svg .hop-shadow { fill: var(--trail); opacity: 0.22; }
+
+svg .finish-casing { fill: none; stroke: var(--trail-casing); stroke-width: 4.4; stroke-opacity: 0.9; }
+svg .finish-ring { fill: none; stroke: var(--finish); stroke-width: 2; }
+svg .finish-dot { fill: var(--finish); }
+
+/* A label on the map stands on ground that runs from near white to deep
+   sepia, so it carries its own casing. paint-order puts the stroke behind the
+   fill, which is what turns a stroke into a halo rather than an outline. */
+svg text.finish-text, svg text.map-label {
+  font-size: 11.5px;
+  stroke: var(--trail-casing);
+  stroke-width: 2.8;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+svg text.finish-text { fill: var(--finish); }
+svg text.map-label { fill: var(--ink); }
+
+/* the grasshopper, copied from the weekend one grasshopper game */
+svg .hopper-body { fill: var(--hopper); }
+svg .hopper-dark { fill: var(--hopper-dark); }
+svg .hopper-ring { fill: none; stroke: var(--hopper-ring); stroke-width: 2.4; }
+svg .hopper-leg {
+  fill: none; stroke: var(--hopper-dark); stroke-width: 1.7;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+svg .hopper-antenna { fill: none; stroke: var(--hopper-dark); stroke-width: 1; stroke-linecap: round; }
+svg .hopper-wing { fill: none; stroke: var(--hopper-dark); stroke-width: 1.1; stroke-opacity: 0.7; }
+svg .hopper-eye { fill: var(--hopper-ring); }
+
+/* the loss by step strip */
+svg .loss-line { fill: none; stroke: var(--net-fit); stroke-width: 1.8; }
+svg .loss-line-past { fill: none; stroke: var(--net-fit); stroke-width: 2.6; }
+svg .loss-dot { fill: var(--net-fit); stroke: var(--panel); stroke-width: 1.2; }
+svg .loss-ref { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; fill: none; }
+
+/* ============================================================ controls */
+
+.controls-row {
+  display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+  width: 100%; max-width: var(--content-w); margin: 0 auto 8px; flex: 0 0 auto;
+}
+
+.control { display: flex; gap: 7px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.control label { white-space: nowrap; }
+
+.toggle-group { display: inline-flex; border: 1px solid var(--rule-strong); border-radius: 4px; overflow: hidden; }
+.toggle-group button {
+  font: inherit; font-size: 12.5px; padding: 4px 11px;
+  background: transparent; color: var(--muted);
+  border: none; border-right: 1px solid var(--rule); cursor: pointer;
+}
+.toggle-group button:last-child { border-right: none; }
+.toggle-group button:hover { color: var(--ink); }
+.toggle-group button.active { background: var(--ink); color: var(--bg); }
+
+.readout { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--ink); }
+.readout .value {
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 15px; color: var(--ink);
+}
+.readout .label { color: var(--muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.stat-strip { display: flex; gap: 22px; flex-wrap: wrap; }
+.stat { display: flex; flex-direction: column; gap: 0; }
+.stat .stat-value {
+  font-family: "SF Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 19px; line-height: 1.15; color: var(--ink);
+}
+.stat .stat-label {
+  font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+}

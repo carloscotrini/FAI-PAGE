@@ -1,0 +1,8 @@
+/* Scene 6. Beyond the data. */
+
+.s6-controls { margin: 8px 0 0; gap: 18px; }
+#stage .scene[data-scene="6"] .callout { margin: 8px 0 0; }
+
+/* With five models the closing paragraph grows by a line and the column just
+   crosses the fold at 1280x720. Two pixels of margin buy it back. */
+#stage .scene[data-scene="6"] .text-col p { margin-bottom: 9px; }

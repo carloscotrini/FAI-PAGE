@@ -1,0 +1,415 @@
+/* ==========================================================================
+   Ramps, bumps, anything. Theme tokens and the scene engine shell.
+
+   COLOUR IS WRITTEN HERE AND NOWHERE ELSE. No JavaScript file in this
+   directory may contain a hex value, an rgb() or a d3 colour scale; verify.sh
+   greps for them and fails. A scene asks for a colour by putting a class on an
+   element, which is what makes the theme toggle free.
+
+   The grammar every scene uses, and the only one:
+
+       blue        the SUM, the thing the model actually predicts
+       orange      a PIECE of it, one ramp or one bump
+       vermillion  OUTSIDE the hours the data covers, and, on the two readouts
+                   of scene 1, a number the model has no business giving
+       dotted ink  the average day, the shape being traced
+       grey dots   the measured counts
+
+   Blue and orange are the Okabe-Ito pair chosen because they stay apart under
+   all three dichromacies. Vermillion never shares a chart with orange. Green is
+   not used at all, so no red and green pair can form.
+   ========================================================================== */
+
+:root {
+  /* Ground and chrome. Light is the lecture default: a lit hall washes dark out. */
+  --bg: #F9F7F1;
+  --panel: #FFFFFF;
+  --panel-hover: #FDFBF5;
+  --ink: #1A1A1A;
+  --ink-soft: #33322E;
+  --muted: #65625B;
+  --rule: #D8D4CA;
+  --accent: #1A1A1A;
+
+  /* The series axis. Okabe-Ito. */
+  --model: #0072B2;        /* blue, the sum */
+  --piece: #E69F00;        /* orange, one ramp or one bump */
+  --beyond: #D55E00;       /* vermillion, outside the sampled hours */
+  --target: #3A3A3A;       /* the average day, always dotted */
+  --data: #6E6A62;         /* the measured counts */
+  --band: rgba(0, 114, 178, 0.10);
+  --band-beyond: rgba(213, 94, 0, 0.09);
+
+  --grid-line: rgba(0, 0, 0, 0.06);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+
+  --t-fast: 150ms;
+  --t-med: 340ms;
+}
+
+[data-theme="dark"] {
+  --bg: #181612;
+  --panel: #232019;
+  --panel-hover: #2A2620;
+  --ink: #ECE7D9;
+  --ink-soft: #CFC9BA;
+  --muted: #948E81;
+  --rule: #3A3630;
+  --accent: #ECE7D9;
+
+  --model: #56B4E9;
+  --piece: #E8B44A;
+  --beyond: #EE7733;
+  --target: #D8D2C2;
+  --data: #9A948A;
+  --band: rgba(86, 180, 233, 0.12);
+  --band-beyond: rgba(238, 119, 51, 0.12);
+
+  --grid-line: rgba(236, 231, 217, 0.07);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   Base. Sized for a 1280x720 projector first, and it has to stay readable
+   from the back row: nothing on a chart is smaller than 12px.
+   ========================================================================== */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  height: 100vh;
+  overflow: hidden;
+  transition: background var(--t-med), color var(--t-med);
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+}
+
+h1, h2, h3 {
+  font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+h1 { font-size: clamp(38px, 5vw, 62px); line-height: 1.04; letter-spacing: -0.025em; }
+h2 { font-size: clamp(23px, 2.3vw, 31px); line-height: 1.14; margin-bottom: 8px; }
+h3 { font-size: clamp(16px, 1.4vw, 20px); line-height: 1.25; margin-bottom: 5px; }
+
+p { margin-bottom: 11px; max-width: 58ch; }
+.muted { color: var(--muted); }
+.small { font-size: 14.5px; line-height: 1.45; }
+.tiny { font-size: 13px; line-height: 1.4; }
+strong { color: var(--ink); font-weight: 600; }
+code, .mono {
+  font-family: "SF Mono", "Menlo", "JetBrains Mono", monospace;
+  font-size: 0.9em;
+}
+.tabular { font-variant-numeric: tabular-nums; }
+
+kbd {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 0.8em;
+  padding: 1px 5px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--panel);
+  color: var(--ink-soft);
+}
+
+/* ==========================================================================
+   Topbar and footer
+   ========================================================================== */
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 9px 26px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg);
+  font-size: 14px;
+  z-index: 10;
+}
+.topbar-left { justify-self: start; display: flex; gap: 8px; align-items: baseline; }
+.topbar-center { justify-self: center; }
+.topbar-right { justify-self: end; display: flex; gap: 16px; align-items: center; }
+
+.brand {
+  font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+  font-weight: 500; font-size: 16px; letter-spacing: 0.02em;
+}
+.brand-sep { color: var(--muted); }
+.brand-title { color: var(--muted); font-size: 14px; }
+
+.scene-title {
+  font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+  font-style: italic; color: var(--muted); font-size: 15px;
+}
+
+.theme-toggle {
+  font: inherit; font-size: 12px; color: var(--muted);
+  background: transparent; border: 1px solid var(--rule);
+  padding: 3px 9px; border-radius: 4px; cursor: pointer;
+  transition: all var(--t-fast);
+}
+.theme-toggle:hover { border-color: var(--ink); color: var(--ink); }
+.theme-toggle .theme-sep { margin: 0 4px; opacity: 0.5; }
+[data-theme="light"] .theme-label-dark { color: var(--ink); font-weight: 500; }
+[data-theme="dark"] .theme-label-light { color: var(--ink); font-weight: 500; }
+
+.dots { display: flex; gap: 6px; }
+.dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  border: 1px solid var(--rule); background: transparent;
+  padding: 0; cursor: pointer; transition: all var(--t-fast);
+}
+.dot:hover { border-color: var(--accent); }
+.dot.active { background: var(--accent); border-color: var(--accent); }
+
+.controls {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 26px; border-top: 1px solid var(--rule);
+  background: var(--bg); z-index: 10;
+}
+.kbd-hint { color: var(--muted); font-size: 12.5px; }
+
+.btn {
+  font: inherit; font-size: 14px; color: var(--ink);
+  background: transparent; border: 1px solid var(--rule);
+  padding: 6px 15px; border-radius: 4px; cursor: pointer;
+  transition: all var(--t-fast);
+}
+.btn:hover:not(:disabled) { background: var(--panel-hover); border-color: var(--ink); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.primary:hover:not(:disabled) { background: var(--ink-soft); }
+.btn.small { font-size: 13px; padding: 4px 11px; }
+
+/* ==========================================================================
+   Stage
+   ========================================================================== */
+
+.stage { position: relative; overflow: hidden; }
+
+.scene {
+  position: absolute; inset: 0;
+  padding: 18px 30px 12px;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--t-med);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.scene.active { opacity: 1; pointer-events: auto; }
+
+.scene-stub {
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; height: 100%; text-align: center; color: var(--muted);
+}
+
+.scene-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.46fr);
+  gap: 26px; flex: 1 1 auto; min-height: 0; align-items: stretch;
+}
+.scene-layout.center { grid-template-columns: 1fr; }
+
+@media (max-width: 1100px) {
+  .scene-layout { grid-template-columns: 1fr; }
+}
+
+.viz-col {
+  display: flex; flex-direction: column; gap: 6px; min-height: 0; min-width: 0;
+}
+.viz-col .viz-wrap { flex: 1 1 auto; min-height: 0; }
+
+.viz-wrap {
+  position: relative; background: var(--panel);
+  border: 1px solid var(--rule); border-radius: 4px;
+  overflow: hidden; min-height: 200px;
+  display: flex; flex-direction: column;
+}
+.viz-wrap svg { display: block; flex: 0 0 auto; }
+
+.text-col {
+  display: flex; flex-direction: column; justify-content: flex-start;
+  max-width: 54ch; min-height: 0; overflow-y: auto; padding-right: 4px;
+}
+.text-col::-webkit-scrollbar { width: 6px; }
+.text-col::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+
+.scene-head { margin-bottom: 10px; flex: 0 0 auto; }
+.eyebrow {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 11.5px; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 5px;
+}
+
+/* ==========================================================================
+   Series classes. A scene never writes a colour; it writes one of these.
+   ========================================================================== */
+
+svg .series-model { stroke: var(--model); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+svg .series-piece { stroke: var(--piece); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+svg .series-beyond { stroke: var(--beyond); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+svg .series-target { stroke: var(--target); fill: none; stroke-dasharray: 2 4; opacity: 0.75; }
+svg .series-ghost { stroke: var(--muted); fill: none; opacity: 0.45; }
+
+svg .fill-model { fill: var(--model); stroke: none; }
+svg .fill-piece { fill: var(--piece); stroke: none; }
+svg .fill-beyond { fill: var(--beyond); stroke: none; }
+svg .fill-ink { fill: var(--ink); stroke: none; }
+svg .fill-muted { fill: var(--muted); stroke: none; }
+svg .fill-panel { fill: var(--panel); }
+
+svg .band-sampled { fill: var(--band); }
+svg .band-beyond { fill: var(--band-beyond); }
+svg .band-tolerance { fill: var(--band); }
+
+svg .mark-data { fill: var(--data); stroke: none; opacity: 0.30; }
+
+svg .axis text { fill: var(--muted); font-size: 12.5px; }
+svg .axis line, svg .axis path { stroke: var(--rule); }
+svg .grid line { stroke: var(--grid-line); }
+svg .zero-line { stroke: var(--muted); stroke-dasharray: 4 4; stroke-width: 1; opacity: 0.7; }
+svg .axis-label {
+  fill: var(--muted); font-size: 13px;
+  font-family: "Iowan Old Style", "Palatino", Georgia, serif; font-style: italic;
+}
+svg .series-label { font-size: 13px; font-weight: 600; }
+svg .note-label { fill: var(--muted); font-size: 12.5px; }
+
+/* The draggable handles. Colour is deliberately NOT what marks them: they are
+   white discs with an ink ring, so they read as "grab me" in both themes and
+   never compete with a series for meaning. */
+svg .handle { fill: var(--panel); stroke: var(--ink); stroke-width: 2.4; cursor: grab; }
+svg .handle:hover { fill: var(--panel-hover); stroke-width: 3.2; }
+svg .handle.dragging { fill: var(--ink); cursor: grabbing; }
+svg .handle-hit { fill: transparent; stroke: none; cursor: grab; }
+svg .handle-label { fill: var(--muted); font-size: 12.5px; }
+svg .handle-guide { stroke: var(--muted); stroke-dasharray: 3 3; opacity: 0.5; }
+
+/* Every label on a chart sits somewhere a curve can move through: the piece
+   names of scene 3 are on the pieces, and a handle carries its numbers with it.
+   A halo in the panel colour is drawn UNDER the glyphs (paint-order), so a line
+   crossing a word passes behind it instead of through it. This has to come after
+   the .fill-* rules above, which set stroke: none at the same specificity. */
+svg .note-label, svg .handle-label, svg .series-label {
+  paint-order: stroke fill;
+  stroke: var(--panel);
+  stroke-width: 3.2px;
+  stroke-linejoin: round;
+}
+
+/* ==========================================================================
+   Controls inside a scene
+   ========================================================================== */
+
+.controls-row {
+  display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+  margin: 8px 0 2px; flex: 0 0 auto;
+}
+.control { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--muted); }
+.control label { white-space: nowrap; }
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  height: 3px; background: var(--rule); border-radius: 2px;
+  outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--ink); border: 2px solid var(--bg); cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--ink); border: 2px solid var(--bg); cursor: pointer;
+}
+
+.readout {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 14px; color: var(--ink);
+}
+
+.toggle-group { display: inline-flex; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+.toggle-group button {
+  font: inherit; font-size: 13px; padding: 4px 11px;
+  background: transparent; color: var(--muted);
+  border: none; border-right: 1px solid var(--rule); cursor: pointer;
+  transition: all var(--t-fast);
+}
+.toggle-group button:last-child { border-right: none; }
+.toggle-group button:hover { color: var(--ink); }
+.toggle-group button.active { background: var(--ink); color: var(--bg); }
+
+/* ==========================================================================
+   Readout panels
+   ========================================================================== */
+
+.stat-strip { display: flex; gap: 22px; flex-wrap: wrap; margin: 6px 0; }
+.stat { display: flex; flex-direction: column; gap: 0; }
+.stat .stat-value {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 23px; line-height: 1.2; color: var(--ink);
+}
+.stat .stat-value.on-model { color: var(--model); }
+.stat .stat-value.on-beyond { color: var(--beyond); }
+.stat .stat-label {
+  font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted);
+}
+
+.callout {
+  border-left: 3px solid var(--accent); background: var(--panel);
+  padding: 10px 13px; margin: 10px 0; border-radius: 0 4px 4px 0;
+}
+.callout .callout-title {
+  font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+  font-style: italic; color: var(--muted); font-size: 13.5px; margin-bottom: 2px;
+}
+.callout p:last-child { margin-bottom: 0; }
+
+.sidebar-note {
+  border: 1px solid var(--rule); background: var(--panel);
+  padding: 9px 12px; border-radius: 4px; margin: 9px 0;
+  font-size: 14.5px; color: var(--ink-soft);
+}
+.sidebar-note .sidebar-title {
+  font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+  font-style: italic; color: var(--muted); font-size: 12.5px;
+  margin-bottom: 2px; display: block;
+}
+.sidebar-note p { margin-bottom: 6px; }
+.sidebar-note p:last-child { margin-bottom: 0; }
+
+/* The synthetic-data stamp. It appears on every scene that draws the counts,
+   because a toy dataset has to say so wherever it is shown. */
+.synthetic-stamp {
+  font-size: 12.5px; color: var(--muted); flex: 0 0 auto; line-height: 1.35;
+}
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.data-table th {
+  text-align: left; font-weight: 500; color: var(--muted);
+  font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;
+  border-bottom: 1px solid var(--rule); padding: 4px 8px 4px 0;
+}
+.data-table td { padding: 3px 8px 3px 0; border-bottom: 1px solid var(--rule); }
+.data-table td.num {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-variant-numeric: tabular-nums; text-align: right;
+}
+/* A heading over a number column belongs over the digits, not over the left
+   edge of the cell. On a 1920 projector the gap is a finger wide otherwise. */
+.data-table th.num { text-align: right; }
+.data-table tr.is-current td { color: var(--model); font-weight: 600; }

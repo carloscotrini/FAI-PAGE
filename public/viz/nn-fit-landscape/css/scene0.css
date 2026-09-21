@@ -1,0 +1,24 @@
+/* Scene 0, the title card. */
+
+.title-card {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 10px;
+  width: 100%; max-width: min(var(--content-w), 1060px); margin: auto;
+  min-height: 0;
+}
+
+.title-text { text-align: center; }
+.title-text h1 { margin-bottom: 6px; font-size: clamp(30px, 3.9vw, 52px); }
+.title-lede {
+  color: var(--muted); font-size: clamp(13.5px, 1.25vw, 16px);
+  max-width: 78ch; margin: 0 auto;
+}
+
+.title-panel { width: 100%; padding: 8px 10px 4px; }
+.title-panel .panel-title { text-align: left; }
+
+.title-foot {
+  display: flex; gap: 26px; justify-content: space-between;
+  width: 100%; font-size: 11.5px; line-height: 1.4;
+}
+.title-foot span { max-width: 52ch; }

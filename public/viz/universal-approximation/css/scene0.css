@@ -1,0 +1,11 @@
+/* Scene 0. The shape nobody can write down. */
+
+.s0-title {
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1.05;
+  margin-bottom: 12px;
+  max-width: 14ch;
+}
+.s0-hook { font-size: 18px; color: var(--ink-soft); }
+.s0-text .stat-strip { margin: 14px 0 8px; gap: 18px; }
+.s0-text .stat .stat-value { font-size: 21px; }

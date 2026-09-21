@@ -1,0 +1,6 @@
+/* Scene 3. The whole day, by hand. */
+
+.s3-controls { margin: 8px 0 0; gap: 10px; }
+.s3-hint { margin-left: 2px; }
+.s3-ledger { margin: 8px 0 8px; }
+.s3-ledger td, .s3-ledger th { font-size: 14px; }

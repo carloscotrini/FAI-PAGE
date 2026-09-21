@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wisdom of Crowds — SML 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #fafafa;
+  --fg: #1a1a1a;
+  --accent: #6b2d80;
+  --accent2: #2d6b80;
+  --accent3: #d97706;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --border: #e5e7eb;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+.layout {
+  display: grid;
+  grid-template-columns: 440px 1fr;
+  gap: 32px;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 24px;
+  align-items: start;
+}
+.viz {
+  position: sticky;
+  top: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#jarCanvas { display: block; margin: 0 auto; width: 280px; height: 280px; flex: 0 0 auto; }
+#histCanvas { display: block; width: 100%; height: 160px; flex: 0 0 160px; }
+.banner {
+  background: var(--accent);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  display: none;
+}
+.banner.show { display: block; }
+.controls { display: flex; flex-direction: column; gap: 6px; }
+.controls .row { display: flex; gap: 6px; }
+input[type=text], textarea {
+  font: inherit;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  flex: 1;
+  background: white;
+}
+textarea {
+  resize: vertical;
+  min-height: 38px;
+  max-height: 120px;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+button {
+  font: inherit;
+  padding: 7px 12px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  flex: 1;
+}
+button:hover { filter: brightness(1.1); }
+button.warn { background: var(--accent3); }
+button.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+button.compact { flex: 0 0 auto; padding: 7px 10px; }
+
+.narrative { display: flex; flex-direction: column; gap: 32px; padding-bottom: 40vh; }
+.step {
+  min-height: 70vh;
+  padding: 40px 36px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.step h2 {
+  margin: 0 0 16px;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.step .lead { font-size: 22px; color: var(--muted); margin: 0 0 12px; }
+.step p {
+  margin: 0 0 14px;
+  line-height: 1.65;
+  font-size: 16px;
+  max-width: 60ch;
+}
+.step p.muted { color: var(--muted); font-size: 13px; font-style: italic; }
+.step ul.bullets {
+  padding-left: 20px;
+  line-height: 1.7;
+  max-width: 62ch;
+  margin: 0 0 14px;
+}
+.step ul.bullets li { margin-bottom: 10px; font-size: 16px; }
+.formula {
+  font-family: "Times New Roman", "Cambria Math", serif;
+  font-style: italic;
+  font-size: 28px;
+  text-align: center;
+  padding: 18px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+.formula sub, .formula sup { font-style: normal; }
+.bar { text-decoration: overline; font-style: italic; }
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+  max-width: 480px;
+}
+.slider-row .label {
+  min-width: 30px;
+  font-style: italic;
+  font-family: "Times New Roman", serif;
+  font-size: 18px;
+}
+.slider-row input[type=range] { flex: 1; }
+.slider-row .val {
+  min-width: 50px;
+  text-align: right;
+  font-family: ui-monospace, monospace;
+  font-size: 14px;
+}
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+  max-width: 600px;
+}
+.stat { background: #f3f4f6; padding: 8px 10px; border-radius: 6px; }
+.stat .label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.stat .value { font-size: 18px; font-weight: 600; }
+
+@media (max-width: 1000px) {
+  .layout { grid-template-columns: 1fr; }
+  .viz { position: relative; top: 0; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="viz">
+    <canvas id="jarCanvas" width="280" height="280"></canvas>
+    <canvas id="histCanvas"></canvas>
+    <div id="bannerMsg" class="banner"></div>
+    <div class="controls">
+      <div class="row">
+        <input type="text" id="txtEstimate">
+        <button id="btnSubmit" class="compact">+</button>
+      </div>
+      <textarea id="txtPaste" placeholder="paste Mentimeter results"></textarea>
+      <div class="row">
+        <button id="btnPasteAdd">Add pasted</button>
+        <button id="btnSimRoom" class="ghost">Simulate</button>
+      </div>
+      <div class="row">
+        <button id="btnReset" class="ghost">Reset (new jar)</button>
+      </div>
+    </div>
+  </aside>
+  <article class="narrative">
+
+    <section class="step" data-step="hook">
+      <h2>How many?</h2>
+      <p class="lead">Take a guess. No counting.</p>
+      <p class="muted">Scroll to continue.</p>
+    </section>
+
+    <section class="step" data-step="galton">
+      <h2>Plymouth, 1906</h2>
+      <p>At the West of England Fat Stock and Poultry Exhibition, Francis Galton watched 800 visitors pay sixpence to guess the dressed weight of a slaughtered ox.</p>
+      <p>Galton was a vox-populi sceptic. He expected the crowd to be wildly off — and ran the analysis to prove it.</p>
+      <p>The median guess was <b>1197 lb</b>. The actual weight: <b>1198 lb</b>.</p>
+      <p class="muted">F. Galton, "Vox Populi", <i>Nature</i>, 7 March 1907.</p>
+    </section>
+
+    <section class="step" data-step="round1">
+      <h2>Round 1 — your turn</h2>
+      <p>Open the Mentimeter. Submit one estimate. No discussion yet — independence is the whole game.</p>
+      <p>Once Mentimeter has the room's guesses, I'll paste them into the box on the left.</p>
+      <p class="muted">If we run short on time, the <i>Simulate</i> button fills in a synthetic crowd calibrated to the few real entries.</p>
+    </section>
+
+    <section class="step" data-step="scorpion">
+      <h2>USS <i>Scorpion</i>, 1968</h2>
+      <p>22 May 1968. The submarine USS <i>Scorpion</i> vanished in the Atlantic with 99 men aboard. Six months of search yielded nothing.</p>
+      <p>Navy mathematician John Craven gathered submariners, salvage operators, and oceanographers — none of them experts in submarine losses. He asked each, independently, to mark a probability map of the seabed: where do you think the wreck is?</p>
+      <p>He weighted the maps by domain expertise, applied Bayes' rule across them, and pointed to a single coordinate.</p>
+      <p>Five months later, the wreck was found about <b>200 metres</b> from his point estimate — on a search area the size of a small country.</p>
+      <p class="muted">Sherry Sontag &amp; Christopher Drew, <i>Blind Man's Bluff</i> (1998); J. P. Craven, <i>The Silent War</i> (2001).</p>
+    </section>
+
+    <section class="step" data-step="round2-setup">
+      <h2>Discuss</h2>
+      <p>One minute. Talk to your neighbour. Look at the histogram on the left.</p>
+      <p>Then re-estimate.</p>
+    </section>
+
+    <section class="step" data-step="round2">
+      <h2>Round 2</h2>
+      <p>Submit a second guess on Mentimeter. I'll paste them in.</p>
+      <p class="muted">Watch what happens to the shape of the distribution.</p>
+    </section>
+
+    <section class="step" data-step="reveal">
+      <h2>The reveal</h2>
+      <p>The orange line is the truth. The two darker lines are the round-1 and round-2 means.</p>
+      <p>Round 2 is <i>narrower</i>. Look closely at how it sits relative to the truth.</p>
+    </section>
+
+    <section class="step" data-step="lorenz">
+      <h2>The catch</h2>
+      <p>Round 2 is tighter than round 1. Often it is no closer to the truth. Sometimes further.</p>
+      <p>Lorenz, Rauhut, Schweitzer &amp; Helbing measured this with 144 subjects across six estimation tasks: social influence shrinks the spread of guesses (overconfidence) without improving accuracy.</p>
+      <p class="muted">"How social influence can undermine the wisdom of crowd effect", <i>PNAS</i> 108(22), 2011.</p>
+    </section>
+
+    <section class="step" data-step="math">
+      <h2>Why</h2>
+      <div class="formula">
+        Var(<span class="bar">Y</span><sub>n</sub>) = ρ·σ² + (1−ρ)·σ²/n
+      </div>
+      <p>The variance of the average of <i>n</i> estimators with pairwise correlation ρ. When ρ = 0, the crowd is independent — variance shrinks like 1/<i>n</i>. When ρ = 1, the crowd agrees — variance stays at σ², no matter how many you add.</p>
+      <div class="slider-row">
+        <span class="label">ρ</span>
+        <input type="range" id="rhoSlider" min="0" max="1" step="0.01" value="0.55">
+        <span class="val" id="rhoVal">0.55</span>
+      </div>
+      <div class="slider-row">
+        <span class="label">n</span>
+        <input type="range" id="nSlider" min="1" max="500" step="1" value="220">
+        <span class="val" id="nVal">220</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="label">σ̂</div><div class="value" id="sigma1">—</div></div>
+        <div class="stat"><div class="label">ρ̂</div><div class="value" id="rhoHat">—</div></div>
+        <div class="stat"><div class="label">Var(mean)</div><div class="value" id="varEnsemble">—</div></div>
+        <div class="stat"><div class="label">Var(single)</div><div class="value" id="varSingle">—</div></div>
+      </div>
+    </section>
+
+    <section class="step" data-step="ensembles">
+      <h2>So what?</h2>
+      <p>Every ensemble method is a wisdom-of-crowds machine. Their differences come down to ρ.</p>
+      <ul class="bullets">
+        <li><b>Bagging.</b> Each tree on a bootstrap sample. Trees see different data. Low ρ. Variance shrinks like 1/<i>n</i>.</li>
+        <li><b>Boosting.</b> Trees fit sequentially on each other's residuals. Highly correlated. ρ near 1. Variance floor at ρσ². Fights bias, not variance.</li>
+        <li><b>Random forests.</b> Bagging plus per-split feature subsampling. Decorrelates further. ρ even lower. Beats plain bagging.</li>
+      </ul>
+      <p>Independence is engineered, not assumed. The reason your round-2 estimates didn't improve is the same reason boosted trees plateau on variance.</p>
+    </section>
+
+    <section class="step" data-step="replay">
+      <h2>Again?</h2>
+      <p>Press <i>Reset (new jar)</i> on the left. The number of beans changes every time, drawn fresh between 300 and 500.</p>
+      <p>Run it twice. Try a different round-2 anchor. See how often the crowd beats the individual.</p>
+    </section>
+
+  </article>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+function rollN() { return 300 + Math.floor(Math.random() * 201); }
+let TRUE_COUNT = (() => {
+  const u = new URL(window.location.href);
+  const n = parseInt(u.searchParams.get('n') || '', 10);
+  return (!isNaN(n) && n >= 50 && n <= 600) ? n : rollN();
+})();
+const CROWD_SIZE = 220;
+const JAR_RECT = { x: 30, y: 30, w: 220, h: 230 };
+const BEAN_R_MIN = 4;
+const BEAN_R_MAX = 5.5;
+const GRAVITY = 0.4;
+const DAMP = 0.55;
+const FLOOR_FRICTION = 0.92;
+
+// ============================================================
+// JAR PHYSICS
+// ============================================================
+const jarCv = document.getElementById('jarCanvas');
+const jarCtx = jarCv.getContext('2d');
+const beans = [];
+let pouring = false;
+let pourQueue = [];
+let pourStartTime = 0;
+
+const PALETTE = [
+  '#a13d2d', '#3b3a52', '#d4b26a', '#7a4a2a', '#b85c3a', '#2a3a52',
+];
+
+function makeBean(x, y) {
+  const r = BEAN_R_MIN + Math.random() * (BEAN_R_MAX - BEAN_R_MIN);
+  return {
+    x, y, vx: (Math.random() - 0.5) * 1.2, vy: 0,
+    r,
+    color: PALETTE[(Math.random() * PALETTE.length) | 0],
+    angle: Math.random() * Math.PI,
+    spin: (Math.random() - 0.5) * 0.15,
+  };
+}
+
+function pourStart() {
+  if (beans.length > 0) return;
+  pourQueue = [];
+  for (let i = 0; i < TRUE_COUNT; i++) {
+    pourQueue.push({
+      delay: i * (4000 / TRUE_COUNT),
+      x: JAR_RECT.x + JAR_RECT.w * (0.4 + 0.2 * Math.random()),
+    });
+  }
+  pouring = true;
+  pourStartTime = performance.now();
+}
+
+function physicsStep() {
+  if (pouring) {
+    const t = performance.now() - pourStartTime;
+    while (pourQueue.length && pourQueue[0].delay <= t) {
+      const p = pourQueue.shift();
+      beans.push(makeBean(p.x, JAR_RECT.y + 10));
+    }
+    if (pourQueue.length === 0) pouring = false;
+  }
+
+  for (const b of beans) {
+    b.vy += GRAVITY;
+    b.x += b.vx;
+    b.y += b.vy;
+    b.angle += b.spin;
+    if (b.x < JAR_RECT.x + b.r) { b.x = JAR_RECT.x + b.r; b.vx *= -DAMP; }
+    if (b.x > JAR_RECT.x + JAR_RECT.w - b.r) { b.x = JAR_RECT.x + JAR_RECT.w - b.r; b.vx *= -DAMP; }
+    if (b.y > JAR_RECT.y + JAR_RECT.h - b.r) {
+      b.y = JAR_RECT.y + JAR_RECT.h - b.r;
+      b.vy *= -DAMP;
+      b.vx *= FLOOR_FRICTION;
+      b.spin *= 0.9;
+    }
+  }
+
+  const cell = BEAN_R_MAX * 2.2;
+  const grid = new Map();
+  for (let i = 0; i < beans.length; i++) {
+    const b = beans[i];
+    const k = ((b.x / cell) | 0) + ',' + ((b.y / cell) | 0);
+    let arr = grid.get(k);
+    if (!arr) { arr = []; grid.set(k, arr); }
+    arr.push(i);
+  }
+  for (let i = 0; i < beans.length; i++) {
+    const a = beans[i];
+    const cx = (a.x / cell) | 0;
+    const cy = (a.y / cell) | 0;
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        const c = grid.get((cx + dx) + ',' + (cy + dy));
+        if (!c) continue;
+        for (const j of c) {
+          if (j <= i) continue;
+          const b = beans[j];
+          const ddx = b.x - a.x, ddy = b.y - a.y;
+          const d2 = ddx * ddx + ddy * ddy;
+          const rr = a.r + b.r;
+          if (d2 < rr * rr && d2 > 0.001) {
+            const d = Math.sqrt(d2);
+            const overlap = (rr - d) / 2;
+            const nx = ddx / d, ny = ddy / d;
+            a.x -= nx * overlap; a.y -= ny * overlap;
+            b.x += nx * overlap; b.y += ny * overlap;
+            const va = a.vx * nx + a.vy * ny;
+            const vb = b.vx * nx + b.vy * ny;
+            const ex = (va - vb) * 0.5 * (1 + DAMP);
+            a.vx -= ex * nx; a.vy -= ex * ny;
+            b.vx += ex * nx; b.vy += ex * ny;
+          }
+        }
+      }
+    }
+  }
+}
+
+function drawJar() {
+  jarCtx.clearRect(0, 0, jarCv.width, jarCv.height);
+  const x = JAR_RECT.x, y = JAR_RECT.y, w = JAR_RECT.w, h = JAR_RECT.h;
+
+  const grad = jarCtx.createLinearGradient(0, 0, 0, jarCv.height);
+  grad.addColorStop(0, '#f8fafc');
+  grad.addColorStop(1, '#e2e8f0');
+  jarCtx.fillStyle = grad;
+  jarCtx.fillRect(0, 0, jarCv.width, jarCv.height);
+
+  jarCtx.fillStyle = 'rgba(190, 210, 230, 0.32)';
+  jarCtx.beginPath();
+  jarCtx.moveTo(x - 14, y - 22);
+  jarCtx.lineTo(x + w + 14, y - 22);
+  jarCtx.lineTo(x + w + 14, y - 8);
+  jarCtx.bezierCurveTo(x + w + 14, y, x + w, y + 2, x + w, y + 10);
+  jarCtx.lineTo(x + w, y + h);
+  jarCtx.quadraticCurveTo(x + w, y + h + 14, x + w - 14, y + h + 14);
+  jarCtx.lineTo(x + 14, y + h + 14);
+  jarCtx.quadraticCurveTo(x, y + h + 14, x, y + h);
+  jarCtx.lineTo(x, y + 10);
+  jarCtx.bezierCurveTo(x, y + 2, x - 14, y, x - 14, y - 8);
+  jarCtx.closePath();
+  jarCtx.fill();
+
+  for (const b of beans) {
+    jarCtx.save();
+    jarCtx.translate(b.x, b.y);
+    jarCtx.rotate(b.angle);
+    jarCtx.fillStyle = b.color;
+    jarCtx.beginPath();
+    jarCtx.ellipse(0, 0, b.r, b.r * 0.74, 0, 0, Math.PI * 2);
+    jarCtx.fill();
+    jarCtx.strokeStyle = 'rgba(0,0,0,0.3)';
+    jarCtx.lineWidth = 0.5;
+    jarCtx.stroke();
+    jarCtx.fillStyle = 'rgba(255,255,255,0.35)';
+    jarCtx.beginPath();
+    jarCtx.ellipse(-b.r * 0.32, -b.r * 0.3, b.r * 0.3, b.r * 0.18, 0, 0, Math.PI * 2);
+    jarCtx.fill();
+    jarCtx.restore();
+  }
+
+  jarCtx.strokeStyle = '#475569';
+  jarCtx.lineWidth = 3;
+  jarCtx.beginPath();
+  jarCtx.moveTo(x - 14, y - 22);
+  jarCtx.lineTo(x + w + 14, y - 22);
+  jarCtx.lineTo(x + w + 14, y - 8);
+  jarCtx.bezierCurveTo(x + w + 14, y, x + w, y + 2, x + w, y + 10);
+  jarCtx.lineTo(x + w, y + h);
+  jarCtx.quadraticCurveTo(x + w, y + h + 14, x + w - 14, y + h + 14);
+  jarCtx.lineTo(x + 14, y + h + 14);
+  jarCtx.quadraticCurveTo(x, y + h + 14, x, y + h);
+  jarCtx.lineTo(x, y + 10);
+  jarCtx.bezierCurveTo(x, y + 2, x - 14, y, x - 14, y - 8);
+  jarCtx.closePath();
+  jarCtx.stroke();
+
+  jarCtx.fillStyle = 'rgba(255, 255, 255, 0.32)';
+  jarCtx.beginPath();
+  jarCtx.ellipse(x + 18, y + h * 0.32, 6, h * 0.28, 0, 0, Math.PI * 2);
+  jarCtx.fill();
+}
+
+function loop() {
+  physicsStep();
+  drawJar();
+  requestAnimationFrame(loop);
+}
+loop();
+
+// ============================================================
+// HISTOGRAM
+// ============================================================
+const histCv = document.getElementById('histCanvas');
+const histCtx = histCv.getContext('2d');
+let estimates1 = [];
+let estimates2 = [];
+let currentRound = 1;
+let truthRevealed = false;
+
+function resizeHist() {
+  const rect = histCv.getBoundingClientRect();
+  histCv.width = rect.width * devicePixelRatio;
+  histCv.height = rect.height * devicePixelRatio;
+  histCtx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+window.addEventListener('resize', () => { resizeHist(); drawHist(); });
+resizeHist();
+
+function p95(arr) {
+  if (!arr.length) return 0;
+  const sorted = [...arr].sort((a, b) => a - b);
+  return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))];
+}
+
+function niceStep(x) {
+  const exp = Math.floor(Math.log10(x));
+  const f = x / Math.pow(10, exp);
+  let nice;
+  if (f < 1.5) nice = 1;
+  else if (f < 3) nice = 2;
+  else if (f < 7) nice = 5;
+  else nice = 10;
+  return Math.max(1, nice * Math.pow(10, exp));
+}
+
+function drawHist() {
+  const w = histCv.width / devicePixelRatio;
+  const h = histCv.height / devicePixelRatio;
+  histCtx.clearRect(0, 0, w, h);
+
+  const margin = { l: 36, r: 12, t: 30, b: 26 };
+  const plotW = w - margin.l - margin.r;
+  const plotH = h - margin.t - margin.b;
+
+  // Always draw axis baseline so the histogram area is visible.
+  histCtx.strokeStyle = '#d1d5db';
+  histCtx.lineWidth = 1;
+  histCtx.beginPath();
+  histCtx.moveTo(margin.l, margin.t);
+  histCtx.lineTo(margin.l, margin.t + plotH);
+  histCtx.lineTo(margin.l + plotW, margin.t + plotH);
+  histCtx.stroke();
+
+  const all = [...estimates1, ...estimates2];
+  if (all.length === 0) return;
+
+  const baseMax = Math.max(p95(all) * 1.15, TRUE_COUNT * 2.0);
+  const maxV = Math.max(80, baseMax);
+
+  const numBins = 28;
+  const binW = maxV / numBins;
+  const bin = (vals) => {
+    const counts = new Array(numBins).fill(0);
+    for (const v of vals) {
+      const i = Math.min(numBins - 1, Math.max(0, Math.floor(v / binW)));
+      counts[i]++;
+    }
+    return counts;
+  };
+  const c1 = bin(estimates1);
+  const c2 = bin(estimates2);
+  const maxC = Math.max(1, ...c1, ...c2);
+
+  histCtx.strokeStyle = '#9ca3af';
+  histCtx.fillStyle = '#374151';
+  histCtx.font = '10px system-ui';
+  histCtx.textAlign = 'center';
+  histCtx.beginPath();
+  histCtx.moveTo(margin.l, margin.t);
+  histCtx.lineTo(margin.l, margin.t + plotH);
+  histCtx.lineTo(margin.l + plotW, margin.t + plotH);
+  histCtx.stroke();
+
+  const tickStep = niceStep(maxV / 6);
+  for (let v = 0; v <= maxV; v += tickStep) {
+    const xx = margin.l + (v / maxV) * plotW;
+    histCtx.strokeStyle = '#e5e7eb';
+    histCtx.beginPath();
+    histCtx.moveTo(xx, margin.t + plotH);
+    histCtx.lineTo(xx, margin.t + plotH + 3);
+    histCtx.stroke();
+    histCtx.fillStyle = '#374151';
+    histCtx.fillText(String(v), xx, margin.t + plotH + 15);
+  }
+
+  const barW = plotW / numBins;
+  const drawBars = (counts, color, alpha) => {
+    histCtx.fillStyle = color;
+    histCtx.globalAlpha = alpha;
+    for (let i = 0; i < numBins; i++) {
+      if (counts[i] === 0) continue;
+      const xx = margin.l + i * barW;
+      const hh = (counts[i] / maxC) * plotH;
+      histCtx.fillRect(xx + 1, margin.t + plotH - hh, barW - 2, hh);
+    }
+    histCtx.globalAlpha = 1;
+  };
+  drawBars(c1, '#6b2d80', 0.55);
+  if (estimates2.length) drawBars(c2, '#2d6b80', 0.65);
+
+  if (truthRevealed) {
+    const drawLine = (vals, color, top) => {
+      if (!vals.length) return;
+      const m = vals.reduce((a, b) => a + b, 0) / vals.length;
+      if (m > maxV) return;
+      const xx = margin.l + (m / maxV) * plotW;
+      histCtx.strokeStyle = color;
+      histCtx.lineWidth = 2;
+      histCtx.beginPath();
+      histCtx.moveTo(xx, margin.t);
+      histCtx.lineTo(xx, margin.t + plotH);
+      histCtx.stroke();
+      histCtx.fillStyle = color;
+      histCtx.textAlign = 'center';
+      histCtx.font = 'bold 11px system-ui';
+      histCtx.fillText(Math.round(m), xx, top);
+    };
+    drawLine(estimates1, '#6b2d80', margin.t - 18);
+    if (estimates2.length) drawLine(estimates2, '#2d6b80', margin.t - 6);
+
+    const xx = margin.l + (TRUE_COUNT / maxV) * plotW;
+    histCtx.strokeStyle = '#d97706';
+    histCtx.lineWidth = 3;
+    histCtx.setLineDash([6, 4]);
+    histCtx.beginPath();
+    histCtx.moveTo(xx, margin.t);
+    histCtx.lineTo(xx, margin.t + plotH);
+    histCtx.stroke();
+    histCtx.setLineDash([]);
+    histCtx.fillStyle = '#d97706';
+    histCtx.textAlign = 'center';
+    histCtx.font = 'bold 12px system-ui';
+    histCtx.fillText(TRUE_COUNT, xx, margin.t + 11);
+  }
+}
+drawHist();
+
+// ============================================================
+// ESTIMATE GENERATION
+// ============================================================
+function logNormal(median, sigmaLog) {
+  const u1 = Math.random(), u2 = Math.random();
+  const z = Math.sqrt(-2 * Math.log(u1 || 1e-9)) * Math.cos(2 * Math.PI * u2);
+  return Math.max(1, Math.round(Math.exp(Math.log(median) + sigmaLog * z)));
+}
+
+function generateRound1(n) {
+  const out = [];
+  const sigma = 0.42;
+  for (let i = 0; i < n; i++) {
+    if (Math.random() < 0.04) {
+      out.push(Math.round(20 + Math.random() * TRUE_COUNT * 4));
+    } else {
+      out.push(logNormal(TRUE_COUNT * 0.92, sigma));
+    }
+  }
+  return out;
+}
+
+function generateRound2(n, anchorMean, rho) {
+  const out = [];
+  const sigmaTight = 0.13;
+  const sigmaWide = 0.36;
+  for (let i = 0; i < n; i++) {
+    if (Math.random() < rho) {
+      out.push(logNormal(anchorMean * (0.97 + Math.random() * 0.06), sigmaTight));
+    } else {
+      out.push(logNormal(TRUE_COUNT * 0.92, sigmaWide));
+    }
+  }
+  return out;
+}
+
+// ============================================================
+// SUBMISSION + UI
+// ============================================================
+const txtEstimate = document.getElementById('txtEstimate');
+const txtPaste = document.getElementById('txtPaste');
+const banner = document.getElementById('bannerMsg');
+
+function addEstimate(v) {
+  if (currentRound === 1) estimates1.push(v);
+  else estimates2.push(v);
+  drawHist();
+  if (mathStepVisible()) recomputeMath();
+}
+
+function mathStepVisible() {
+  return !!document.getElementById('sigma1');
+}
+
+function parseBulk(text) {
+  return text.split(/[\s,;]+/)
+    .map(x => parseInt(x.replace(/[^\d-]/g, ''), 10))
+    .filter(x => !isNaN(x) && x > 0 && x < 100000);
+}
+
+txtEstimate.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const v = parseInt(txtEstimate.value, 10);
+    if (!isNaN(v) && v > 0) {
+      addEstimate(v);
+      txtEstimate.value = '';
+    }
+  }
+});
+document.getElementById('btnSubmit').addEventListener('click', () => {
+  const v = parseInt(txtEstimate.value, 10);
+  if (!isNaN(v) && v > 0) {
+    addEstimate(v);
+    txtEstimate.value = '';
+  }
+});
+document.getElementById('btnPasteAdd').addEventListener('click', () => {
+  const arr = parseBulk(txtPaste.value);
+  arr.forEach(v => addEstimate(v));
+  txtPaste.value = '';
+});
+
+document.getElementById('btnSimRoom').addEventListener('click', () => {
+  if (currentRound === 1) {
+    const remaining = Math.max(0, CROWD_SIZE - estimates1.length);
+    if (remaining === 0) return;
+    streamEstimates(generateRound1(remaining));
+  } else {
+    if (!estimates1.length) return;
+    const m1 = estimates1.reduce((a, b) => a + b, 0) / estimates1.length;
+    const rho = parseFloat(document.getElementById('rhoSlider').value);
+    const remaining = Math.max(0, CROWD_SIZE - estimates2.length);
+    if (remaining === 0) return;
+    streamEstimates(generateRound2(remaining, m1, rho));
+  }
+});
+
+function streamEstimates(arr) {
+  let i = 0;
+  const dur = 6000;
+  const step = dur / arr.length;
+  const tick = () => {
+    if (i >= arr.length) return;
+    addEstimate(arr[i]);
+    i++;
+    setTimeout(tick, Math.max(8, step + (Math.random() - 0.5) * step * 0.7));
+  };
+  tick();
+}
+
+document.getElementById('btnReset').addEventListener('click', () => {
+  beans.length = 0;
+  pourQueue.length = 0;
+  pouring = false;
+  estimates1.length = 0;
+  estimates2.length = 0;
+  truthRevealed = false;
+  currentRound = 1;
+  banner.classList.remove('show');
+  if (timerHandle) clearInterval(timerHandle);
+  TRUE_COUNT = rollN();
+  fired.clear();
+  drawHist();
+  recomputeMath();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+document.getElementById('rhoSlider').addEventListener('input', e => {
+  document.getElementById('rhoVal').textContent = parseFloat(e.target.value).toFixed(2);
+  recomputeMath();
+});
+document.getElementById('nSlider').addEventListener('input', e => {
+  document.getElementById('nVal').textContent = e.target.value;
+  recomputeMath();
+});
+
+function recomputeMath() {
+  if (!estimates1.length) {
+    document.getElementById('sigma1').textContent = '—';
+    document.getElementById('rhoHat').textContent = '—';
+    document.getElementById('varEnsemble').textContent = '—';
+    document.getElementById('varSingle').textContent = '—';
+    return;
+  }
+  const m1 = estimates1.reduce((a, b) => a + b, 0) / estimates1.length;
+  const v1 = estimates1.reduce((a, b) => a + (b - m1) ** 2, 0) / estimates1.length;
+  const sigma = Math.sqrt(v1);
+  document.getElementById('sigma1').textContent = Math.round(sigma);
+  document.getElementById('varSingle').textContent = Math.round(v1);
+  if (estimates2.length) {
+    const m2 = estimates2.reduce((a, b) => a + b, 0) / estimates2.length;
+    const v2 = estimates2.reduce((a, b) => a + (b - m2) ** 2, 0) / estimates2.length;
+    const r = Math.max(0, Math.min(1, 1 - v2 / Math.max(1, v1)));
+    document.getElementById('rhoHat').textContent = r.toFixed(2);
+  } else {
+    document.getElementById('rhoHat').textContent = '—';
+  }
+  const rho = parseFloat(document.getElementById('rhoSlider').value);
+  const n = parseInt(document.getElementById('nSlider').value, 10);
+  const varEns = rho * v1 + (1 - rho) * v1 / n;
+  document.getElementById('varEnsemble').textContent = Math.round(varEns);
+}
+
+let timerHandle = null;
+let bannerBaseHTML = '';
+function startTimer(seconds) {
+  let t = seconds;
+  if (timerHandle) clearInterval(timerHandle);
+  bannerBaseHTML = banner.innerHTML;
+  banner.innerHTML = bannerBaseHTML + ` <span style="opacity:0.85">(${t}s)</span>`;
+  timerHandle = setInterval(() => {
+    t--;
+    if (t <= 0) {
+      clearInterval(timerHandle);
+      banner.innerHTML = bannerBaseHTML + ' <span style="opacity:0.85">— go</span>';
+      return;
+    }
+    banner.innerHTML = bannerBaseHTML + ` <span style="opacity:0.85">(${t}s)</span>`;
+  }, 1000);
+}
+
+function showBanner(html) {
+  banner.innerHTML = html;
+  banner.classList.add('show');
+}
+
+// ============================================================
+// SCROLL-DRIVEN STATE (scrollytelling)
+// ============================================================
+// Truth visibility, current round, and the discussion banner all derive
+// from scroll position so scrolling backward hides them again.
+let bannerActive = false;
+function updateScrollState() {
+  const r2setup = document.querySelector('[data-step="round2-setup"]');
+  const reveal = document.querySelector('[data-step="reveal"]');
+  if (!r2setup || !reveal) return;
+  const setupRect = r2setup.getBoundingClientRect();
+  const revealRect = reveal.getBoundingClientRect();
+  const mid = window.innerHeight * 0.5;
+
+  const wantRound = setupRect.top < mid ? 2 : 1;
+  if (wantRound !== currentRound) currentRound = wantRound;
+
+  const wantTruth = revealRect.top < mid;
+  if (wantTruth !== truthRevealed) {
+    truthRevealed = wantTruth;
+    drawHist();
+  }
+
+  const inSetup = setupRect.top < mid && setupRect.bottom > mid;
+  if (inSetup && !bannerActive) {
+    bannerActive = true;
+    showBanner('Discuss with your neighbour');
+    startTimer(60);
+  } else if (!inSetup && bannerActive) {
+    bannerActive = false;
+    banner.classList.remove('show');
+    if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
+  }
+}
+window.addEventListener('scroll', updateScrollState, { passive: true });
+window.addEventListener('resize', updateScrollState);
+updateScrollState();
+
+// Fire-once events: pour beans when hook is reached, recompute math when shown.
+const fired = new Set();
+const stepActions = {
+  hook: () => { pourStart(); },
+  math: () => { recomputeMath(); },
+};
+const observer = new IntersectionObserver(entries => {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    const step = e.target.dataset.step;
+    if (fired.has(step)) continue;
+    fired.add(step);
+    if (stepActions[step]) stepActions[step]();
+  }
+}, { threshold: 0.4 });
+document.querySelectorAll('.step').forEach(s => observer.observe(s));
+
+// Test hooks for headless-Chrome screenshots; no-ops without query param.
+{
+  const params = new URL(location).searchParams;
+  const scrollTarget = params.get('scroll');
+  if (scrollTarget) {
+    const el = document.querySelector(`[data-step="${scrollTarget}"]`);
+    if (el) {
+      window.scrollTo(0, el.offsetTop - 60);
+      updateScrollState();
+    }
+  }
+  if (params.get('force') === 'banner') {
+    bannerActive = true;
+    showBanner('Discuss with your neighbour');
+    startTimer(60);
+  }
+  if (params.get('force') === 'revealed') {
+    for (let i = 0; i < 220; i++) estimates1.push(Math.round(TRUE_COUNT * (0.5 + Math.random())));
+    for (let i = 0; i < 220; i++) estimates2.push(Math.round(TRUE_COUNT * (0.85 + Math.random() * 0.2)));
+    truthRevealed = true;
+    drawHist();
+  }
+}
+</script>
+</body>
+</html>

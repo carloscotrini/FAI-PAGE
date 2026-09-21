@@ -1,0 +1,79 @@
+/* Scene 2. All 493 at once. Styles that belong to this scene alone.
+   No colour value is written here: every hue is a token from css/style.css. */
+
+#stage .scene[data-scene="2"] .viz-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ============================================================== the controls */
+
+.s2-legend { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.s2-legend-label { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.s2-legend-host .role-legend { margin: 0; gap: 14px; }
+.s2-legend-host .role-key { gap: 6px; }
+.s2-legend-host .role-gloss { font-variant-numeric: tabular-nums; }
+
+/* ================================================================= the chart */
+
+/* The band holding the strongest k. Chrome rather than a category, so it is a
+   wash of the ink token instead of a colour of its own. */
+svg .s2-band { fill: var(--ink); opacity: 0.055; }
+[data-theme="dark"] svg .s2-band { opacity: 0.085; }
+
+svg .s2-lane-rule { stroke: var(--rule); stroke-width: 1; }
+
+svg .s2-lane-mark { stroke: none; }
+
+svg .s2-lane-label { font-size: 12.5px; font-weight: 600; }
+
+/* Halo in the panel colour, painted behind the letters, so an annotation
+   stays readable if a mark ever lands under it. */
+svg .s2-annot {
+  fill: var(--ink-soft);
+  font-size: 11.5px;
+  stroke: var(--panel);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+
+svg .s2-leader { stroke: var(--muted); stroke-width: 1; fill: none; }
+
+/* Hover emphasis. Thicker than the .hot outline that marks the causal columns
+   the strongest spurious one beats, so the two never read as the same thing. */
+svg .mark.s2-lit { stroke: var(--ink); stroke-width: 2.2; }
+
+/* ============================================================ under the chart */
+
+.s2-under {
+  display: flex; align-items: baseline; gap: 10px;
+  margin: 8px 0 2px; flex: 0 0 auto;
+  font-size: 13px; min-height: 20px;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.s2-hover-label {
+  font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+  font-style: italic; color: var(--muted); font-size: 12px;
+  flex: 0 0 auto;
+}
+.s2-hover-value.muted { color: var(--muted); }
+.s2-hover-value {
+  color: var(--ink-soft);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.s2-facts {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+  flex: 0 0 auto; margin-top: 2px;
+}
+.s2-facts p {
+  font-size: 13.5px; margin-bottom: 0; max-width: none;
+  color: var(--ink-soft);
+}
+.s2-facts .katex { font-size: 1em; }
+
+@media (min-height: 900px) {
+  .s2-facts p { font-size: 15px; }
+  .s2-under { font-size: 14px; }
+}

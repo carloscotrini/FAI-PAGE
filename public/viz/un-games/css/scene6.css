@@ -1,0 +1,177 @@
+/* Scene 6. Regularisation. Three small multiples, one shared slider.
+ *
+ * No colour literal lives here. Every rule below reaches for a token already
+ * declared in css/style.css, so the theme toggle costs this scene nothing. */
+
+.s6-layout {
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 26px;
+}
+
+.s6-left {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.s6-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.s6-foot {
+  flex: 0 0 auto;
+  margin-top: 8px;
+  line-height: 1.45;
+  max-width: 100%;
+}
+
+/* ============================================================== one panel */
+
+.s6-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 8px 10px 6px;
+}
+
+.s6-panel-head {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 2px;
+}
+.s6-panel-head .s6-family {
+  font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.s6-panel-head .s6-best {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
+.s6-chart {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+.s6-chart svg { display: block; width: 100%; height: 100%; }
+
+/* The three numbers under each panel, at the slider's current alpha. */
+
+.s6-readout {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  border-top: 1px solid var(--rule);
+  padding-top: 5px;
+  margin-top: 2px;
+}
+.s6-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+.s6-cell .s6-k {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+.s6-cell .s6-k.k-train { color: var(--fit-train); }
+.s6-cell .s6-k.k-test { color: var(--fit-test); }
+.s6-cell .s6-k.k-kept { color: var(--muted); }
+.s6-cell .s6-v {
+  font-family: "SF Mono", "Menlo", "JetBrains Mono", monospace;
+  font-size: 14px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+/* ============================================================== the chart */
+
+/* The scrubber, where the shared slider stands. Solid and vertical, against
+   the dashed horizontal reference and the dashed vertical best rule. */
+#stage .s6-chart svg .s6-scrub {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  opacity: 0.45;
+}
+
+#stage .s6-chart svg .s6-bestline {
+  stroke: var(--muted);
+  stroke-width: 1.3;
+  stroke-dasharray: 2 3;
+  fill: none;
+}
+#stage .s6-chart svg .s6-bestlabel {
+  fill: var(--muted);
+  font-size: 10.5px;
+  font-family: "Iowan Old Style", "Palatino", Georgia, serif;
+  font-style: italic;
+}
+
+#stage .s6-chart svg .s6-dot { stroke: var(--panel); stroke-width: 1.4; }
+
+/* Chart labels sit on top of curves. A halo in the panel colour keeps them
+   readable without a fill behind them and without a new hue. */
+#stage .s6-chart svg .axis-label,
+#stage .s6-chart svg .series-label,
+#stage .s6-chart svg .s6-bestlabel,
+#stage .s6-chart svg .s6-count-label {
+  paint-order: stroke fill;
+  stroke: var(--panel);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* The surviving coefficient count. Ink rather than a fourth hue: it is one
+   series with no partner to be told apart from, and it carries its own end of
+   line label the way the fit series do. */
+#stage .s6-chart svg .s6-count {
+  stroke: var(--ink);
+  stroke-width: 2.4;
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+#stage .s6-chart svg .s6-count-dot { fill: var(--ink); }
+#stage .s6-chart svg .s6-count-label {
+  fill: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+/* =============================================================== the text */
+
+/* Anchored at the top rather than centred: a column that centres its content
+   and then overflows loses the first lines off the top edge, which reads as a
+   sentence starting mid word. */
+.s6-text { max-width: none; justify-content: flex-start; }
+.s6-text p { max-width: none; font-size: 14px; margin-bottom: 10px; }
+.s6-text .katex { font-size: 0.98em; }
+.s6-text .katex-display { margin: 0 0 4px; }
+.s6-text .sidebar-note { font-size: 13px; }
+.s6-legend { margin-top: 4px; }
+.s6-legend .role-legend { margin: 0; gap: 14px; }
+.s6-legend .role-key { font-size: 12px; }
+
+/* A shorter hall. Give the panels the height back by trimming the chrome. */
+@media (max-height: 780px) {
+  .s6-panel-head .s6-family { font-size: 14px; }
+  .s6-cell .s6-v { font-size: 13px; }
+  .s6-text p { font-size: 13.5px; }
+}

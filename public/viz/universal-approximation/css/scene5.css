@@ -1,0 +1,18 @@
+/* Scene 5. Letting the machine place the ramps. */
+
+.s5-strip { flex: 0 0 116px; min-height: 116px; }
+.s5-controls { margin: 6px 0 0; gap: 14px; }
+.s5-caption { color: var(--muted); }
+.s5-table { margin: 6px 0 6px; }
+.s5-table td, .s5-table th { font-size: 14px; }
+.s5-table td { padding-top: 2px; padding-bottom: 2px; }
+.s5-table th { padding-bottom: 3px; }
+
+/* This column carries more than any other: a standfirst, two readouts, a seven
+   row table AND the closing sentence. At 1280x720 it overflowed the fold by
+   about thirty pixels, which cut the last line of that sentence off in the
+   room. These four reclaim it without shrinking a single typeface. */
+#stage .scene[data-scene="5"] .text-col p { margin-bottom: 8px; }
+#stage .scene[data-scene="5"] .stat-strip { margin: 4px 0; }
+#stage .scene[data-scene="5"] .scene-head { margin-bottom: 7px; }
+#stage .scene[data-scene="5"] h2 { margin-bottom: 6px; }
