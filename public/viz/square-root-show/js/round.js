@@ -13,6 +13,10 @@
   var S = window.SquareOne;
   var UI = window.UI;
 
+  // A phone or a tablet: its on-screen keyboard covers half the screen.
+  var TOUCH = window.matchMedia ? window.matchMedia('(hover: none) and (pointer: coarse)') : null;
+  function onTouchScreen() { return !!(TOUCH && TOUCH.matches); }
+
   // cfg: {
   //   root        the page's <section>
   //   judge(w)    -> { est, gap, loss, solved, hint }
@@ -45,8 +49,9 @@
 
     this.form.addEventListener('submit', function (e) {
       e.preventDefault();
-      self.submit(self.input.value, {});
-      self.input.focus();
+      // On a touch screen a guess that was taken puts the keyboard away, so
+      // the picture and the new row can be seen.
+      if (self.submit(self.input.value, {}) && onTouchScreen()) { self.input.blur(); } else { self.input.focus(); }
     });
     this.input.addEventListener('keydown', function (e) {
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z') && self.input.value === '') {
@@ -81,9 +86,11 @@
     this.body.addEventListener('keydown', function (e) {
       var r = e.target.closest ? e.target.closest('.tbl-row') : null;
       if (!r) { return; }
+      // On a phone the rows run newest first (css/phone.css).
+      var rev = window.getComputedStyle(self.body).flexDirection === 'column-reverse';
       var sib = null;
-      if (e.key === 'ArrowDown') { sib = r.nextElementSibling; }
-      if (e.key === 'ArrowUp') { sib = r.previousElementSibling; }
+      if (e.key === 'ArrowDown') { sib = rev ? r.previousElementSibling : r.nextElementSibling; }
+      if (e.key === 'ArrowUp') { sib = rev ? r.nextElementSibling : r.previousElementSibling; }
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
         e.stopPropagation();
@@ -244,6 +251,8 @@
 
   GuessRound.prototype.enter = function () {
     var self = this;
+    // On a touch screen the keyboard comes up when the box is tapped.
+    if (onTouchScreen()) { return; }
     window.setTimeout(function () {
       try { self.input.focus({ preventScroll: true }); } catch (e) { self.input.focus(); }
     }, 60);

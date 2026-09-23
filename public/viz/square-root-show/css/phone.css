@@ -1,0 +1,162 @@
+/* Square One: a phone held upright. Participants play rounds 1 and 2 on
+   their own phones from the QR code in the block 1 deck.
+
+   Every rule in this file sits under a max-width media query, the widest
+   being the compact width class (under 600 px wide), so the projected
+   layout at 1280x720 and 1920x1080 never sees it, and neither does a phone
+   held sideways (640 px and up). The width alone decides: the on-screen
+   keyboard changes the height, so a height test could flip the layout
+   while someone types.
+
+   Below 800 px the rem is at its 10px floor (base.css), so here 1rem is
+   10px on every phone. The strip keeps only the page numbers. Pages 0, 1
+   and 2 become one column that scrolls: the title card stacks its three
+   cards, and a round stacks the picture, the guess box and the table. The
+   table puts the newest guess first, right under the box, and each row
+   gives its hint a line of its own. Pages 3 to 5 are left as they are. */
+
+@media (max-width: 599.98px) {
+
+  /* An accidental pull to refresh would clear a round's table, and a quick
+     double tap on Check would zoom the page. */
+  html,
+  body { overscroll-behavior-y: none; touch-action: manipulation; }
+
+  /* ===== the strip: the page numbers only ===== */
+
+  :root { --strip-h: 3.6rem; }
+  .strip { padding: 0 0.6rem; gap: 0.2rem; }
+  .brand { margin-right: 0.2rem; padding: 0.2rem 0.3rem; font-size: 1.15rem; letter-spacing: 0.1em; }
+  .brand svg { width: 1.4rem; height: 1.4rem; }
+  .tabs { gap: 0.1rem; }
+  .tab { padding: 0 0.6rem; }
+  .tab .tab-name { display: none; }
+  .tab .tab-num { width: 1.9rem; height: 1.9rem; font-size: 1.1rem; }
+  .tab::after { left: 0.3rem; right: 0.3rem; }
+  .tab-sep { margin: 0 0.15rem; }
+  .strip-tools .icon-btn { width: 2.8rem; height: 2.8rem; }
+  .strip-tools .icon-btn svg { width: 1.3rem; height: 1.3rem; }
+
+  /* ===== pages 0, 1 and 2 scroll inside themselves ===== */
+
+  .page-title,
+  .page-round {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2) transparent;
+  }
+
+  /* ===== page 0: the title card ===== */
+
+  .page-title {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.6rem 1.6rem 2.4rem;
+  }
+  /* centred while it fits, from the top once it does not */
+  .title-wrap { margin: auto 0; }
+  .logo { width: 7.6rem; height: 7.6rem; }
+  /* "SQUARE ONE" is about five times as wide as its font size */
+  .show-title { font-size: 16vw; }
+  .tagline { gap: 0.8rem; margin-top: 1.2rem; font-size: 1.4rem; letter-spacing: 0.2em; }
+  .tagline::before,
+  .tagline::after { width: 2.2rem; }
+  .rounds {
+    flex-direction: column;
+    align-self: stretch;
+    gap: 1rem;
+    margin-top: 2.4rem;
+  }
+  .round-card { width: auto; padding: 1.1rem 1.4rem 1.2rem; }
+  .rc-kicker { font-size: 1.1rem; }
+  .rc-name { font-size: 2.4rem; }
+  .rc-icon { width: 3rem; height: 3rem; }
+  .round-card .rc-check { width: 1.6rem; height: 1.6rem; }
+
+  /* ===== pages 1 and 2: the picture, the guess box, the table ===== */
+
+  .page-round {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 1.4rem 1.4rem 2.4rem;
+  }
+  .round-left,
+  .round-right { flex: none; gap: 1rem; }
+
+  .round-kicker { gap: 0.8rem; }
+  .round-kicker .chip { height: 2.3rem; }
+  .round-kicker .chip > .loz-in { padding: 0 1.1rem; font-size: 1.1rem; }
+  .round-title { font-size: 2.8rem; }
+  .round-sub { margin-top: 0.7rem; font-size: 1.5rem; line-height: 1.3; }
+
+  .bignum { font-size: 4.6rem; }
+  .bignum .unit { font-size: 1.9rem; }
+  .bignum.eq { font-size: 4rem; }
+
+  .page-round .view-panel { flex: none; height: 27rem; }
+
+  /* min-width 0: the input's own width must not hold the bar wide */
+  .guess-bar { height: 4.6rem; min-width: 0; }
+  .guess-bar > .loz-in { gap: 0.6rem; padding: 0 0.4rem 0 2rem; }
+  .guess-label { font-size: 2.2rem; }
+  .guess-input { font-size: 2.6rem; }
+  .btn-check { height: 3.6rem; }
+  .btn-check > .loz-in { padding: 0 1.3rem 0 1.4rem; font-size: 1.4rem; }
+  /* the Enter key icon means nothing on a touch screen */
+  .btn-check .icon-slot { display: none; }
+  .round-tools { gap: 0.5rem; }
+  .round-tools .icon-btn { width: 3.4rem; height: 3.4rem; }
+  .round-tools .icon-btn svg { width: 1.5rem; height: 1.5rem; }
+  .nudge { left: 2rem; font-size: 1.5rem; }
+
+  /* The table grows with the page instead of scrolling inside it, newest
+     row first. Three number columns; the hint takes the row's second line. */
+  .round-table { flex: none; }
+  .round-table .tbl-body {
+    flex: none;
+    flex-direction: column-reverse;
+    overflow: visible;
+    gap: 0.5rem;
+  }
+  #round1 .round-table .tbl-head,
+  #round1 .round-table .tbl-row { --cols: minmax(0, 0.62fr) minmax(0, 1fr) minmax(0, 1fr); }
+  #round2 .round-table .tbl-head,
+  #round2 .round-table .tbl-row { --cols: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1fr); }
+  .round-table .tbl-head { padding: 0 1rem 0.5rem 1.3rem; }
+  .round-table .th.upd { display: none; }
+  .round-table .th .th-word { font-size: 0.95rem; letter-spacing: 0.12em; }
+  .round-table .th .th-math { font-size: 1.4rem; }
+  .round-table .tbl-row {
+    row-gap: 0.3rem;
+    padding: 0.5rem 1rem 0.6rem 0.9rem;
+  }
+  .round-table .num { font-size: min(1.9rem, 4.8vw); }
+  .round-table .c-upd { grid-column: 1 / -1; padding-left: 0; }
+  /* the hint still grows with the loss: 13 to 26 px here */
+  .round-table .hint { --hs: calc(1.3rem + var(--t, 0) * 1.3rem); }
+  .round-table .hint.solved { --hs: 2rem; }
+  .round-table .hint .h-sub { margin-top: 0; font-size: calc(1.15rem + var(--t, 0) * 0.25rem); }
+  .round-table .hint .h-text {
+    flex-direction: row;
+    align-items: baseline;
+    flex-wrap: wrap;
+    column-gap: 0.7rem;
+  }
+
+  /* the pictures' words, a little larger on a small screen */
+  .page-round .sq-label { font-size: 5.6px; }
+  .page-round .sq-side { font-size: 6.4px; }
+  .page-round .loupe-x { font-size: 5.4px; }
+  .page-round .bar-val { font-size: 5.2px; }
+  .page-round .bar-name { font-size: 6px; }
+  .page-round .reveal-small { font-size: 4.2px; }
+}
+
+/* Under 340 px (older, smaller phones) the strip keeps only the logo. */
+@media (max-width: 339.98px) {
+  .brand { gap: 0; font-size: 0; }
+}
