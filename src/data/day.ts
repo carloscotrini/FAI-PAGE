@@ -85,8 +85,8 @@ export const day: Day = {
       type: 'lab',
       links: [
         { label: 'Grasshopper', url: viz('grasshopper', 'cx_grasshopper.html') },
-        { label: 'The curve and the landscape', url: viz('nn-fit-landscape') },
         { label: 'Ramps, bumps, anything', url: viz('universal-approximation') },
+        { label: 'The curve and the landscape', url: viz('nn-fit-landscape') },
         { label: 'TensorFlow Playground', url: PLAYGROUND },
       ],
     },
@@ -172,15 +172,15 @@ export const day: Day = {
     },
     {
       group: 'Block 2, gradient descent and neural networks',
-      label: 'The curve and the landscape',
-      url: viz('nn-fit-landscape'),
-      note: 'A neural network learning a day of bike-sharing demand (synthetic data), beside the landscape its training walks down.',
-    },
-    {
-      group: 'Block 2, gradient descent and neural networks',
       label: 'Ramps, bumps, anything',
       url: viz('universal-approximation'),
       note: 'Why a neural network can draw any shape, built by hand out of ramps.',
+    },
+    {
+      group: 'Block 2, gradient descent and neural networks',
+      label: 'The curve and the landscape',
+      url: viz('nn-fit-landscape'),
+      note: 'A neural network learning a day of bike-sharing demand (synthetic data), beside the landscape its training walks down.',
     },
     {
       group: 'Block 2, gradient descent and neural networks',
