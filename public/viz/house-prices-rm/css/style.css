@@ -1,0 +1,458 @@
+/* ===========================================================================
+   style.css : theme tokens, the page shell, and every class the scenes draw
+   with. NO COLOUR IS EVER WRITTEN IN JAVASCRIPT. A mark gets a class here and
+   the theme switch then follows by itself.
+
+   Colour identities, fixed once:
+
+     grey        the ten houses, and the data in general
+     vermillion  the walk: its line w * x, the house it is visiting, that miss
+
+   One accent and no second hue, so nothing on the page can pair red with
+   green. Colour is never the only channel: the line is dashed, the house
+   visited is ringed and named, and the miss is labelled l.
+
+   Light, the lecture default, carries Okabe-Ito vermillion #D55E00. Dark is a
+   study variant and carries Okabe-Ito orange #E69F00, the lighter warm partner
+   in the same palette, because vermillion on a dark ground is too dim for the
+   small labels.
+
+   Designed on a 1280 by 720 frame that js/main.js scales to the window: every
+   scene has to fit inside it without scrolling.
+   =========================================================================== */
+
+/* ============================================ theme tokens: light, the default */
+:root,
+:root[data-theme="light"] {
+  --topbar-h: 46px;
+  --footer-h: 50px;
+
+  --bg:          #f9f7f1;
+  --panel:       #fffdf8;
+  --panel-2:     #f2efe6;
+  --panel-3:     #e8e3d6;
+  --ink:         #1a1a1a;
+  --muted:       #5f5c55;
+  --faint:       #8d887d;
+  --rule:        #d8d4ca;
+  --rule-strong: #c4bfb2;
+
+  /* the walk */
+  --rm:          #D55E00;
+
+  /* the data */
+  --house:       #55534E;
+  --house-ring:  #fffdf8;
+
+  --axis:        #b3ada0;
+  --axis-ink:    #5f5c55;
+  --grid:        #ece9df;
+
+  --btn-bg:       #fffdf8;
+  --btn-border:   #c4bfb2;
+  --btn-hover:    #f2efe6;
+  --btn-on-bg:    #1a1a1a;
+  --btn-on-ink:   #fffdf8;
+  --btn-off-ink:  #b7b2a6;
+}
+
+/* ============================================== theme tokens: dark, for study */
+:root[data-theme="dark"] {
+  --bg:          #181612;
+  --panel:       #201d18;
+  --panel-2:     #262219;
+  --panel-3:     #353025;
+  --ink:         #ece7d9;
+  --muted:       #a09a8c;
+  --faint:       #8a8475;
+  --rule:        #383530;
+  --rule-strong: #4a463f;
+
+  --rm:          #E69F00;
+
+  --house:       #D6D0C0;
+  --house-ring:  #201d18;
+
+  --axis:        #4d4941;
+  --axis-ink:    #a09a8c;
+  --grid:        #2b2822;
+
+  --btn-bg:       #262219;
+  --btn-border:   #4a463f;
+  --btn-hover:    #322d23;
+  --btn-on-bg:    #ece7d9;
+  --btn-on-ink:   #181612;
+  --btn-off-ink:  #625d55;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* THE FRAME. Everything is laid out on this 1280 by 720 box, and js/main.js
+   scales it to the window: 1.5 on a 1920 by 1080 projector, below 1 on a small
+   laptop window, so the page is always whole and never scrolls. */
+.frame {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 720px;
+  transform-origin: 0 0;
+  background: var(--bg);
+}
+
+/* ========================================================== the topbar ==== */
+.topbar {
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--panel);
+}
+
+.brand {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+}
+
+.brand-sep { color: var(--faint); }
+
+.brand-title {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.scene-title {
+  margin-left: auto;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 20px;
+}
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dots { display: flex; gap: 7px; }
+
+.dot {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--rule-strong);
+  background: transparent;
+  cursor: pointer;
+}
+
+.dot.active { background: var(--ink); border-color: var(--ink); }
+
+/* ========================================================== the stage ==== */
+.stage {
+  position: relative;
+  height: calc(720px - var(--topbar-h) - var(--footer-h));
+  padding: 10px 20px 4px;
+}
+
+.scene {
+  position: absolute;
+  inset: 10px 20px 4px;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scene.active { opacity: 1; pointer-events: auto; }
+
+.lead {
+  font-size: 17px;
+  color: var(--muted);
+  min-height: 24px;
+}
+
+.row {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 10px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-height: 20px;
+}
+
+.panel-title {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 15.5px;
+}
+
+/* ======================================================== the controls ==== */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.controls .reset { margin-left: auto; }
+
+.btn {
+  font: inherit;
+  font-size: 15px;
+  padding: 6px 16px;
+  border: 1px solid var(--btn-border);
+  border-radius: 3px;
+  background: var(--btn-bg);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.btn:hover { background: var(--btn-hover); }
+.btn:disabled { color: var(--btn-off-ink); cursor: default; background: var(--btn-bg); }
+.btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.btn.primary { background: var(--btn-on-bg); color: var(--btn-on-ink); border-color: var(--btn-on-bg); }
+.btn.primary:hover { opacity: 0.88; }
+.btn.primary:disabled { opacity: 0.4; }
+
+.btn.on { background: var(--btn-on-bg); color: var(--btn-on-ink); border-color: var(--btn-on-bg); }
+
+.ctl-label {
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+input[type="range"] { width: 120px; accent-color: var(--ink); }
+
+/* ======================================================== the readouts ==== */
+.readouts { display: flex; gap: 12px; flex-wrap: nowrap; }
+
+.readout {
+  flex: 0 0 auto;
+  border-left: 2px solid var(--rule);
+  padding-left: 9px;
+}
+
+.readout-label {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+/* A variable of the code panel, spelled as the code spells it. */
+.readout-label.is-code {
+  font-family: "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+  line-height: 18px;
+}
+
+.readout-value {
+  font-family: "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  font-size: 18px;
+  line-height: 1.35;
+  min-height: 24px;
+  white-space: nowrap;
+}
+
+.readout-value .unit { font-size: 12.5px; color: var(--muted); }
+/* no number yet, so no unit either: at round 0 "l" read "CHF" on its own */
+.readout-value .num:empty + .unit { visibility: hidden; }
+
+/* The loop has stopped on this number. A heavier rule and a heavier figure,
+   and "return w" lit in the code: no colour needed. */
+.readout.is-met { border-left: 4px solid var(--ink); padding-left: 7px; }
+.readout.is-met .num { font-weight: 700; }
+
+.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* ==================================================== the drawn marks ==== */
+/* Every fill and stroke below is reached by class from the scene files. */
+
+.axis-line { stroke: var(--axis); stroke-width: 1; }
+.tick-line { stroke: var(--axis); stroke-width: 1; }
+.tick-ink  { fill: var(--axis-ink); font-size: 14px; }
+.axis-title { fill: var(--muted); font-size: 14.5px; }
+.grid-line { stroke: var(--grid); stroke-width: 1; }
+
+.house-dot   { fill: var(--house); stroke: var(--house-ring); stroke-width: 1; }
+.house-label { fill: var(--muted); font-size: 14px; }
+/* A HALO UNDER EVERY LABEL ON A SCATTER. The ten houses are three tight
+   clusters, 1 with 2, 5 with 6 with 7, and 9 with 10, so a label set beside or
+   above its own dot lands on a neighbour's whatever side it is put on, and
+   vermillion over the dark grey of a dot is almost no contrast: a capture once
+   read "House " with the digit swallowed by the dot of house 5. The glyphs are
+   painted over their own outline in the panel colour, which is the one
+   background every scatter here sits on. */
+.plot-label {
+  paint-order: stroke;
+  stroke: var(--panel);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.house-dot.is-visiting { fill: var(--rm); }
+.visit-ring  { fill: none; stroke: var(--rm); stroke-width: 2.2; }
+
+.fit-line     { fill: none; stroke-width: 2.6; }
+/* The dash is a second channel: the line that moves is the dashed one. */
+.fit-line.rm  { stroke: var(--rm); stroke-dasharray: 10 5; }
+/* where the line stood before the step. Thin and solid. */
+.fit-line.ghost { stroke: var(--rule-strong); stroke-width: 1.5; }
+
+.miss-line     { stroke-width: 2.4; }
+.miss-line.rm  { stroke: var(--rm); }
+.miss-ink      { font-size: 14px; font-weight: 600; }
+.miss-ink.rm   { fill: var(--rm); }
+/* a name from the code, l or w * x, set in the code's own face */
+.var-ink       { font-family: "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+                 font-size: 15px; font-weight: 700; }
+.var-ink.rm    { fill: var(--rm); }
+
+/* ==================================================== the update line ==== */
+.formula {
+  background: var(--panel-2);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 6px 12px;
+}
+
+.sym { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-style: italic; }
+
+.fmla {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 22px;
+  /* CENTER, not baseline: an empty value has no text baseline, the grid then
+     synthesised one from the box bottom, and the row grew 8px at round 0 and
+     pushed the code panel down between rounds. */
+  align-items: center;
+  font-family: "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.fmla-sym { white-space: nowrap; color: var(--muted); }
+.fmla-val { white-space: nowrap; font-variant-numeric: tabular-nums; min-height: 24px; }
+.fmla-val.rm { color: var(--rm); font-weight: 600; }
+
+/* ============================================================ the code ==== */
+.code {
+  font-family: "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  font-size: 17px;
+  line-height: 1.5;
+  background: var(--panel-2);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 7px 0;
+}
+
+.code-line {
+  padding: 0 10px 0 11px;
+  border-left: 4px solid transparent;
+  white-space: pre;
+  color: var(--ink);
+}
+
+.code-line .cmt { color: var(--muted); font-style: italic; }
+
+/* The executing line: a band and a thick left rule, so it reads without its
+   colour. */
+.code-line.is-active {
+  background: var(--panel-3);
+  border-left-color: var(--rm);
+  font-weight: 700;
+}
+
+/* ============================================================ the table ==== */
+.data-table {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table th {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint);
+  text-align: right;
+  padding: 0 12px 7px;
+  border-bottom: 1px solid var(--rule-strong);
+  white-space: nowrap;
+}
+
+.data-table td {
+  text-align: right;
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--rule);
+  font-family: "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  font-size: 17px;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+
+/* ========================================================== the footer ==== */
+.footer {
+  height: var(--footer-h);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  border-top: 1px solid var(--rule);
+  background: var(--panel);
+}
+
+.kbd-hint { color: var(--faint); font-size: 13px; }
+
+kbd {
+  font-family: "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  font-size: 12px;
+  border: 1px solid var(--rule-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+.footer .btn:last-child { margin-left: auto; }

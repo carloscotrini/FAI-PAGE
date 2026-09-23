@@ -7,15 +7,21 @@
 <style>
 
   /* ============================================================================
-     Two palettes, one set of roles. The names below are structural, not literal:
-       --bitumen    the page ground        --ink / --ink-dim   prose
-       --bitumen-2  a raised surface       --clay / --clay-mid numbers and data
-       --groove     hairlines              --faint             de-emphasised text
-       --gold       the value in play      --lapis             what you are told
-       --carnelian  the miss               --reed              agreement / success
+     Two palettes, one set of roles. The names below are structural, not literal.
+       bitumen: the page ground. bitumen-2: a raised surface.
+       ink, ink-dim: prose. clay, clay-mid: numbers and data.
+       groove: hairlines. faint: de-emphasised text.
+       gold: the value in play.
+       lapis: what you are told, a w that is too small, and a right answer.
+       vermillion: a w that is too big, and a wrong answer.
+
+     Colour-blind safe: the one hue pair that carries meaning is vermillion
+     against lapis blue, both Okabe-Ito hues, and every mark in either colour
+     also carries a word, an arrow, a shape, a check or a cross. There is no
+     red and no green on this page.
 
      LIGHT is Gypsum & Indigo: noon glare on plaster, iron-gall ink.
-     DARK  is Basalt & Verdigris: volcanic rock after dark, oxidised copper.
+     DARK  is Basalt & Sky: volcanic rock after dark, a clear blue.
 
      Every colour in the file resolves through these. If you add one, add a token
      rather than a literal, or the other mode will break.
@@ -33,8 +39,7 @@
     --lapis:#2f4b7c;
     --lapis-dim:#6a80a6;
     --gold:#8a5c1c;
-    --carnelian:#a83a25;
-    --reed:#5f7143;
+    --vermillion:#a84300;
     --ink:#2b2118;
     --ink-dim:#6b5c49;
 
@@ -46,9 +51,9 @@
     --on-gold:#f7f2e6;
     --gold-wash:rgba(138,92,28,0.12);
     --clay-wash:rgba(92,74,51,0.18);
-    --carnelian-wash:rgba(168,58,37,0.10);
-    --carnelian-wash-2:rgba(168,58,37,0.16);
-    --reed-wash:rgba(95,113,67,0.15);
+    --vermillion-wash:rgba(168,67,0,0.10);
+    --vermillion-wash-2:rgba(168,67,0,0.16);
+    --lapis-wash:rgba(47,75,124,0.13);
     --shadow:rgba(60,45,25,0.30);
 
     /* The drawn lamp on the cover, when the 1909 plate is not there to stand in. */
@@ -68,8 +73,9 @@
     --data:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
 
-  /* Basalt & Verdigris. Defined twice on purpose: once for the system preference,
-     once for an explicit data-theme="dark". Keep the two blocks identical. */
+  /* Basalt & Sky. Defined twice on purpose: once for the system preference,
+     once for an explicit data-theme="dark". Keep the two blocks identical.
+     The blue and the vermillion are the HS26 dark pair, #56B4E9 and #EE7733. */
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       color-scheme:dark;
@@ -79,11 +85,10 @@
       --clay-mid:#9aa39b;
       --groove:#4a5551;
       --faint:#7c8983;
-      --lapis:#6fa8a0;
-      --lapis-dim:#47716c;
+      --lapis:#56b4e9;
+      --lapis-dim:#3f7ea8;
       --gold:#c9a227;
-      --carnelian:#bf5b4b;
-      --reed:#7fae6a;
+      --vermillion:#ee7733;
       --ink:#eef1ea;
       --ink-dim:#8d968f;
 
@@ -94,9 +99,9 @@
       --on-gold:#0e1211;
       --gold-wash:rgba(201,162,39,0.10);
       --clay-wash:rgba(207,211,203,0.16);
-      --carnelian-wash:rgba(191,91,75,0.12);
-      --carnelian-wash-2:rgba(191,91,75,0.18);
-      --reed-wash:rgba(127,174,106,0.13);
+      --vermillion-wash:rgba(238,119,51,0.12);
+      --vermillion-wash-2:rgba(238,119,51,0.18);
+      --lapis-wash:rgba(86,180,233,0.14);
       --shadow:rgba(0,0,0,0.85);
 
       --art-sky-1:#1b2321;
@@ -119,11 +124,10 @@
     --clay-mid:#9aa39b;
     --groove:#4a5551;
     --faint:#7c8983;
-    --lapis:#6fa8a0;
-    --lapis-dim:#47716c;
+    --lapis:#56b4e9;
+    --lapis-dim:#3f7ea8;
     --gold:#c9a227;
-    --carnelian:#bf5b4b;
-    --reed:#7fae6a;
+    --vermillion:#ee7733;
     --ink:#eef1ea;
     --ink-dim:#8d968f;
 
@@ -134,10 +138,10 @@
     --on-gold:#0e1211;
     --gold-wash:rgba(201,162,39,0.10);
     --clay-wash:rgba(207,211,203,0.16);
-    --carnelian-wash:rgba(191,91,75,0.12);
-    --carnelian-wash-2:rgba(191,91,75,0.18);
-    --reed-wash:rgba(127,174,106,0.13);
-    --shadow:var(--shadow);
+    --vermillion-wash:rgba(238,119,51,0.12);
+    --vermillion-wash-2:rgba(238,119,51,0.18);
+    --lapis-wash:rgba(86,180,233,0.14);
+    --shadow:rgba(0,0,0,0.85);
 
     --art-sky-1:#1b2321;
     --art-sky-2:#0e1211;
@@ -195,7 +199,7 @@
   .formula{font-family:var(--data);font-size:clamp(17px,2vw,22px);color:var(--gold);letter-spacing:0.05em;line-height:1.85;margin:6px 0 16px 0}
   .formula .par{color:var(--clay)}
   .formula .sig{color:var(--lapis)}
-  .formula .rate{color:var(--reed)}
+  .formula .rate{color:var(--gold)}
 
   /* Reveal */
   .reveal{opacity:0;transform:translateY(14px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
@@ -254,8 +258,8 @@
   .control{display:flex;flex-direction:column;gap:20px;min-width:0}
   .field{display:flex;flex-direction:column;gap:9px}
   .field label{font-family:var(--data);font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-dim)}
-  .field input[type=number]{width:100%;padding:12px 14px;border-radius:2px;background:var(--sunk);color:var(--clay);border:1px solid var(--line-firm);font-family:var(--data);font-size:17px}
-  .field input[type=number]:focus{outline:none;border-color:var(--gold)}
+  .field input[type=number],.field input[type=text]{width:100%;padding:12px 14px;border-radius:2px;background:var(--sunk);color:var(--clay);border:1px solid var(--line-firm);font-family:var(--data);font-size:17px}
+  .field input[type=number]:focus,.field input[type=text]:focus{outline:none;border-color:var(--gold)}
   .field input:disabled{opacity:0.4;cursor:not-allowed}
   .press{width:100%;padding:13px 18px;border-radius:2px;border:1px solid var(--gold);cursor:pointer;font-family:var(--data);font-size:11.5px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:var(--gold);background:transparent;transition:background .18s,color .18s}
   .press:hover{background:var(--gold);color:var(--on-gold)}
@@ -290,9 +294,9 @@
   table.ruled td{text-align:right;padding:9px 16px;border-bottom:1px solid var(--line-soft);color:var(--clay);white-space:nowrap}
   table.ruled tr:last-child td{border-bottom:none}
   table.ruled th + th,table.ruled td + td{border-left:1px solid var(--line-soft)}
-  table.ruled .over{color:var(--carnelian)}
+  table.ruled .over{color:var(--vermillion)}
   table.ruled .under{color:var(--lapis)}
-  table.ruled .hit{color:var(--reed)}
+  table.ruled .hit{color:var(--lapis)}
   table.ruled .empty{text-align:center;color:var(--faint);padding:26px;font-family:var(--body);font-size:13.5px;border-left:none}
 
   /* Pseudocode: lines scroll rather than wrap. */
@@ -300,8 +304,8 @@
           color:var(--ink);white-space:nowrap;overflow-x:auto;padding-bottom:4px}
   .recipe .note-com{color:var(--faint);font-style:italic}
   .recipe .kw{color:var(--lapis)}
-  .recipe .chg{color:var(--carnelian)}
-  .recipe .chg-com{color:var(--carnelian);font-style:italic}
+  .recipe .chg{color:var(--vermillion)}
+  .recipe .chg-com{color:var(--vermillion);font-style:italic}
 
   /* ===== Stacked fractions =====
      The deterministic run is exact rational arithmetic, so the columns print
@@ -324,8 +328,10 @@
      whether a cell holds a stacked fraction or a plain decimal. */
   table.ruled.run.cmp td{height:58px;padding-top:0;padding-bottom:0}
   table.ruled.run.cmp th{padding-top:12px;padding-bottom:12px}
-  table.ruled.run .neg{color:var(--lapis)}
-  table.ruled.run .pos{color:var(--carnelian)}
+  /* The sign of l, read the same way as the drop: positive means w is too
+     small (lapis), negative means it is too big (vermillion). */
+  table.ruled.run .neg{color:var(--vermillion)}
+  table.ruled.run .pos{color:var(--lapis)}
 
   /* The curved arrow that says: the target you were just handed is the next guess. */
   .flow{position:relative;padding-left:158px}
@@ -354,9 +360,9 @@ table.ruled td.choose{padding:6px 10px;white-space:nowrap}
       border:1px solid;border-radius:2px;padding:6px 10px;margin:0 3px;cursor:pointer;
       transition:background .18s,color .18s,box-shadow .18s}
 .corr[data-dir="up"]{color:var(--lapis);border-color:var(--lapis-dim)}
-.corr[data-dir="down"]{color:var(--carnelian);border-color:var(--carnelian)}
+.corr[data-dir="down"]{color:var(--vermillion);border-color:var(--vermillion)}
 .corr[data-dir="up"]:hover{background:var(--lapis);color:var(--on-gold)}
-.corr[data-dir="down"]:hover{background:var(--carnelian);color:var(--on-gold)}
+.corr[data-dir="down"]:hover{background:var(--vermillion);color:var(--on-gold)}
 .corr:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .corr.pulse{animation:corr-glow 1.7s ease-in-out infinite}
 .corr.wrong{animation:corr-shake .4s ease}
@@ -380,7 +386,7 @@ table.ruled td.choose{padding:6px 10px;white-space:nowrap}
   .voice{font-family:var(--data);font-size:14px;line-height:1.6;color:var(--ink-dim);min-height:44px;border-left:2px solid var(--groove);padding-left:14px}
   .voice b{color:var(--clay);font-weight:500}
   .voice .up{color:var(--lapis)}
-  .voice .down{color:var(--carnelian)}
+  .voice .down{color:var(--vermillion)}
 
   /* ===== End card over the panel ===== */
   .stage.done .control,.stage.done .stage-right{opacity:0.32;pointer-events:none;filter:grayscale(0.35);transition:opacity .3s,filter .3s}
@@ -405,32 +411,38 @@ table.ruled td.choose{padding:6px 10px;white-space:nowrap}
   pre.tablet-code{background:var(--sunk);border:1px solid var(--line);border-radius:3px;padding:22px 24px;overflow-x:auto;font-family:var(--data);font-size:13px;line-height:1.9;color:var(--ink)}
   pre.tablet-code .kw{color:var(--lapis)}
   pre.tablet-code .fn{color:var(--gold)}
-  pre.tablet-code .cls{color:var(--reed)}
-  pre.tablet-code .num{color:var(--reed)}
+  pre.tablet-code .cls{color:var(--clay)}
+  pre.tablet-code .num{color:var(--clay)}
   pre.tablet-code .str{color:var(--clay-mid)}
   pre.tablet-code .com{color:var(--faint);font-style:italic}
   .out-tag{display:block;margin:28px 0 10px;font-family:var(--data);font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-dim)}
-  pre.out{margin:0;background:var(--sunk);border:1px solid var(--line);border-left:2px solid var(--reed);border-radius:3px;padding:18px 22px;overflow-x:auto;font-family:var(--data);font-size:12.5px;line-height:1.8;color:var(--ink)}
+  pre.out{margin:0;background:var(--sunk);border:1px solid var(--line);border-left:2px solid var(--lapis);border-radius:3px;padding:18px 22px;overflow-x:auto;font-family:var(--data);font-size:12.5px;line-height:1.8;color:var(--ink)}
   pre.out .pr{color:var(--ink-dim)}
   pre.out .rv{color:var(--lapis)}
-  pre.tablet-code input.inline{font-family:inherit;font-size:inherit;background:var(--carnelian-wash);color:var(--clay);border:none;border-bottom:1px solid var(--carnelian);border-radius:0;padding:2px 6px;outline:none;min-width:210px}
+  /* A blank waits in a neutral wash. Once checked it is marked twice: lapis
+     with a solid rule and a check, or vermillion with a dashed rule and a cross. */
+  pre.tablet-code input.inline{font-family:inherit;font-size:inherit;background:var(--gold-wash);color:var(--clay);border:none;border-bottom:2px solid var(--line-firm);border-radius:0;padding:2px 6px;outline:none;min-width:210px}
   pre.tablet-code input.inline:focus{background:var(--gold-wash);border-bottom-color:var(--gold)}
-  pre.tablet-code input.inline.ok{background:var(--reed-wash);border-bottom-color:var(--reed);color:var(--reed)}
-  pre.tablet-code input.inline.bad{background:var(--carnelian-wash-2);border-bottom-color:var(--carnelian)}
+  pre.tablet-code input.inline.ok{background:var(--lapis-wash);border-bottom:2px solid var(--lapis);color:var(--lapis)}
+  pre.tablet-code input.inline.bad{background:var(--vermillion-wash-2);border-bottom:2px dashed var(--vermillion)}
+  pre.tablet-code .mark{display:inline-block;width:1.5em;text-align:center;font-weight:700}
+  pre.tablet-code .mark.ok{color:var(--lapis)}
+  pre.tablet-code .mark.bad{color:var(--vermillion)}
+  .runs{font-family:var(--data);font-size:13px;color:var(--ink-dim);margin:12px 0 0 0;line-height:1.7}
   .btnrow{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;align-items:center}
   .hint-link{background:none;border:0;padding:2px 0;margin-left:10px;font-family:var(--data);font-size:12px;letter-spacing:0.05em;color:var(--ink-dim);cursor:pointer;border-bottom:1px dotted var(--line-firm);transition:opacity .18s,color .18s,border-color .18s}
   .hint-link:hover{color:var(--clay);border-bottom-color:var(--clay-mid)}
   .hint-link:focus-visible{outline:2px solid var(--lapis);outline-offset:3px}
   .btnrow .press{width:auto;padding:12px 26px}
   .msg{margin-top:16px;font-size:14px;line-height:1.6;display:none;padding-left:14px;border-left:2px solid transparent}
-  .msg.bad{display:block;border-left-color:var(--carnelian);color:var(--carnelian)}
-  .msg.ok{display:block;border-left-color:var(--reed);color:var(--reed)}
+  .msg.bad{display:block;border-left-color:var(--vermillion);color:var(--vermillion)}
+  .msg.ok{display:block;border-left-color:var(--lapis);color:var(--lapis)}
   .msg.tip{display:block;border-left-color:var(--lapis);color:var(--ink-dim)}
   .aside-hint{margin-top:18px;padding-left:15px;border-left:1px solid var(--line-firm);color:var(--ink-dim);font-size:13.5px;line-height:1.8;display:none}
   .aside-hint.show{display:block}
   .aside-hint code{color:var(--clay)}
   /* A line the reader is meant to see and then discard. */
-  .strike{text-decoration:line-through;text-decoration-color:var(--carnelian);text-decoration-thickness:1.5px;color:var(--faint)}
+  .strike{text-decoration:line-through;text-decoration-color:var(--vermillion);text-decoration-thickness:1.5px;color:var(--faint)}
 
   /* ===== Quiz ===== */
   .quiz{max-width:860px}
@@ -440,22 +452,14 @@ table.ruled td.choose{padding:6px 10px;white-space:nowrap}
   .opts label:hover{border-color:var(--clay-mid)}
   .opts input{margin-top:4px;accent-color:var(--gold);flex-shrink:0}
   .quiz.answered .opts label{cursor:default}
-  .opts label.is-correct{border-color:var(--reed);background:var(--reed-wash)}
-  .opts label.is-wrong{border-color:var(--carnelian);background:var(--carnelian-wash)}
+  .opts label.is-correct{border-color:var(--lapis);background:var(--lapis-wash)}
+  .opts label.is-wrong{border-color:var(--vermillion);background:var(--vermillion-wash)}
   .quiz-explain{display:none;margin-top:20px;padding-left:22px;border-left:2px solid var(--lapis)}
   .quiz-explain.show{display:block}
   .quiz-explain .verdict{font-family:var(--data);font-size:10.5px;letter-spacing:0.26em;text-transform:uppercase;color:var(--lapis);margin-bottom:10px}
-  .quiz-explain.hint{border-left-color:var(--carnelian)}
-  .quiz-explain.hint .verdict{color:var(--carnelian)}
+  .quiz-explain.hint{border-left-color:var(--vermillion)}
+  .quiz-explain.hint .verdict{color:var(--vermillion)}
   .quiz-explain p{margin:0;color:var(--ink);font-size:15px;line-height:1.7}
-
-  /* ===== Gate ===== */
-  .locked{display:none !important}
-  .gate{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;scroll-snap-align:start;gap:16px}
-  .gate .wedge{width:14px;height:16px;opacity:0.8}
-  .gate-msg{font-family:var(--data);font-size:10.5px;letter-spacing:0.3em;text-transform:uppercase;color:var(--carnelian)}
-  .gate-title{font-family:var(--display);font-weight:400;font-size:clamp(24px,3vw,36px);margin:0;color:var(--ink)}
-  .gate-sub{color:var(--ink-dim);font-size:15.5px;line-height:1.7;max-width:52ch;margin:0}
 
   /* ===== Closing ===== */
   .parts{list-style:none;padding:0;margin:34px 0 0 0;max-width:820px}
@@ -474,14 +478,20 @@ table.ruled td.choose{padding:6px 10px;white-space:nowrap}
 .tile .tv{font-family:var(--data);font-size:27px;line-height:1.05;color:var(--clay);word-break:break-word}
 .tile .tv.small{font-size:15px;line-height:1.4}
 .tile .ts{font-size:12.5px;line-height:1.55;color:var(--faint)}
-.tile.ok .tv{color:var(--reed)}
-.tile.warn .tv{color:var(--carnelian)}
-.tile.mid .tv{color:var(--lapis)}
+.tile.ok .tv{color:var(--lapis)}
+.tile.warn .tv{color:var(--vermillion)}
+.tile.mid .tv{color:var(--gold)}
 .chart-card{background:var(--bitumen-2);border:1px solid var(--line);border-radius:3px;padding:18px 20px 10px}
 .chart-card canvas{width:100%;height:220px;display:block}
+.chart-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin:0 0 10px 0}
+.chart-key{margin:0;display:flex;gap:18px;font-family:var(--data);font-size:11.5px;letter-spacing:0.04em}
+.chart-key .big{color:var(--vermillion)}
+.chart-key .small,.chart-key .fits{color:var(--lapis)}
 .dim{fill:none;stroke:currentColor;stroke-width:1}
-#p1_dw{color:var(--clay)} #p1_dh{color:var(--lapis)}
+#p2_dw{color:var(--clay)} #p2_dh{color:var(--lapis)}
 .dimlab{font-family:var(--data);font-size:11px;letter-spacing:0.02em}
+/* The l label sits right of the strip and can run past the figure's edge. */
+#p2_fig{overflow:visible}
 /* Rendered text never hyphenates and never breaks a word across lines. */
 html,body{hyphens:none;-webkit-hyphens:none}
 
@@ -493,31 +503,31 @@ html,body{hyphens:none;-webkit-hyphens:none}
 
 .brace-fig svg{width:100%;max-width:560px;height:auto;display:block}
 .brace-fig .fx{font-family:var(--data);font-size:30px;fill:var(--ink)}
-.brace-fig .fx.a{fill:var(--reed)}
+.brace-fig .fx.a{fill:var(--gold)}
 .brace-fig .fx.l{fill:var(--lapis)}
 .brace-fig .br{fill:none;stroke:var(--faint);stroke-width:1.6}
 .brace-fig .cap{font-family:var(--data);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;fill:var(--faint)}
 
-/* Problem two: a square of your guess, dropped on a hole of the true side. */
+/* Problem one: a square of your guess, dropped on a hole of the true side. */
 .drop-stage{position:relative;width:100%;height:340px;background:var(--bitumen-2);
             border:1px solid var(--line);border-radius:3px;overflow:hidden}
 .hole{position:absolute;z-index:2;border:2px dashed var(--lapis);border-radius:2px;
       display:flex;align-items:center;justify-content:center;
       background:repeating-linear-gradient(135deg,var(--line-soft) 0 6px,transparent 6px 12px)}
 .hole .tag{font-family:var(--data);font-size:12px;color:var(--lapis)}
-.hole.filled{border-style:solid;border-color:var(--reed);background:var(--reed-wash)}
-.hole.filled .tag{color:var(--reed)}
+.hole.filled{border-style:solid;border-color:var(--lapis);background:var(--lapis-wash)}
+.hole.filled .tag{color:var(--lapis)}
 .falling{position:absolute;z-index:3;border:2px solid var(--clay);border-radius:2px;
          background:var(--clay-wash);display:flex;align-items:center;justify-content:center;
          font-family:var(--data);font-size:13px;color:var(--clay)}
-.falling.big{border-color:var(--carnelian);color:var(--carnelian);background:var(--carnelian-wash)}
+.falling.big{border-color:var(--vermillion);color:var(--vermillion);background:var(--vermillion-wash)}
 .falling.small{border-color:var(--lapis);color:var(--lapis);background:var(--clay-wash)}
-.falling.fits{border-color:var(--reed);color:var(--reed);background:var(--reed-wash)}
+.falling.fits{border-color:var(--lapis);color:var(--lapis);background:var(--lapis-wash)}
 @media (prefers-reduced-motion: reduce){.falling{transition:none !important}}
 
-.verdict-big{color:var(--carnelian)}
+.verdict-big{color:var(--vermillion)}
 .verdict-small{color:var(--lapis)}
-.verdict-fits{color:var(--reed)}
+.verdict-fits{color:var(--lapis)}
 </style>
 </head>
 <body>
@@ -543,143 +553,40 @@ html,body{hyphens:none;-webkit-hyphens:none}
 <section class="page segment slide-scroll" id="p1">
   <div class="segment-inner" style="padding:88px 0 48px">
     <div class="rule reveal"><span class="wedge"></span><span class="rule-label">Problem one</span></div>
-    <h2 class="segment-heading reveal d1">Solve <span style="font-family:var(--data);color:var(--gold)">w = 1 + 1/w</span></h2>
-    <p class="lead reveal d2">Move every <code>w</code> to one side:</p>
-    <p class="eq reveal d2"><span class="v">f(w)</span> = w &minus; 1/w,&nbsp;&nbsp; target = <span class="t">1</span>,&nbsp;&nbsp; l = <span class="t">1</span> &minus; <span class="v">f(w)</span></p>
-    <p class="lead reveal d2" style="margin:14px 0 26px 0">Type any positive <code>w</code> and press <strong>Step</strong>. Each step reads <code>f(w)</code>, takes the loss, and moves <code>w</code> by <code>&alpha;&middot;l</code> with <code>&alpha; = 1</code>. The new <code>w</code> lands back in the box, so you can keep pressing. Stop when <code>|l| &lt; 0.001</code>.</p>
-
-    <div class="stage reveal d3" id="p1_stage">
-      <div class="control">
-        <div class="field">
-          <label for="p1_w">w</label>
-          <input id="p1_w" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="1" />
-        </div>
-        <button class="press" id="p1_go">Step</button>
-        <button class="press quiet" id="p1_reset">Reset</button>
-        <div class="readout">
-          <div><p class="k">Steps</p><p class="v" id="p1_n">0</p></div>
-          <div><p class="k">l</p><p class="v small" id="p1_l">&middot;</p></div>
-        </div>
-
-        <div class="fig" style="margin-top:4px">
-          <svg id="p1_fig" viewBox="0 0 300 268" role="img"
-               aria-label="A rectangle with sides w across and 1 + 1/w up. The two sides differ by l.">
-            <rect id="p1_gap" x="0" y="0" width="0" height="0" stroke="none"/>
-            <rect id="p1_sq" x="0" y="0" width="0" height="0" class="sq-target" vector-effect="non-scaling-stroke"/>
-            <rect id="p1_rect" x="0" y="0" width="0" height="0" class="sq-guess" vector-effect="non-scaling-stroke"/>
-            <path id="p1_dw" class="dim" d=""/>
-            <path id="p1_dh" class="dim" d=""/>
-            <path id="p1_dl" class="dim" d=""/>
-            <text id="p1_lw" class="dimlab" text-anchor="middle" fill="var(--clay)"></text>
-            <text id="p1_lh" class="dimlab" text-anchor="middle" fill="var(--lapis)"></text>
-            <text id="p1_ll" class="dimlab" text-anchor="start"></text>
-          </svg>
-          <p class="fig-caption">The equation asks for these two sides to match</p>
-        </div>
-      </div>
-
-      <div class="stage-right">
-        <div class="cols tall" style="max-height:380px">
-          <table class="ruled run">
-            <thead><tr><th>w</th><th>f(w)</th><th>l = 1 &minus; f(w)</th><th>Update</th></tr></thead>
-            <tbody id="p1_rows"><tr><td class="empty" colspan="4">Enter a positive w.</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="endcard" id="p1_end" role="dialog" aria-modal="true" hidden>
-        <span class="wedge"></span>
-        <h3 class="end-title">Solved.</h3>
-        <p class="end-row">w = <b id="p1_endw">1.6180</b> after <b id="p1_endn">9</b> steps.</p>
-        <div class="end-actions">
-          <button class="press quiet" id="p1_again">Again</button>
-          <button class="press" id="p1_next">Next</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 3 =============================================== PROBLEM ONE, CODE -->
-<section class="page segment slide-scroll" id="p1code">
-  <div class="segment-inner" style="padding:88px 0 48px">
-    <div class="rule reveal"><span class="wedge"></span><span class="rule-label">Your turn to write it</span></div>
-
-    <pre class="tablet-code reveal d1"><span class="kw">def</span> <span class="fn">solve</span>(alpha=<span class="num">1.0</span>, tol=<span class="num">1e-10</span>, max_steps=<span class="num">10_000</span>):
-    w = <span class="num">1.0</span>
-    l = <span class="num">1.0</span>
-    steps = <span class="num">0</span>
-
-    <span class="kw">while</span> <input class="inline" data-a="4" placeholder="... &gt; tol" style="min-width:190px" /> <span class="kw">and</span> steps &lt; max_steps:
-        f = <input class="inline" data-a="1" placeholder="w - ..." style="min-width:190px" />
-        l = <input class="inline" data-a="2" placeholder="1 - ..." style="min-width:190px" />
-        w = <input class="inline" data-a="3" placeholder="w + ..." style="min-width:190px" />
-        steps += <span class="num">1</span>
-
-    <span class="kw">return</span> w, steps</pre>
-
-    <div class="btnrow reveal d2">
-      <button class="press" id="a_check">Check</button>
-      <button class="hint-link" id="a_hint">stuck?</button>
-    </div>
-    <div class="msg" id="a_fb"></div>
-    <div class="aside-hint" id="a_hintbox">
-      The columns of the table you just filled in are the lines of this loop, in the same order. It keeps going while the loss is still too big to ignore, whichever side of zero it sits on.
-    </div>
-  </div>
-</section>
-
-<!-- 4 ============================================================ ALPHA -->
-<section class="page">
-  <div class="segment">
-    <div class="segment-inner">
-      <div class="rule reveal"><span class="wedge"></span><span class="rule-label">The step size</span></div>
-      <h2 class="segment-heading reveal d1">Here <span style="font-family:var(--data);color:var(--reed)">&alpha; = 1</span> is enough.</h2>
-      <p class="eq reveal d2" style="margin-bottom:18px">w := w + <span class="t">&alpha;</span> &middot; l</p>
-      <p class="eq reveal d2" style="margin-bottom:22px">w + <span class="t">1</span>&nbsp;&middot;&nbsp;(1 &minus; f(w)) = 1 + 1/w</p>
-      <p class="lead reveal d2">A full step lands on the target, and the target pulls you in. Nine steps from w = 1.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 5 ================================================== PROBLEM TWO -->
-<section class="page segment slide-scroll" id="p2">
-  <div class="segment-inner" style="padding:88px 0 48px">
-    <div class="rule reveal"><span class="wedge"></span><span class="rule-label">Problem two</span></div>
-    <h2 class="segment-heading reveal d1">Find <span style="font-family:var(--data);color:var(--gold)">&radic;<span id="p2_area_h">2026</span></span></h2>
-    <p class="eq reveal d2"><span class="v">f(w)</span> = w&sup2;,&nbsp;&nbsp; target = <span class="t" id="p2_area_e">2026</span>,&nbsp;&nbsp; l = <span class="t" id="p2_area_e2">2026</span> &minus; <span class="v">f(w)</span></p>
+    <h2 class="segment-heading reveal d1">Find <span style="font-family:var(--data);color:var(--gold)">&radic;<span id="p1_area_h">2026</span></span></h2>
+    <p class="eq reveal d2"><span class="v">f(w)</span> = w&sup2;,&nbsp;&nbsp; target = <span class="t" id="p1_area_e">2026</span>,&nbsp;&nbsp; l = <span class="t" id="p1_area_e2">2026</span> &minus; <span class="v">f(w)</span></p>
     <p class="lead reveal d2" style="margin:14px 0 22px 0">Behind the dashed outline sits a square of the area above. You cannot measure it, you can only try a side and see what happens.</p>
     <div class="note reveal d2" style="margin-bottom:26px">
       <span class="note-tag">What the drop tells you</span>
-      <p style="margin:0"><strong style="color:var(--carnelian)">Too big</strong> and the square will not go in, so it rests on the rim.<br>
-         <strong style="color:var(--lapis)">Too small</strong> and it falls straight through.<br>
-         <strong style="color:var(--reed)">Right</strong> and it seats in the hole.</p>
+      <p style="margin:0"><strong class="verdict-big">Too big</strong> and the square will not go in, so it rests on the rim.<br>
+         <strong class="verdict-small">Too small</strong> and it falls straight through.<br>
+         <strong class="verdict-fits">Right</strong> and it seats in the hole.</p>
       <p class="aside" style="margin-top:12px">That is the whole signal: which side of the answer you are on, and by how much. Read <code>l</code>, then say which way <code>w</code> has to move before you try again.</p>
     </div>
 
     <div class="stage reveal d3">
       <div class="control">
         <div class="field">
-          <label for="p2_w">w</label>
-          <input id="p2_w" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="20" />
+          <label for="p1_w">w</label>
+          <input id="p1_w" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="20" />
         </div>
-        <button class="press" id="p2_go">Drop it</button>
-        <button class="press quiet" id="p2_reset">New square</button>
+        <button class="press" id="p1_go">Drop it</button>
+        <button class="press quiet" id="p1_reset">New square</button>
         <div class="readout">
-          <div><p class="k">Tries</p><p class="v" id="p2_n">0</p></div>
-          <div><p class="k">l</p><p class="v small" id="p2_l">&middot;</p></div>
+          <div><p class="k">Tries</p><p class="v" id="p1_n">0</p></div>
+          <div><p class="k">l</p><p class="v small" id="p1_l">&middot;</p></div>
         </div>
-        <div class="voice" id="p2_voice">Drop a square and see if it fits.</div>
+        <div class="voice" id="p1_voice">Drop a square and see if it fits.</div>
       </div>
 
       <div class="stage-right">
-        <div class="drop-stage" id="p2_drop">
-          <div class="hole" id="p2_hole"><span class="tag">2026</span></div>
+        <div class="drop-stage" id="p1_drop">
+          <div class="hole" id="p1_hole"><span class="tag">2026</span></div>
         </div>
         <div class="cols tall" style="max-height:230px;margin-top:20px">
           <table class="ruled run">
-            <thead><tr><th>w</th><th>f(w)</th><th>l = <span id="p2_area_t">2026</span> &minus; f(w)</th><th>Update</th></tr></thead>
-            <tbody id="p2_rows"><tr><td class="empty" colspan="4">Enter a positive w.</td></tr></tbody>
+            <thead><tr><th>w</th><th>f(w)</th><th>l = <span id="p1_area_t">2026</span> &minus; f(w)</th><th>Update</th></tr></thead>
+            <tbody id="p1_rows"><tr><td class="empty" colspan="4">Enter a positive w.</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -687,8 +594,8 @@ html,body{hyphens:none;-webkit-hyphens:none}
   </div>
 </section>
 
-<!-- 6 ===================================================== BETTER ALPHA -->
-<section class="page segment slide-scroll" id="p2alpha">
+<!-- 3 ===================================================== BETTER ALPHA -->
+<section class="page segment slide-scroll" id="p1alpha">
   <div class="segment-inner" style="padding:88px 0 48px">
     <div class="rule reveal"><span class="wedge"></span><span class="rule-label">The step size</span></div>
     <h2 class="segment-heading reveal d1">What &alpha; were you using?</h2>
@@ -698,9 +605,124 @@ html,body{hyphens:none;-webkit-hyphens:none}
 <div class="tiles reveal d2" id="ia_tiles"></div>
 
 <div class="chart-card reveal d2" style="margin-bottom:30px">
-  <p class="rule-label" style="margin:0 0 10px 0">Gap to the answer by attempt, log scale</p>
+  <div class="chart-head">
+    <p class="rule-label" style="margin:0">Gap to the answer by attempt, log scale</p>
+    <p class="chart-key"><span class="big">&#9650; too big</span><span class="small">&#9660; too small</span><span class="fits">&#9673; fits</span></p>
+  </div>
   <canvas id="ia_chart" height="220"></canvas>
 </div>
+  </div>
+</section>
+
+<!-- 4 =============================================== PROBLEM ONE, CODE -->
+<section class="page segment slide-scroll" id="p1code">
+  <div class="segment-inner" style="padding:88px 0 48px">
+    <div class="rule reveal"><span class="wedge"></span><span class="rule-label">Your turn to write it</span></div>
+    <h2 class="segment-heading reveal d1">The same rule, in code.</h2>
+    <p class="eq reveal d1" style="margin-bottom:22px">w := w + <span class="t">&alpha;</span> &middot; ( area &minus; w&sup2; )</p>
+    <p class="lead reveal d2" style="margin-bottom:30px">The loss is <code>area &minus; w&sup2;</code>. The print shows <code>steps</code>, <code>w</code> and <code>l</code> after every step, so you can watch the loss fall.</p>
+
+    <pre class="tablet-code reveal d2"><span class="kw">def</span> <span class="fn">root</span>(area, alpha, tol, max_steps):
+    w = <span class="num">1.0</span>
+    l = <span class="num">1.0</span>
+    steps = <span class="num">0</span>
+
+    <span class="kw">while</span> <input class="inline" data-a="3" placeholder="... &gt; tol" style="min-width:210px" /><span class="mark" aria-hidden="true"></span> <span class="kw">and</span> steps &lt; max_steps:
+        l = <input class="inline" data-a="1" placeholder="area - ..." style="min-width:210px" /><span class="mark" aria-hidden="true"></span>
+        w = <input class="inline" data-a="2" placeholder="w + ..." style="min-width:210px" /><span class="mark" aria-hidden="true"></span>
+        steps += <span class="num">1</span>
+        <span class="fn">print</span>(steps, w, l)
+
+    <span class="kw">return</span> w, steps</pre>
+    <p class="runs reveal d2">Runs with <code>alpha = 0.01</code>, <code>tol = 0.001</code>, <code>max_steps = 200</code>.</p>
+
+    <div class="btnrow reveal d3">
+      <button class="press" id="a_check">Check</button>
+      <button class="hint-link" id="a_hint">stuck?</button>
+    </div>
+    <div class="msg" id="a_fb"></div>
+    <div id="a_out">
+      <span class="out-tag">What it prints</span>
+      <pre class="out" id="a_outpre"></pre>
+    </div>
+
+    <div class="aside-hint" id="a_hintbox">
+      The loss compares the area you want with the area your w actually makes. The loop keeps going while the loss is still too big to ignore, whichever side of zero it sits on.
+    </div>
+  </div>
+</section>
+
+<!-- 5 ================================================== PROBLEM TWO -->
+<section class="page segment slide-scroll" id="p2">
+  <div class="segment-inner" style="padding:88px 0 48px">
+    <div class="rule reveal"><span class="wedge"></span><span class="rule-label">Problem two</span></div>
+    <h2 class="segment-heading reveal d1">Solve <span style="font-family:var(--data);color:var(--gold)">w = 1 + 1/w</span></h2>
+    <p class="lead reveal d2">Move every <code>w</code> to one side:</p>
+    <p class="eq reveal d2"><span class="v">f(w)</span> = w &minus; 1/w,&nbsp;&nbsp; target = <span class="t">1</span>,&nbsp;&nbsp; l = <span class="t">1</span> &minus; <span class="v">f(w)</span></p>
+    <p class="lead reveal d2" style="margin:14px 0 26px 0">Type any positive <code>w</code> and press <strong>Step</strong>. Each step reads <code>f(w)</code>, takes the loss, and moves <code>w</code> by <code>&alpha;&middot;l</code> with <code>&alpha; = 1</code>. The new <code>w</code> lands back in the box, so you can keep pressing. Stop when <code>|l| &lt; 0.001</code>.</p>
+
+    <div class="stage reveal d3" id="p2_stage">
+      <div class="control">
+        <div class="field">
+          <label for="p2_w">w</label>
+          <input id="p2_w" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="1" />
+        </div>
+        <button class="press" id="p2_go">Step</button>
+        <button class="press quiet" id="p2_reset">Reset</button>
+        <div class="readout">
+          <div><p class="k">Steps</p><p class="v" id="p2_n">0</p></div>
+          <div><p class="k">l</p><p class="v small" id="p2_l">&middot;</p></div>
+        </div>
+
+        <div class="fig" style="margin-top:4px">
+          <svg id="p2_fig" viewBox="0 0 300 268" role="img"
+               aria-label="A rectangle with sides w across and 1 + 1/w up. The two sides differ by l.">
+            <rect id="p2_gap" x="0" y="0" width="0" height="0" stroke="none"/>
+            <rect id="p2_sq" x="0" y="0" width="0" height="0" class="sq-target" vector-effect="non-scaling-stroke"/>
+            <rect id="p2_rect" x="0" y="0" width="0" height="0" class="sq-guess" vector-effect="non-scaling-stroke"/>
+            <path id="p2_dw" class="dim" d=""/>
+            <path id="p2_dh" class="dim" d=""/>
+            <path id="p2_dl" class="dim" d=""/>
+            <text id="p2_lw" class="dimlab" text-anchor="middle" fill="var(--clay)"></text>
+            <text id="p2_lh" class="dimlab" text-anchor="middle" fill="var(--lapis)"></text>
+            <text id="p2_ll" class="dimlab" text-anchor="start"></text>
+          </svg>
+          <p class="fig-caption">The equation asks for these two sides to match</p>
+        </div>
+      </div>
+
+      <div class="stage-right">
+        <div class="cols tall" style="max-height:380px">
+          <table class="ruled run">
+            <thead><tr><th>w</th><th>f(w)</th><th>l = 1 &minus; f(w)</th><th>Update</th></tr></thead>
+            <tbody id="p2_rows"><tr><td class="empty" colspan="4">Enter a positive w.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="endcard" id="p2_end" role="dialog" aria-modal="true" hidden>
+        <span class="wedge"></span>
+        <h3 class="end-title">Solved.</h3>
+        <p class="end-row">w = <b id="p2_endw">1.6180</b> after <b id="p2_endn">9</b> steps.</p>
+        <div class="end-actions">
+          <button class="press quiet" id="p2_again">Again</button>
+          <button class="press" id="p2_next">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 ============================================================ ALPHA -->
+<section class="page" id="p2alpha">
+  <div class="segment">
+    <div class="segment-inner">
+      <div class="rule reveal"><span class="wedge"></span><span class="rule-label">The step size</span></div>
+      <h2 class="segment-heading reveal d1">Here <span style="font-family:var(--data);color:var(--gold)">&alpha; = 1</span> is enough.</h2>
+      <p class="eq reveal d2" style="margin-bottom:18px">w := w + <span class="t">&alpha;</span> &middot; l</p>
+      <p class="eq reveal d2" style="margin-bottom:22px">w + <span class="t">1</span>&nbsp;&middot;&nbsp;(1 &minus; f(w)) = 1 + 1/w</p>
+      <p class="lead reveal d2">A full step lands on the target, and the target pulls you in. Nine steps from w = 1.</p>
+    </div>
   </div>
 </section>
 
@@ -708,35 +730,28 @@ html,body{hyphens:none;-webkit-hyphens:none}
 <section class="page segment slide-scroll" id="p2code">
   <div class="segment-inner" style="padding:88px 0 48px">
     <div class="rule reveal"><span class="wedge"></span><span class="rule-label">Your turn to write it</span></div>
-    <h2 class="segment-heading reveal d1">The same rule, in code.</h2>
-    <p class="eq reveal d1" style="margin-bottom:22px">w := w + <span class="t">&alpha;</span> &middot; ( area &minus; w&sup2; )</p>
-    <p class="lead reveal d2" style="margin-bottom:30px">Nothing new. The loss is <code>area &minus; w&sup2;</code>, and <code>&alpha;</code> is fixed at <code>0.01</code>. The print shows <code>w</code> and <code>l</code> after every step, so you can watch the loss fall.</p>
 
-    <pre class="tablet-code reveal d2"><span class="kw">def</span> <span class="fn">root</span>(area, alpha=<span class="num">0.01</span>, tol=<span class="num">1e-3</span>, max_steps=<span class="num">200</span>):
+    <pre class="tablet-code reveal d1"><span class="kw">def</span> <span class="fn">solve</span>(alpha, tol, max_steps):
     w = <span class="num">1.0</span>
     l = <span class="num">1.0</span>
     steps = <span class="num">0</span>
 
-    <span class="kw">while</span> <input class="inline" data-b="3" placeholder="... &gt; tol" style="min-width:210px" /> <span class="kw">and</span> steps &lt; max_steps:
-        l = <input class="inline" data-b="1" placeholder="area - ..." style="min-width:210px" />
-        w = <input class="inline" data-b="2" placeholder="w + ..." style="min-width:210px" />
+    <span class="kw">while</span> <input class="inline" data-b="4" placeholder="... &gt; tol" style="min-width:190px" /><span class="mark" aria-hidden="true"></span> <span class="kw">and</span> steps &lt; max_steps:
+        f = <input class="inline" data-b="1" placeholder="w - ..." style="min-width:190px" /><span class="mark" aria-hidden="true"></span>
+        l = <input class="inline" data-b="2" placeholder="1 - ..." style="min-width:190px" /><span class="mark" aria-hidden="true"></span>
+        w = <input class="inline" data-b="3" placeholder="w + ..." style="min-width:190px" /><span class="mark" aria-hidden="true"></span>
         steps += <span class="num">1</span>
-        <span class="fn">print</span>(<span class="str">f"step {steps}: w = {w:.4f}  l = {l:.4f}"</span>)
 
     <span class="kw">return</span> w, steps</pre>
+    <p class="runs reveal d1">Runs with <code>alpha = 1</code>, <code>tol = 0.001</code>, <code>max_steps = 100</code>.</p>
 
-    <div class="btnrow reveal d3">
+    <div class="btnrow reveal d2">
       <button class="press" id="b_check">Check</button>
       <button class="hint-link" id="b_hint">stuck?</button>
     </div>
     <div class="msg" id="b_fb"></div>
-    <div id="b_out" hidden>
-      <span class="out-tag">What it prints</span>
-      <pre class="out" id="b_outpre"></pre>
-    </div>
-
     <div class="aside-hint" id="b_hintbox">
-      Like problem one, without the f line. The loss compares the area you want with the area your w actually makes.
+      Like problem one, plus the f line. The columns of the problem two table are the lines of this loop, in the same order.
     </div>
   </div>
 </section>
@@ -747,7 +762,33 @@ html,body{hyphens:none;-webkit-hyphens:none}
 </main>
 <script>
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  window.addEventListener('load', () => window.scrollTo(0, 0));
+
+  // ===== dev flags, carried by the hash =====
+  // #p1code opens on that section: p1, p1alpha, p1code, p2, p2alpha, p2code.
+  // Flags follow it, joined by &:
+  //   area=2026        deal that area in problem one instead of a random one
+  //   drops=20,60,45   play those drops in problem one, each followed by the
+  //                    right direction; the last one is left waiting for it
+  //   solve            step problem two until it is solved
+  //   fill             type the right answers into both code blocks, press Check
+  //   wrong            the same, with one wrong answer in each block
+  //   theme=light      or theme=dark, to pin a palette
+  // Example: cx_robbins-monro.html#p1alpha&area=2026&drops=20,60,40,46,44.5,45.01
+  const DEV = (function(){
+    const o = { target: null, flags: {} };
+    decodeURIComponent(location.hash.slice(1)).split('&').filter(Boolean).forEach((p, i) => {
+      const k = p.split('=')[0];
+      if (i === 0 && p.indexOf('=') < 0 && document.getElementById(p)) o.target = p;
+      else o.flags[k] = p.length > k.length ? p.slice(k.length + 1) : true;
+    });
+    return o;
+  })();
+  if (DEV.flags.theme === 'light' || DEV.flags.theme === 'dark') document.documentElement.setAttribute('data-theme', DEV.flags.theme);
+  window.addEventListener('load', () => {
+    const t = DEV.target && document.getElementById(DEV.target);
+    if (t) t.scrollIntoView({ behavior: 'instant', block: 'start' });
+    else window.scrollTo(0, 0);
+  });
 
   const io = new IntersectionObserver((es) => {
     es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
@@ -764,7 +805,12 @@ html,body{hyphens:none;-webkit-hyphens:none}
   const fmt = (x, d) => Number(x).toFixed(d).replace('-', '−');
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   function signed(x, d){ return (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(d); }
-  function setState(el, ok){ el.classList.remove('ok', 'bad'); el.classList.add(ok ? 'ok' : 'bad'); }
+  // A checked blank is marked twice: its colour, and a check or a cross after it.
+  function setState(el, ok){
+    el.classList.remove('ok', 'bad'); el.classList.add(ok ? 'ok' : 'bad');
+    const m = el.nextElementSibling;
+    if (m && m.classList.contains('mark')) { m.className = 'mark ' + (ok ? 'ok' : 'bad'); m.textContent = ok ? '✓' : '✗'; }
+  }
   function say(el, kind, text){ el.className = 'msg ' + kind; el.textContent = text; }
   function mute(el){ el.className = 'msg'; el.textContent = ''; }
   function num(raw){ const v = parseFloat((raw || '').trim()); return (isFinite(v) && v > 0) ? v : null; }
@@ -773,6 +819,24 @@ html,body{hyphens:none;-webkit-hyphens:none}
       const on = document.getElementById(box).classList.toggle('show');
       this.textContent = on ? 'hide' : 'stuck?';
     });
+  }
+  // Python's repr of a float, which is what print() writes: the shortest digits
+  // that read back as the same number, ".0" on a whole number, and an exponent
+  // below 1e-4 or from 1e16 up (1e-05, 1.5e+16).
+  function pyFloat(x){
+    if (x !== x) return 'nan';
+    if (x === Infinity) return 'inf';
+    if (x === -Infinity) return '-inf';
+    if (x === 0) return (1 / x < 0) ? '-0.0' : '0.0';
+    const m = /^(-?)(\d)(?:\.(\d+))?e([+-]\d+)$/.exec(x.toExponential());
+    const sign = m[1], digits = m[2] + (m[3] || ''), e = parseInt(m[4], 10);
+    if (e < -4 || e >= 16) {
+      const mant = digits.length > 1 ? digits[0] + '.' + digits.slice(1) : digits;
+      return sign + mant + 'e' + (e < 0 ? '-' : '+') + (Math.abs(e) < 10 ? '0' : '') + Math.abs(e);
+    }
+    if (e < 0) return sign + '0.' + '0'.repeat(-e - 1) + digits;
+    if (digits.length <= e + 1) return sign + digits + '0'.repeat(e + 1 - digits.length) + '.0';
+    return sign + digits.slice(0, e + 1) + '.' + digits.slice(e + 1);
   }
 
   // ===== the title figure: w := w + alpha . l, with both parts braced =====
@@ -797,200 +861,35 @@ html,body{hyphens:none;-webkit-hyphens:none}
       + '<text class="fx a" x="238" y="86">α</text>'
       + '<text class="fx" x="286" y="86">·</text>'
       + '<text class="fx l" x="330" y="86">l</text>'
-      
+
       // underbrace
       + '<path class="br" d="' + brace(230, 42, 98) + '"/>'
-      
+
       // overbrace
       + '<path class="br" d="' + brace(322, 26, 52)
       + '" transform="translate(0 104) scale(1 -1)"/>'
-      
+
       + '<text class="cap" x="251" y="130" text-anchor="middle">step size</text>'
       + '<text class="cap" x="335" y="30" text-anchor="middle">loss</text>';
     })();
 
-  // ===== problem one: w = 1 + 1/w, so f(w) = w - 1/w and target 1 =====
-  (function(){
-    const TOL = 1e-3;
-    const wIn = document.getElementById('p1_w');
-    const rows = document.getElementById('p1_rows');
-    const stage = document.getElementById('p1_stage');
-    const end = document.getElementById('p1_end');
-    let hist = [], done = false;
-
-    const f = w => w - 1 / w;
-
-    // The equation says w and 1 + 1/w should be the same number, so draw them as
-    // the two sides of a rectangle: it becomes a square exactly when the equation
-    // holds. The strip left over is l, because (1 + 1/w) - w = 1 - (w - 1/w) = l.
-    const fig = {
-      rect: document.getElementById('p1_rect'),
-      sq:   document.getElementById('p1_sq'),
-      gap:  document.getElementById('p1_gap'),
-      dw:   document.getElementById('p1_dw'),
-      dh:   document.getElementById('p1_dh'),
-      dl:   document.getElementById('p1_dl'),
-      lw:   document.getElementById('p1_lw'),
-      lh:   document.getElementById('p1_lh'),
-      ll:   document.getElementById('p1_ll'),
-    };
-    const OX = 74, OY = 214, SPAN = 168;
-
-    // a dimension line with a serif at each end
-    function dim(x1, y1, x2, y2, t){
-      const vert = x1 === x2;
-      const a = vert ? 'M ' + (x1 - t) + ' ' + y1 + ' H ' + (x1 + t) : 'M ' + x1 + ' ' + (y1 - t) + ' V ' + (y1 + t);
-      const b = vert ? 'M ' + (x2 - t) + ' ' + y2 + ' H ' + (x2 + t) : 'M ' + x2 + ' ' + (y2 - t) + ' V ' + (y2 + t);
-      return 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2 + ' ' + a + ' ' + b;
-    }
-
-    function drawFig(){
-      const w = num(wIn.value);
-      if (w === null || !fig.rect) return;
-      const h = 1 + 1 / w;
-      const k = SPAN / Math.max(w, h, 2.2);          // keep both sides in frame
-      const wp = w * k, hp = h * k;
-
-      fig.rect.setAttribute('x', OX);
-      fig.rect.setAttribute('y', OY - hp);
-      fig.rect.setAttribute('width', wp);
-      fig.rect.setAttribute('height', hp);
-
-      fig.sq.setAttribute('x', OX);
-      fig.sq.setAttribute('y', OY - wp);
-      fig.sq.setAttribute('width', wp);
-      fig.sq.setAttribute('height', wp);
-
-      const top = Math.min(OY - hp, OY - wp);
-      const band = Math.abs(hp - wp);
-      fig.gap.setAttribute('x', OX);
-      fig.gap.setAttribute('y', top);
-      fig.gap.setAttribute('width', wp);
-      fig.gap.setAttribute('height', band);
-      fig.gap.setAttribute('fill', h > w ? 'var(--carnelian-wash)' : 'var(--clay-wash)');
-
-      // w measured along the bottom
-      fig.dw.setAttribute('d', dim(OX, OY + 14, OX + wp, OY + 14, 4));
-      fig.lw.setAttribute('x', OX + wp / 2);
-      fig.lw.setAttribute('y', OY + 34);
-      fig.lw.textContent = 'w = ' + fmt(w, 4);
-
-      // 1 + 1/w measured up the left, the label turned to run with it
-      fig.dh.setAttribute('d', dim(OX - 16, OY, OX - 16, OY - hp, 4));
-      fig.lh.setAttribute('x', OX - 26);
-      fig.lh.setAttribute('y', OY - hp / 2);
-      fig.lh.setAttribute('transform', 'rotate(-90 ' + (OX - 26) + ' ' + (OY - hp / 2) + ')');
-      fig.lh.textContent = '1 + 1/w = ' + fmt(h, 4);
-
-      // l is the strip between the two, marked on the right
-      const l = h - w, show = band >= 2;
-      fig.dl.setAttribute('d', show ? dim(OX + wp + 12, top, OX + wp + 12, top + band, 4) : '');
-      fig.dl.setAttribute('style', 'color:' + (l > 0 ? 'var(--carnelian)' : 'var(--lapis)'));
-      fig.ll.setAttribute('x', OX + wp + 20);
-      fig.ll.setAttribute('y', top + band / 2 + 4);
-      fig.ll.setAttribute('text-anchor', 'start');
-      fig.ll.setAttribute('fill', l > 0 ? 'var(--carnelian)' : 'var(--lapis)');
-      fig.ll.textContent = show ? ('l = ' + signed(l, 4)) : '';
-    }
-
-
-    function render(){
-      rows.innerHTML = hist.length === 0
-        ? '<tr><td class="empty" colspan="4">Enter a positive w.</td></tr>'
-        : hist.map(r => '<tr>'
-            + '<td>' + fmt(r.w, 6) + '</td>'
-            + '<td>' + fmt(r.f, 6) + '</td>'
-            + '<td class="' + (r.l < 0 ? 'neg' : 'pos') + '">' + signed(r.l, 6) + '</td>'
-            + '<td class="q" style="font-size:17px">' + (r.l > 0 ? '&uarr;' : '&darr;') + '</td>'
-            + '</tr>').join('');
-      const wrap = rows.closest('.cols');
-      wrap.scrollTop = wrap.scrollHeight;
-      document.getElementById('p1_n').textContent = hist.length;
-      document.getElementById('p1_l').textContent = hist.length ? signed(hist[hist.length - 1].l, 6) : '·';
-      drawFig();
-    }
-
-    function step(){
-      if (done) return;
-      const w = num(wIn.value);
-      if (w === null) { wIn.focus(); return; }
-      const fv = f(w), l = 1 - fv, next = w + l;      // alpha = 1
-      hist.push({ w, f: fv, l, next });
-      render();
-      if (Math.abs(l) < TOL) {
-        done = true;
-        document.getElementById('p1_endw').textContent = fmt(w, 6);
-        document.getElementById('p1_endn').textContent = hist.length;
-        end.hidden = false; stage.classList.add('done');
-        document.getElementById('p1_go').disabled = true;
-        return;
-      }
-      wIn.value = fmt(next, 10);
-    }
-
-    function reset(){
-      hist = []; done = false; wIn.value = '1';
-      document.getElementById('p1_go').disabled = false;
-      end.hidden = true; stage.classList.remove('done');
-      render();
-    }
-
-    document.getElementById('p1_go').addEventListener('click', step);
-    document.getElementById('p1_reset').addEventListener('click', reset);
-    document.getElementById('p1_again').addEventListener('click', reset);
-    document.getElementById('p1_next').addEventListener('click', () => {
-      const t = document.getElementById('p1code');
-      if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-    wIn.addEventListener('input', drawFig);
-    wIn.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); step(); } });
-    render();
-  })();
-
-  // ===== problem one, the code =====
-  (function(){
-    const ANS = {
-      1: ['w-1/w', 'w-1.0/w', 'w-(1/w)', '(w*w-1)/w'],
-      2: ['1-f', '1.0-f', '1-(f)'],
-      3: ['w+alpha*l', 'w+l*alpha', 'w+(alpha*l)'],
-      4: ['abs(l)>tol', 'abs(l)>=tol', 'tol<abs(l)'],
-    };
-    const fb = document.getElementById('a_fb');
-    document.getElementById('a_check').addEventListener('click', () => {
-      let bad = [];
-      for (const k of Object.keys(ANS)) {
-        const el = document.querySelector('input[data-a="' + k + '"]');
-        const ok = ANS[k].some(a => norm(a) === norm(el.value));
-        setState(el, ok);
-        if (!ok) bad.push(k);
-      }
-      if (bad.length === 0) { say(fb, 'ok', 'Correct.'); return; }
-      const el4 = document.querySelector('input[data-a="4"]');
-      if (bad.includes('4') && /^l>tol$|^l>=tol$/.test(norm(el4.value))) {
-        say(fb, 'bad', 'l goes negative on the way in, so that ends the loop early. Use its size.');
-        return;
-      }
-      say(fb, 'bad', bad.length + ' of 4 still open.');
-    });
-    bindHint('a_hint', 'a_hintbox');
-  })();
-
-// ===== problem two: drop a square of side w onto a hole of side sqrt(area) =====
+// ===== problem one: drop a square of side w onto a hole of side sqrt(area) =====
 // The area is drawn fresh each round, so the answer cannot be memorised.
-const P2 = { area: 0, hist: [] };
+const P1 = { area: 0, hist: [] };
 
 (function(){
   const TOL = 0.02;
-  const wIn = document.getElementById('p2_w');
-  const rows = document.getElementById('p2_rows');
-  const drop = document.getElementById('p2_drop');
-  const hole = document.getElementById('p2_hole');
-  const voice = document.getElementById('p2_voice');
-  const goBtn = document.getElementById('p2_go');
+  const wIn = document.getElementById('p1_w');
+  const rows = document.getElementById('p1_rows');
+  const drop = document.getElementById('p1_drop');
+  const hole = document.getElementById('p1_hole');
+  const voice = document.getElementById('p1_voice');
+  const goBtn = document.getElementById('p1_go');
   const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let busy = false, solved = false;
+  const FAST = !!DEV.flags.drops;
+  let busy = false, solved = false, firstDeal = true;
 
-  const root = () => Math.sqrt(P2.area);
+  const root = () => Math.sqrt(P1.area);
 
   function metrics(){
     const w = drop.clientWidth, h = drop.clientHeight;
@@ -1011,19 +910,19 @@ const P2 = { area: 0, hist: [] };
 
   // the newest row waits for a direction before another drop is allowed
   function pending(){
-    const last = P2.hist[P2.hist.length - 1];
+    const last = P1.hist[P1.hist.length - 1];
     return (last && !last.dir && !last.fits) ? last : null;
   }
   function rightDir(l){ return l > 0 ? 'up' : 'down'; }
 
   function render(){
-    if (P2.hist.length === 0) {
+    if (P1.hist.length === 0) {
       rows.innerHTML = '<tr><td class="empty" colspan="4">Enter a positive w.</td></tr>';
     } else {
       const open = pending();
-      rows.innerHTML = P2.hist.map(r => {
+      rows.innerHTML = P1.hist.map(r => {
         const cell = r.fits
-          ? '<td class="hit">fits</td>'
+          ? '<td class="hit">&#10003; fits</td>'
           : (r === open
               ? '<td class="choose">'
                 + '<button class="corr pulse" data-dir="up" aria-label="lengthen w">lengthen</button>'
@@ -1039,14 +938,24 @@ const P2 = { area: 0, hist: [] };
       const wrap = rows.closest('.cols');
       wrap.scrollTop = wrap.scrollHeight;
     }
-    document.getElementById('p2_n').textContent = P2.hist.length;
-    document.getElementById('p2_l').textContent = P2.hist.length ? signed(P2.hist[P2.hist.length - 1].l, 2) : '·';
+    document.getElementById('p1_n').textContent = P1.hist.length;
+    document.getElementById('p1_l').textContent = P1.hist.length ? signed(P1.hist[P1.hist.length - 1].l, 2) : '·';
     lock();
   }
 
   function lock(){
     const open = pending();
     wIn.disabled = goBtn.disabled = !!open || solved || busy;
+  }
+
+  function choose(dir){
+    const open = pending();
+    if (!open) return false;
+    if (dir !== rightDir(open.l)) return false;
+    open.dir = dir;
+    voice.textContent = open.dir === 'up' ? 'Lengthen w and drop again.' : 'Shorten w and drop again.';
+    render();
+    return true;
   }
 
   rows.addEventListener('click', ev => {
@@ -1061,9 +970,7 @@ const P2 = { area: 0, hist: [] };
         : 'l is negative, so w&sup2; is over the target. Lengthening w makes it worse.';
       return;
     }
-    open.dir = btn.dataset.dir;
-    voice.textContent = open.dir === 'up' ? 'Lengthen w and drop again.' : 'Shorten w and drop again.';
-    render();
+    choose(btn.dataset.dir);
     wIn.focus(); wIn.select();
   });
 
@@ -1073,10 +980,10 @@ const P2 = { area: 0, hist: [] };
     if (w === null) { wIn.focus(); return; }
     busy = true; lock(); placeHole();
 
-    const fv = w * w, l = P2.area - fv;
+    const fv = w * w, l = P1.area - fv;
     const fits = Math.abs(w - root()) <= TOL;
     const kind = fits ? 'fits' : (w > root() ? 'big' : 'small');
-    P2.hist.push({ w, f: fv, l, fits, dir: null });
+    P1.hist.push({ w, f: fv, l, fits, dir: null });
     render();
 
     const m = metrics(), size = px(w, m);
@@ -1092,7 +999,7 @@ const P2 = { area: 0, hist: [] };
     const land = kind === 'big' ? m.ground - size
                : kind === 'fits' ? m.ground
                : m.ground + m.base;
-    const ms = REDUCED.matches ? 60 : 700;
+    const ms = (REDUCED.matches || FAST) ? 60 : 700;
 
     requestAnimationFrame(() => {
       sq.style.transition = 'top ' + ms + 'ms cubic-bezier(0.6,0,1,0.4)';
@@ -1108,16 +1015,17 @@ const P2 = { area: 0, hist: [] };
         sq.textContent = '';
         setTimeout(() => {
           hole.classList.add('filled');
-          hole.querySelector('.tag').textContent = fmt(root(), 4);
+          hole.querySelector('.tag').textContent = '✓ ' + fmt(root(), 4);
           sq.style.transition = 'opacity 260ms ease';
           sq.style.opacity = '0';
           setTimeout(() => { if (sq.isConnected) sq.remove(); }, 300);
         }, 220);
-        voice.innerHTML = 'It fits. <b>w = ' + fmt(w, 4) + '</b> in ' + P2.hist.length
-                        + (P2.hist.length === 1 ? ' try.' : ' tries.');
+        voice.innerHTML = 'It fits. <b>w = ' + fmt(w, 4) + '</b> in ' + P1.hist.length
+                        + (P1.hist.length === 1 ? ' try.' : ' tries.');
       } else if (kind === 'big') {
         voice.innerHTML = 'Too big, it sits on the rim. Which way now?';
-        setTimeout(() => sq.remove(), 700);
+        // the last square of a scripted run stays on the rim for the capture
+        if (!FAST) setTimeout(() => sq.remove(), 700);
       } else {
         voice.innerHTML = 'Too small, it falls through. Which way now?';
         sq.style.opacity = '0';
@@ -1129,23 +1037,52 @@ const P2 = { area: 0, hist: [] };
     }, ms + 60);
   }
 
+  // For these three areas CPython on macOS prints a different last digit when
+  // the loss is written w**2, because the pow of the C library there is not
+  // correctly rounded. They are never dealt, so the printed run below stays
+  // exact for w**2 and for w*w alike.
+  const POW_DIFFERS = [1963, 2065, 2082];
+
   function reset(){
-    P2.area = 1900 + Math.floor(Math.random() * 201);   // 1900 to 2100 inclusive
-    P2.hist = []; busy = false; solved = false;
-    ['p2_area_h', 'p2_area_e', 'p2_area_e2', 'p2_area_t'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.textContent = P2.area;
+    const dev = parseInt(DEV.flags.area, 10);
+    let area;
+    do { area = 1900 + Math.floor(Math.random() * 201); }   // 1900 to 2100 inclusive
+    while (POW_DIFFERS.indexOf(area) >= 0);
+    P1.area = (firstDeal && dev >= 1900 && dev <= 2100) ? dev : area;
+    firstDeal = false;
+    P1.hist = []; busy = false; solved = false;
+    ['p1_area_h', 'p1_area_e', 'p1_area_e2', 'p1_area_t'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.textContent = P1.area;
     });
     wIn.value = '20'; wIn.disabled = false;
     hole.classList.remove('filled');
-    hole.querySelector('.tag').textContent = P2.area;
+    hole.querySelector('.tag').textContent = P1.area;
     drop.querySelectorAll('.falling').forEach(e => e.remove());
     voice.textContent = 'Drop a square and see if it fits.';
     render(); placeHole();
     if (typeof window.renderImplied === 'function') window.renderImplied();
+    if (typeof window.renderRun === 'function') window.renderRun();
   }
 
+  // dev: play a list of drops, each followed by the right direction
+  P1.play = function(list){
+    let i = 0;
+    (function next(){
+      if (i >= list.length) return;
+      wIn.value = String(list[i]); go();
+      setTimeout(() => {
+        const open = pending();
+        if (open && i < list.length - 1) {
+          drop.querySelectorAll('.falling').forEach(e => e.remove());
+          choose(rightDir(open.l));
+        }
+        i++; next();
+      }, 260);
+    })();
+  };
+
   goBtn.addEventListener('click', go);
-  document.getElementById('p2_reset').addEventListener('click', reset);
+  document.getElementById('p1_reset').addEventListener('click', reset);
   wIn.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
   window.addEventListener('resize', placeHole);
   if (window.ResizeObserver) new ResizeObserver(placeHole).observe(drop);
@@ -1159,7 +1096,7 @@ const P2 = { area: 0, hist: [] };
     const canvas = document.getElementById('ia_chart');
     if (!tiles && !canvas) return;
 
-    const root = () => Math.sqrt(P2.area);
+    const root = () => Math.sqrt(P1.area);
     const f4 = x => fmt(x, 4);
 
     // What the average step size says about the way the guessing went.
@@ -1180,9 +1117,24 @@ const P2 = { area: 0, hist: [] };
       return { label: 'Very cautious', tone: '', note: 'Average &alpha; is ' + A + ', far below the best value (' + I + '), so w creeps toward the answer.' };
     }
 
+    // A drop is marked by shape as well as colour: too big an upward triangle,
+    // too small a downward one, a fit a ringed dot.
+    function mark(ctx, kind, x, y, colour){
+      ctx.fillStyle = colour; ctx.strokeStyle = colour;
+      ctx.beginPath();
+      if (kind === 'big') {
+        ctx.moveTo(x, y - 6); ctx.lineTo(x + 5.5, y + 4); ctx.lineTo(x - 5.5, y + 4); ctx.closePath(); ctx.fill();
+      } else if (kind === 'small') {
+        ctx.moveTo(x, y + 6); ctx.lineTo(x + 5.5, y - 4); ctx.lineTo(x - 5.5, y - 4); ctx.closePath(); ctx.fill();
+      } else {
+        ctx.arc(x, y, 3.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.lineWidth = 1.5; ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.stroke();
+      }
+    }
+
     function drawChart(){
       if (!canvas) return;
-      const h = P2.hist;
+      const h = P1.hist;
       const cssW = canvas.clientWidth, cssH = 220;
       if (!cssW) return;                       // not laid out yet
       const dpr = window.devicePixelRatio || 1;
@@ -1195,7 +1147,7 @@ const P2 = { area: 0, hist: [] };
       const cs = getComputedStyle(document.documentElement);
       const tok = n => cs.getPropertyValue(n).trim();
       const ink = tok('--ink'), dim = tok('--ink-dim'), line = tok('--line');
-      const ok = tok('--reed'), big = tok('--carnelian'), small = tok('--lapis');
+      const ok = tok('--lapis'), big = tok('--vermillion'), small = tok('--lapis');
 
       const mL = 52, mR = 14, mT = 10, mB = 26;
       const pW = cssW - mL - mR, pH = cssH - mT - mB;
@@ -1230,13 +1182,13 @@ const P2 = { area: 0, hist: [] };
       ctx.stroke();
 
       h.forEach((r, i) => {
-        ctx.fillStyle = r.fits ? ok : (r.w > root() ? big : small);
-        ctx.beginPath(); ctx.arc(xAt(i), yAt(logs[i]), 4, 0, Math.PI * 2); ctx.fill();
+        const kind = r.fits ? 'fits' : (r.w > root() ? 'big' : 'small');
+        mark(ctx, kind, xAt(i), yAt(logs[i]), kind === 'fits' ? ok : (kind === 'big' ? big : small));
       });
     }
 
     window.renderImplied = function(){
-      const h = P2.hist;
+      const h = P1.hist;
       const out = [];
       for (let i = 1; i < h.length; i++) {
         const wOld = h[i - 1].w, lOld = h[i - 1].l, wNew = h[i].w;
@@ -1245,7 +1197,7 @@ const P2 = { area: 0, hist: [] };
       }
 
       if (rows) rows.innerHTML = out.length === 0
-        ? '<tr><td class="empty" colspan="5">Make a few guesses in problem two first.</td></tr>'
+        ? '<tr><td class="empty" colspan="5">Make a few guesses in problem one first.</td></tr>'
         : out.map(r => '<tr>'
             + '<td>' + fmt(r.wOld, 3) + '</td>'
             + '<td class="' + (r.lOld < 0 ? 'neg' : 'pos') + '">' + signed(r.lOld, 2) + '</td>'
@@ -1280,16 +1232,199 @@ const P2 = { area: 0, hist: [] };
     window.renderImplied();
   })();
 
+  // ===== problem one, the code =====
+  (function(){
+    const ANS = {
+      1: ['area-w**2', 'area-w*w', 'area-(w**2)', 'area-(w*w)', 'area-pow(w,2)', '(area-w**2)', '(area-w*w)'],
+      2: ['w+alpha*l', 'w+l*alpha', 'w+(alpha*l)', 'alpha*l+w', 'l*alpha+w'],
+      3: ['abs(l)>tol', 'abs(l)>=tol', 'tol<abs(l)', 'tol<=abs(l)'],
+    };
+    const fb = document.getElementById('a_fb');
+    const pre = document.getElementById('a_outpre');
+    document.getElementById('a_check').addEventListener('click', () => {
+      let bad = [];
+      for (const k of Object.keys(ANS)) {
+        const el = document.querySelector('input[data-a="' + k + '"]');
+        const ok = ANS[k].some(a => norm(a) === norm(el.value));
+        setState(el, ok);
+        if (!ok) bad.push(k);
+      }
+      if (bad.length === 0) { say(fb, 'ok', '✓ Correct.'); return; }
+      say(fb, 'bad', '✗ ' + bad.length + ' of 3 still open.');
+    });
+    // What the finished loop prints on the area problem one dealt out, written
+    // exactly the way CPython writes print(steps, w, l) and the returned tuple.
+    window.renderRun = function(){
+      const area = P1.area, alpha = 0.01, tol = 0.001, maxSteps = 200;
+      let w = 1.0, l = 1.0, steps = 0;
+      const lines = ['<span class="pr">&gt;&gt;&gt; root(' + area + ', 0.01, 0.001, 200)</span>'];
+      while (Math.abs(l) > tol && steps < maxSteps) {
+        l = area - w * w;
+        w = w + alpha * l;
+        steps += 1;
+        lines.push(steps + ' ' + pyFloat(w) + ' ' + pyFloat(l));
+      }
+      lines.push('<span class="rv">(' + pyFloat(w) + ', ' + steps + ')</span>');
+      pre.innerHTML = lines.join('\n');
+    };
+    window.renderRun();
+    bindHint('a_hint', 'a_hintbox');
+  })();
+
+  // ===== problem two: w = 1 + 1/w, so f(w) = w - 1/w and target 1 =====
+  const P2 = {};
+  (function(){
+    const TOL = 1e-3;
+    const wIn = document.getElementById('p2_w');
+    const rows = document.getElementById('p2_rows');
+    const stage = document.getElementById('p2_stage');
+    const end = document.getElementById('p2_end');
+    let hist = [], done = false;
+
+    const f = w => w - 1 / w;
+
+    // The equation says w and 1 + 1/w should be the same number, so draw them as
+    // the two sides of a rectangle: it becomes a square exactly when the equation
+    // holds. The strip left over is l, because (1 + 1/w) - w = 1 - (w - 1/w) = l.
+    const fig = {
+      rect: document.getElementById('p2_rect'),
+      sq:   document.getElementById('p2_sq'),
+      gap:  document.getElementById('p2_gap'),
+      dw:   document.getElementById('p2_dw'),
+      dh:   document.getElementById('p2_dh'),
+      dl:   document.getElementById('p2_dl'),
+      lw:   document.getElementById('p2_lw'),
+      lh:   document.getElementById('p2_lh'),
+      ll:   document.getElementById('p2_ll'),
+    };
+    const OX = 74, OY = 214, SPAN = 168;
+
+    // a dimension line with a serif at each end
+    function dim(x1, y1, x2, y2, t){
+      const vert = x1 === x2;
+      const a = vert ? 'M ' + (x1 - t) + ' ' + y1 + ' H ' + (x1 + t) : 'M ' + x1 + ' ' + (y1 - t) + ' V ' + (y1 + t);
+      const b = vert ? 'M ' + (x2 - t) + ' ' + y2 + ' H ' + (x2 + t) : 'M ' + x2 + ' ' + (y2 - t) + ' V ' + (y2 + t);
+      return 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2 + ' ' + a + ' ' + b;
+    }
+
+    function drawFig(){
+      const w = num(wIn.value);
+      if (w === null || !fig.rect) return;
+      const h = 1 + 1 / w;
+      const k = SPAN / Math.max(w, h, 2.2);          // keep both sides in frame
+      const wp = w * k, hp = h * k;
+
+      fig.rect.setAttribute('x', OX);
+      fig.rect.setAttribute('y', OY - hp);
+      fig.rect.setAttribute('width', wp);
+      fig.rect.setAttribute('height', hp);
+
+      fig.sq.setAttribute('x', OX);
+      fig.sq.setAttribute('y', OY - wp);
+      fig.sq.setAttribute('width', wp);
+      fig.sq.setAttribute('height', wp);
+
+      // l is positive when w is too small, lapis like "too small" in problem one,
+      // and negative when w is too big, vermillion like "too big"
+      const l = h - w;
+      const top = Math.min(OY - hp, OY - wp);
+      const band = Math.abs(hp - wp);
+      fig.gap.setAttribute('x', OX);
+      fig.gap.setAttribute('y', top);
+      fig.gap.setAttribute('width', wp);
+      fig.gap.setAttribute('height', band);
+      fig.gap.setAttribute('fill', l > 0 ? 'var(--lapis-wash)' : 'var(--vermillion-wash-2)');
+
+      // w measured along the bottom
+      fig.dw.setAttribute('d', dim(OX, OY + 14, OX + wp, OY + 14, 4));
+      fig.lw.setAttribute('x', OX + wp / 2);
+      fig.lw.setAttribute('y', OY + 34);
+      fig.lw.textContent = 'w = ' + fmt(w, 4);
+
+      // 1 + 1/w measured up the left, the label turned to run with it
+      fig.dh.setAttribute('d', dim(OX - 16, OY, OX - 16, OY - hp, 4));
+      fig.lh.setAttribute('x', OX - 26);
+      fig.lh.setAttribute('y', OY - hp / 2);
+      fig.lh.setAttribute('transform', 'rotate(-90 ' + (OX - 26) + ' ' + (OY - hp / 2) + ')');
+      fig.lh.textContent = '1 + 1/w = ' + fmt(h, 4);
+
+      // l is the strip between the two, marked on the right
+      const show = band >= 2;
+      fig.dl.setAttribute('d', show ? dim(OX + wp + 12, top, OX + wp + 12, top + band, 4) : '');
+      fig.dl.setAttribute('style', 'color:' + (l > 0 ? 'var(--lapis)' : 'var(--vermillion)'));
+      fig.ll.setAttribute('x', OX + wp + 20);
+      fig.ll.setAttribute('y', top + band / 2 + 4);
+      fig.ll.setAttribute('text-anchor', 'start');
+      fig.ll.setAttribute('fill', l > 0 ? 'var(--lapis)' : 'var(--vermillion)');
+      fig.ll.textContent = show ? ('l = ' + signed(l, 4)) : '';
+    }
+
+
+    function render(){
+      rows.innerHTML = hist.length === 0
+        ? '<tr><td class="empty" colspan="4">Enter a positive w.</td></tr>'
+        : hist.map(r => '<tr>'
+            + '<td>' + fmt(r.w, 6) + '</td>'
+            + '<td>' + fmt(r.f, 6) + '</td>'
+            + '<td class="' + (r.l < 0 ? 'neg' : 'pos') + '">' + signed(r.l, 6) + '</td>'
+            + '<td class="q" style="font-size:17px">' + (r.l > 0 ? '&uarr;' : '&darr;') + '</td>'
+            + '</tr>').join('');
+      const wrap = rows.closest('.cols');
+      wrap.scrollTop = wrap.scrollHeight;
+      document.getElementById('p2_n').textContent = hist.length;
+      document.getElementById('p2_l').textContent = hist.length ? signed(hist[hist.length - 1].l, 6) : '·';
+      drawFig();
+    }
+
+    function step(){
+      if (done) return;
+      const w = num(wIn.value);
+      if (w === null) { wIn.focus(); return; }
+      const fv = f(w), l = 1 - fv, next = w + l;      // alpha = 1
+      hist.push({ w, f: fv, l, next });
+      render();
+      if (Math.abs(l) < TOL) {
+        done = true;
+        document.getElementById('p2_endw').textContent = fmt(w, 6);
+        document.getElementById('p2_endn').textContent = hist.length;
+        end.hidden = false; stage.classList.add('done');
+        document.getElementById('p2_go').disabled = true;
+        return;
+      }
+      wIn.value = fmt(next, 10);
+    }
+
+    function reset(){
+      hist = []; done = false; wIn.value = '1';
+      document.getElementById('p2_go').disabled = false;
+      end.hidden = true; stage.classList.remove('done');
+      render();
+    }
+
+    // dev: step until solved
+    P2.solve = function(){ for (let i = 0; i < 60 && !done; i++) step(); };
+
+    document.getElementById('p2_go').addEventListener('click', step);
+    document.getElementById('p2_reset').addEventListener('click', reset);
+    document.getElementById('p2_again').addEventListener('click', reset);
+    document.getElementById('p2_next').addEventListener('click', () => {
+      const t = document.getElementById('p2alpha');
+      if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    wIn.addEventListener('input', drawFig);
+    wIn.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); step(); } });
+    render();
+  })();
+
   // ===== problem two, the code =====
   (function(){
     const ANS = {
-      1: ['area-w**2', 'area-w*w', 'area-(w**2)', 'area-(w*w)', 'area-pow(w,2)'],
-      2: ['w+alpha*l', 'w+l*alpha', 'w+(alpha*l)'],
-      3: ['abs(l)>tol', 'abs(l)>=tol', 'tol<abs(l)'],
+      1: ['w-1/w', 'w-1.0/w', 'w-(1/w)', '(w*w-1)/w', 'w-1/(w)'],
+      2: ['1-f', '1.0-f', '1-(f)'],
+      3: ['w+alpha*l', 'w+l*alpha', 'w+(alpha*l)', 'alpha*l+w', 'l*alpha+w'],
+      4: ['abs(l)>tol', 'abs(l)>=tol', 'tol<abs(l)', 'tol<=abs(l)'],
     };
     const fb = document.getElementById('b_fb');
-    const out = document.getElementById('b_out');
-    const pre = document.getElementById('b_outpre');
     document.getElementById('b_check').addEventListener('click', () => {
       let bad = [];
       for (const k of Object.keys(ANS)) {
@@ -1298,26 +1433,37 @@ const P2 = { area: 0, hist: [] };
         setState(el, ok);
         if (!ok) bad.push(k);
       }
-if (bad.length === 0) { say(fb, 'ok', 'Correct.'); showRun(); return; }
-out.hidden = true;
-say(fb, 'bad', bad.length + ' of 3 still open.');
+      if (bad.length === 0) { say(fb, 'ok', '✓ Correct.'); return; }
+      const el4 = document.querySelector('input[data-b="4"]');
+      if (bad.includes('4') && /^l>tol$|^l>=tol$/.test(norm(el4.value))) {
+        say(fb, 'bad', '✗ l goes negative on the way in, so that ends the loop early. Use its size.');
+        return;
+      }
+      say(fb, 'bad', '✗ ' + bad.length + ' of 4 still open.');
     });
-// The trace the finished loop prints, on the area problem two dealt out.
-function showRun(){
-  const area = P2.area, alpha = 0.01, tol = 1e-3;
-  let w = 1.0, l = 1.0, steps = 0;
-  const lines = ['<span class="pr">&gt;&gt;&gt; root(' + area + ')</span>'];
-  while (Math.abs(l) > tol && steps < 200) {
-    l = area - w * w;
-    w = w + alpha * l;
-    steps += 1;
-    lines.push('step ' + steps + ': w = ' + w.toFixed(4) + '  l = ' + l.toFixed(4));
-  }
-  lines.push('<span class="rv">(' + w.toFixed(6) + ', ' + steps + ')</span>');
-  pre.innerHTML = lines.join('\n');
-  out.hidden = false;
-}
-bindHint('b_hint', 'b_hintbox');
+    bindHint('b_hint', 'b_hintbox');
+  })();
+
+  // ===== dev flags that need the page built =====
+  (function(){
+    const F = DEV.flags;
+    function type(sel, v){ const el = document.querySelector(sel); if (el) el.value = v; }
+    if (F.fill || F.wrong) {
+      type('input[data-a="1"]', 'area - w**2');
+      type('input[data-a="2"]', 'w + alpha * l');
+      type('input[data-a="3"]', F.wrong ? 'l > tol' : 'abs(l) > tol');
+      type('input[data-b="1"]', 'w - 1/w');
+      type('input[data-b="2"]', '1 - f');
+      type('input[data-b="3"]', 'w + alpha * l');
+      type('input[data-b="4"]', F.wrong ? 'l > tol' : 'abs(l) > tol');
+      document.getElementById('a_check').click();
+      document.getElementById('b_check').click();
+    }
+    if (F.solve) P2.solve();
+    if (typeof F.drops === 'string') {
+      const list = F.drops.split(',').map(parseFloat).filter(v => isFinite(v) && v > 0);
+      if (list.length) P1.play(list);
+    }
   })();
 </script>
 </body>

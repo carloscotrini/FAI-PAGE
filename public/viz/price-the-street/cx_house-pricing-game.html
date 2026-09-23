@@ -5,332 +5,370 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Price the Street</title>
 <style>
-  :root{--bg:#020617;--card:#0b1220;--accent:#34d399;--muted:#94a3b8;--ok:#34d399;--bad:#fb7185;--info:#60a5fa;--low:#60a5fa;--high:#fb7185;--gold:#fbbf24}
+  /* ============================================================================
+     Warm paper and iron-gall ink, the same ground and the same typefaces as
+     the square-roots page ("Two problems, done by hand") that runs before it.
+
+     Colour-blind safe, Okabe-Ito hues only, and never red with green:
+       w, the price per square metre: blue.
+       b, the base price: orange.
+       a miss by its sign: blue when the house sold for more than you said
+         (raise), vermillion when it sold for less (lower). Every miss also
+         carries an arrow and a sign.
+       a right answer: blue with a check. A wrong one: vermillion with a cross.
+       everything else: ink.
+     Each hue has a darker "ink" variant for small text on paper.
+     Every colour in the file is a token below; nothing else names a colour.
+     ============================================================================ */
+  :root{
+    color-scheme:light;
+
+    --paper:#f2ece0;
+    --paper-2:#e7dfcf;
+    --sunk:#e2d8c4;
+    --ink:#2b2118;
+    --ink-dim:#6b5c49;
+    --faint:#7d6c52;
+    --line:rgba(92,74,51,0.22);
+    --line-soft:rgba(92,74,51,0.12);
+    --line-firm:rgba(92,74,51,0.38);
+    --ink-wash:rgba(43,33,24,0.07);
+    --shadow:rgba(60,45,25,0.22);
+    --kw:#2f4b7c;
+
+    --w:#0072b2;
+    --w-ink:#005e94;
+    --w-wash:rgba(0,114,178,0.10);
+    --b:#b87800;
+    --b-ink:#8f5800;
+    --b-wash:rgba(230,159,0,0.16);
+
+    --under:#0072b2;
+    --under-ink:#005e94;
+    --under-wash:rgba(0,114,178,0.10);
+    --over:#d55e00;
+    --over-ink:#a84300;
+    --over-wash:rgba(213,94,0,0.10);
+
+    --ok:#005e94;
+    --ok-wash:rgba(0,114,178,0.10);
+    --bad:#a84300;
+    --bad-wash:rgba(213,94,0,0.12);
+
+    --display:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+    --body:Inter,ui-sans-serif,system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    --data:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
   *{box-sizing:border-box}
-  html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:#020617;color:#e6eef8}
+  html,body{margin:0;min-height:100%;font-family:var(--body);background:var(--paper);color:var(--ink);hyphens:none;-webkit-hyphens:none}
   html{scroll-behavior:smooth;scroll-snap-type:y mandatory}
   @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
-  .segment.slide-scroll{height:100vh;overflow-y:auto;display:block;overflow:hidden auto;scroll-snap-align:start}
-  main{max-width:none;width:100%;margin:0;padding:20px 64px 12px 64px}
+  main{width:100%;margin:0;padding:0 64px}
+  @media (max-width:700px){main{padding:0 20px}}
   .page{display:block}
-  .page h2{scroll-margin-top:24px}
+  .segment.slide-scroll{height:100vh;overflow:hidden auto;display:block;scroll-snap-align:start}
 
   /* Scroll segments */
-  .segment{height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0;overflow:hidden;scroll-snap-align:start}
-  .segment.game-seg{padding:36px 0}
+  .segment{height:100vh;display:flex;flex-direction:column;justify-content:center;padding:72px 0;overflow:hidden;scroll-snap-align:start;max-width:1180px;margin:0 auto}
+  .segment.game-seg{padding:28px 0}
   .segment-inner{width:100%}
-  .segment-heading{font-size:clamp(28px,3.4vw,44px);font-weight:800;letter-spacing:-0.02em;margin:0 0 14px 0;line-height:1.1}
-  .segment-heading .dim{color:var(--muted);font-weight:600}
-  .segment-lead{color:#cbd5e1;font-size:17px;line-height:1.6;margin:0 0 28px 0;max-width:80ch}
-  .concept-card{background:#0b1220;border:1px solid rgba(255,255,255,0.06);border-left:4px solid var(--info);border-radius:10px;padding:18px 22px;margin-top:0}
+  .segment-heading{font-family:var(--display);font-weight:500;font-size:clamp(30px,3.6vw,48px);letter-spacing:0.005em;line-height:1.12;margin:0 0 14px 0;color:var(--ink)}
+  .segment-heading .dim{color:var(--faint)}
+  .segment-lead{color:var(--ink-dim);font-size:17px;line-height:1.65;margin:0 0 26px 0;max-width:80ch}
+  .segment-lead strong,.segment-lead em{color:var(--ink)}
+  code{font-family:var(--data);font-size:0.86em;color:var(--ink);background:var(--ink-wash);padding:1px 6px;border-radius:3px}
+  .lc{text-transform:none;letter-spacing:0}
+  .c-w{color:var(--w-ink);font-weight:600}
+  .c-b{color:var(--b-ink);font-weight:600}
+
+  .concept-card{background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--ink-dim);border-radius:4px;padding:18px 22px}
   .concept-card + .concept-card{margin-top:14px}
-  .concept-card .concept-tag{display:inline-block;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;color:var(--info);margin-bottom:8px}
-  .concept-card p{margin:0;color:#e6eef8;line-height:1.6;font-size:15px}
-  .concept-card ul{margin:8px 0 0 0;line-height:1.7}
-  .concept-card code{font-size:13.5px}
-  .concept-card.eq{border-left-color:#34d399}
-  .concept-card.eq .concept-tag{color:#34d399}
-  .concept-card.red{border-left-color:var(--bad)}.concept-card.red .concept-tag{color:var(--bad)}
-  .concept-card.green{border-left-color:var(--ok)}.concept-card.green .concept-tag{color:var(--ok)}
+  .concept-card .concept-tag{display:inline-block;font-family:var(--data);font-size:10.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:8px}
+  .concept-card p{margin:0;color:var(--ink);line-height:1.6;font-size:15.5px}
+  .concept-card ul{margin:8px 0 0 0;line-height:1.75;color:var(--ink)}
+  .concept-card.eq{border-left-color:var(--ink)}
+  .concept-card.worse{border-left-color:var(--over)}
+  .concept-card.worse .concept-tag{color:var(--over-ink)}
+  .concept-card.better{border-left-color:var(--w)}
+  .concept-card.better .concept-tag{color:var(--w-ink)}
   .why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;max-width:1100px}
   .why-grid .concept-card + .concept-card{margin-top:0}
   @media (max-width:900px){.why-grid{grid-template-columns:1fr}}
-  .eqn{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:clamp(15px,1.7vw,20px);line-height:1.8;color:#e6eef8;margin:6px 0 0 0}
-  .eqn .lr{color:#fbbf24}
-  .eqn .err{color:#93c5fd}
-  .eqn .pos{color:#6ee7b7}
-  .eqn .base{color:#f9a8d4}
-  .eqn .strike{text-decoration:line-through;color:#64748b}
-  .c-w{color:#6ee7b7}.c-b{color:#f9a8d4}.c-l{color:#93c5fd}.c-a{color:#fbbf24}
-  .formula{display:inline-flex;align-items:center;gap:14px;margin-top:16px;line-height:1;font-size:1.2em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e6eef8}
+  .eqn{font-family:var(--data);font-size:clamp(15px,1.7vw,20px);line-height:1.85;color:var(--ink);margin:6px 0 0 0}
+  .eqn .w{color:var(--w-ink)}
+  .eqn .b{color:var(--b-ink)}
+  .formula{display:inline-flex;align-items:center;gap:14px;line-height:1;font-size:1.1em;font-family:var(--data);color:var(--ink)}
   .formula .frac{display:inline-flex;flex-direction:column;align-items:center}
-  .formula .frac .num{padding:0 8px 5px;border-bottom:2px solid #e6eef8}
+  .formula .frac .num{padding:0 8px 5px;border-bottom:2px solid var(--ink)}
   .formula .frac .den{padding:5px 8px 0}
   .formula .sum{display:inline-flex;flex-direction:column;align-items:center;gap:3px}
-  .formula .sum .sigma{font-family:'STIX Two Math','Cambria Math','Times New Roman',serif;font-size:2.4em;line-height:0.85;color:#fbbf24}
-  .formula .sum .lim{font-size:0.6em;color:#cbd5e1}
+  .formula .sum .sigma{font-family:var(--display);font-size:2.2em;line-height:0.85;color:var(--ink)}
+  .formula .sum .lim{font-size:0.6em;color:var(--ink-dim)}
   .formula sub{font-size:0.65em;vertical-align:-0.35em}
   .eq-row{display:inline-flex;align-items:center;gap:40px;flex-wrap:wrap;margin-top:10px}
-  .eq-row .formula{margin-top:0}
 
-  /* Concept visualisations pinned right */
+  /* Concept pictures pinned right */
   .mdp-segment{position:relative}
   .mdp-segment .segment-inner{padding-right:max(320px, 28vw)}
   .mdp-segment .concept-card{max-width:760px}
-  .mdp-segment .mdp-viz{position:absolute;right:64px;top:0;bottom:0;width:max(320px, 28vw);justify-content:center}
+  .mdp-segment .mdp-viz{position:absolute;right:0;top:0;bottom:0;width:max(320px, 28vw);justify-content:center}
   @media (max-width:1100px){
     .mdp-segment{position:static}
     .mdp-segment .segment-inner{padding-right:0}
-    .mdp-segment .mdp-viz{position:static;transform:none;margin:24px auto 0 auto}
+    .mdp-segment .mdp-viz{position:static;margin:24px auto 0 auto}
   }
   .mdp-viz{display:flex;flex-direction:column;align-items:center;gap:12px;flex-shrink:0}
-  .mdp-caption{font-size:11px;color:var(--muted);letter-spacing:0.14em;text-transform:uppercase;font-weight:600;margin:0;text-align:center}
+  .mdp-caption{font-family:var(--data);font-size:10.5px;color:var(--ink-dim);letter-spacing:0.18em;text-transform:uppercase;margin:0;text-align:center}
   .viz-svg{width:100%;max-width:360px;height:auto;display:block}
-  .viz-svg .ld-box{fill:#0b1220;stroke:rgba(255,255,255,0.14);stroke-width:1.2}
-  .viz-svg .ld-box.pred{stroke:rgba(52,211,153,0.6)}
-  .viz-svg .ld-box.loss{stroke:rgba(147,197,253,0.7)}
-  .viz-svg .ld-box.upd{stroke:rgba(251,191,36,0.7)}
-  .viz-svg .ld-box.data{stroke:rgba(249,168,212,0.6)}
-  .viz-svg text{fill:#e6eef8;font-family:ui-monospace,Menlo,monospace;font-size:13px}
-  .viz-svg text.tag{fill:var(--muted);font-family:Inter,system-ui,sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase}
-  .viz-svg text.small{font-size:11px;fill:#cbd5e1}
-  .viz-svg .ld-arrow{stroke:#94a3b8;stroke-width:1.6;fill:none}
-  .viz-svg .ld-loop{stroke:#fbbf24;stroke-width:1.6;fill:none;stroke-dasharray:5 4}
-  .viz-svg .ld-head{fill:#94a3b8}
-  .viz-svg .ld-head.gold{fill:#fbbf24}
-  .viz-svg .grid{stroke:rgba(255,255,255,0.07);stroke-width:1}
-  .viz-svg .axis{stroke:rgba(255,255,255,0.3);stroke-width:1}
-  .viz-svg .line-w{stroke:#6ee7b7;stroke-width:2.5;fill:none}
-  .viz-svg .line-b{stroke:#f9a8d4;stroke-width:2.5;fill:none}
-  .viz-svg .line-base{stroke:#94a3b8;stroke-width:2;fill:none;stroke-dasharray:4 4}
-  .viz-svg .pt{fill:#e6eef8}
+  .viz-svg .ld-box{fill:var(--paper-2);stroke:var(--line-firm);stroke-width:1.2}
+  .viz-svg .ld-box.upd{stroke:var(--ink);stroke-width:1.5}
+  .viz-svg text{fill:var(--ink);font-family:var(--data);font-size:13px}
+  .viz-svg text.tag{fill:var(--ink-dim);font-size:10px;letter-spacing:0.14em;text-transform:uppercase}
+  .viz-svg text.small{font-size:11px;fill:var(--ink-dim)}
+  .viz-svg text.small.w{fill:var(--w-ink);font-weight:700}
+  .viz-svg text.small.b{fill:var(--b-ink);font-weight:700}
+  .viz-svg text.small.loop{fill:var(--ink)}
+  .viz-svg .ld-arrow{stroke:var(--ink-dim);stroke-width:1.6;fill:none}
+  .viz-svg .ld-arrow.w{stroke:var(--w)}
+  .viz-svg .ld-arrow.b{stroke:var(--b)}
+  .viz-svg .ld-loop{stroke:var(--ink);stroke-width:1.6;fill:none;stroke-dasharray:5 4}
+  .viz-svg .ld-head{fill:var(--ink-dim)}
+  .viz-svg .ld-head.loop{fill:var(--ink)}
+  .viz-svg .ld-head.w{fill:var(--w)}
+  .viz-svg .ld-head.b{fill:var(--b)}
+  .viz-svg .grid{stroke:var(--line-soft);stroke-width:1}
+  .viz-svg .axis{stroke:var(--line-firm);stroke-width:1}
+  .viz-svg .line-w{stroke:var(--w);stroke-width:2.5;fill:none}
+  .viz-svg .line-b{stroke:var(--b);stroke-width:2.5;fill:none}
+  .viz-svg .line-base{stroke:var(--ink-dim);stroke-width:2;fill:none;stroke-dasharray:4 4}
 
   /* Scroll-reveal */
-  .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:translateY(0)}
   .reveal.d1{transition-delay:.10s}
   .reveal.d2{transition-delay:.25s}
   .reveal.d3{transition-delay:.40s}
   .reveal.d4{transition-delay:.55s}
-  .reveal.d5{transition-delay:.70s}
   @media (prefers-reduced-motion: reduce){.reveal{opacity:1;transform:none;transition:none}}
 
   h2{margin:0 0 16px 0}
-  .card{background:var(--card);padding:18px 22px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.4)}
-  .card + .card{margin-top:14px}
   h3{margin:14px 0 8px 0;font-size:15.5px}
   p,ul{margin:8px 0}
-  p{line-height:1.6;color:#d1d8e6}
+  p{line-height:1.6;color:var(--ink-dim)}
   ul{line-height:1.8}
 
-  /* ===== Cover / hero ===== */
-  .hero{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1100px 500px at 20% 20%,rgba(52,211,153,0.16),transparent 60%),radial-gradient(900px 500px at 80% 80%,rgba(56,189,248,0.14),transparent 60%);margin:-20px -64px 0 -64px;padding:48px 64px;overflow:hidden;scroll-snap-align:start}
+  /* ===== Cover ===== */
+  .hero{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;margin:0 -64px;padding:48px 64px;overflow:hidden;scroll-snap-align:start}
   .hero .scroll-cue{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);margin:0}
-  .hero-inner{display:grid;grid-template-columns:1.1fr 0.9fr;gap:64px;align-items:center;max-width:1280px;width:100%}
+  .hero-inner{display:grid;grid-template-columns:1.1fr 0.9fr;gap:64px;align-items:center;max-width:1180px;width:100%}
   .hero-left{min-width:0}
   .hero-right{display:flex;justify-content:center;align-items:center}
-  .hero-title{margin:0 0 22px 0;font-size:clamp(40px,5.4vw,76px);line-height:1.1;font-weight:800;letter-spacing:-0.025em}
-  .hero-title .grad{background:linear-gradient(135deg,#34d399 0%,#38bdf8 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:0.06em}
-  .hero-sub{margin:0;font-size:18px;line-height:1.55;color:#cbd5e1;max-width:60ch}
+  .hero-title{margin:0 0 22px 0;font-family:var(--display);font-weight:400;font-size:clamp(44px,5.6vw,78px);line-height:1.06;color:var(--ink)}
+  .hero-title em{font-style:italic}
+  .hero-sub{margin:0;font-size:18px;line-height:1.6;color:var(--ink-dim);max-width:54ch}
   @media (max-width:980px){
     .hero-inner{grid-template-columns:1fr;gap:32px;text-align:center}
     .hero-left{display:flex;flex-direction:column;align-items:center}
     .hero-right{order:-1}
   }
-  .hero-street{width:100%;max-width:440px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:14px}
+  .hero-street{width:100%;max-width:440px;background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:14px}
 
   .rule-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:30px}
   @media (max-width:1100px){.rule-grid{grid-template-columns:repeat(2,1fr)}}
   @media (max-width:680px){.rule-grid{grid-template-columns:1fr}}
-  .rule-card{display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px 18px;transition:transform .15s,border-color .15s}
-  .rule-card:hover{transform:translateY(-2px);border-color:rgba(52,211,153,0.35)}
-  .rule-icon{font-size:26px;line-height:1;flex-shrink:0}
-  .rule-body{font-size:14px;line-height:1.5;color:#e6eef8}
-  .rule-body code{font-size:12.5px}
+  .rule-card{display:flex;gap:14px;align-items:flex-start;background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:16px 18px}
+  .rule-icon{font-size:24px;line-height:1;flex-shrink:0;filter:grayscale(1);opacity:0.75}
+  .rule-body{font-size:14.5px;line-height:1.55;color:var(--ink)}
+  .nw{white-space:nowrap}
 
-  .panel{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px 22px}
-  .panel h3{margin:0 0 14px 0;font-size:15px;color:#cbd5e1;letter-spacing:0.04em;text-transform:uppercase}
-  .score-row{display:flex;align-items:center;gap:14px;padding:8px 0;font-size:15px;color:#e6eef8}
-  .score-row + .score-row{border-top:1px solid rgba(255,255,255,0.05)}
-  .score-val{font-family:ui-monospace,Menlo,monospace;font-weight:700;min-width:54px;padding:4px 10px;border-radius:6px;text-align:center;font-size:14px;white-space:nowrap}
-  .score-good .score-val{background:rgba(52,211,153,0.15);color:var(--ok)}
-  .score-neutral .score-val{background:rgba(148,163,184,0.15);color:#cbd5e1}
-  .score-bad .score-val{background:rgba(251,113,133,0.15);color:var(--bad)}
-  .score-low .score-val{background:rgba(96,165,250,0.15);color:var(--low)}
+  .panel{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:20px 22px}
+  .panel h3{margin:0 0 14px 0;font-family:var(--data);font-size:11px;font-weight:400;color:var(--ink-dim);letter-spacing:0.2em;text-transform:uppercase}
+  .score-row{display:flex;align-items:center;gap:14px;padding:8px 0;font-size:15px;color:var(--ink)}
+  .score-row + .score-row{border-top:1px solid var(--line-soft)}
+  .score-val{font-family:var(--data);font-weight:700;min-width:96px;padding:4px 10px;border-radius:4px;text-align:center;font-size:14px;white-space:nowrap}
+  .score-low .score-val{background:var(--under-wash);color:var(--under-ink)}
+  .score-high .score-val{background:var(--over-wash);color:var(--over-ink)}
+  .score-good .score-val{background:var(--ok-wash);color:var(--ok)}
 
-  .keyboard{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,52px);gap:6px;justify-content:center;margin-top:6px}
-  .key{background:linear-gradient(180deg,#1e293b,#0f172a);border:1px solid rgba(255,255,255,0.10);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:18px;color:#e6eef8;box-shadow:0 2px 0 rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06)}
-  .key.on{border-color:rgba(52,211,153,0.65);color:#fff;background:linear-gradient(180deg,#153a30,#0b2622);box-shadow:0 2px 0 rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.08),0 0 14px rgba(52,211,153,0.35)}
-  .key.pink{border-color:rgba(249,168,212,0.65);background:linear-gradient(180deg,#3a1530,#26102a);box-shadow:0 2px 0 rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.08),0 0 14px rgba(249,168,212,0.3)}
-  .key.off{background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.05);color:#475569;box-shadow:none;font-weight:600}
+  .keyboard{display:grid;gap:6px;justify-content:center;margin-top:6px}
+  .key{background:var(--paper);border:1px solid var(--line-firm);border-bottom-width:3px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--data);font-weight:700;font-size:16px;color:var(--ink)}
+  .key.w{border-color:var(--w);color:var(--w-ink)}
+  .key.b{border-color:var(--b);color:var(--b-ink)}
   .key.wide{grid-column:span 3;width:auto}
-  .key-cap{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:8px;font-weight:600}
-  .scroll-cue{display:flex;flex-direction:column;align-items:center;gap:8px;margin:46px auto 0 auto;color:var(--muted);font-size:12px;letter-spacing:0.18em;text-transform:uppercase}
-  .scroll-cue .chev{font-size:22px;color:#34d399;animation:bob 1.6s ease-in-out infinite}
+  .key-cap{font-family:var(--data);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-dim);text-align:center;margin-top:8px}
+  .scroll-cue{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--ink-dim)}
+  .scroll-cue .chev{font-size:22px;color:var(--ink-dim);animation:bob 1.6s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+  @media (prefers-reduced-motion: reduce){.scroll-cue .chev{animation:none}}
 
-  button.primary{background:var(--accent);border:1px solid transparent;padding:10px 18px;border-radius:8px;color:#04291c;cursor:pointer;font-weight:700;font-size:14px}
-  button.primary:hover{filter:brightness(1.05)}
-  button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.18);padding:10px 18px;border-radius:8px;color:#e6eef8;cursor:pointer;font-weight:500;font-size:14px}
-  button.secondary:hover{background:rgba(255,255,255,0.05)}
-  button.secondary.active{border-color:rgba(251,191,36,0.6);color:#fde68a}
+  button.primary{background:var(--ink);border:1px solid var(--ink);padding:10px 18px;border-radius:6px;color:var(--paper);cursor:pointer;font-weight:600;font-size:14px;font-family:var(--body)}
+  button.primary:hover{opacity:0.88}
+  button.secondary{background:transparent;border:1px solid var(--line-firm);padding:10px 18px;border-radius:6px;color:var(--ink);cursor:pointer;font-weight:500;font-size:14px;font-family:var(--body)}
+  button.secondary:hover{background:var(--ink-wash)}
   button:disabled{opacity:0.45;cursor:default}
   .btnrow{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
   .btnrow button{box-sizing:border-box;height:42px;display:flex;align-items:center;justify-content:center}
-  .feedback{margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13.5px;display:none}
-  .feedback.ok{display:block;background:rgba(52,211,153,0.12);border:1px solid var(--ok);color:var(--ok)}
-  .feedback.bad{display:block;background:rgba(251,113,133,0.12);border:1px solid var(--bad);color:var(--bad)}
-  .hint-box{margin-top:10px;padding:10px 14px;border-radius:8px;background:rgba(96,165,250,0.10);border:1px solid rgba(96,165,250,0.4);color:#bfdbfe;font-size:13.5px;display:none}
+  .feedback{margin-top:12px;padding:10px 14px;border-radius:4px;font-size:14px;display:none;border-left:3px solid transparent}
+  .feedback.ok{display:block;background:var(--ok-wash);border-left-color:var(--ok);color:var(--ok)}
+  .feedback.bad{display:block;background:var(--bad-wash);border-left-color:var(--bad);color:var(--bad)}
+  .hint-box{margin-top:12px;padding:10px 14px;border-radius:4px;background:var(--paper-2);border-left:3px solid var(--line-firm);color:var(--ink-dim);font-size:14px;display:none}
   .hint-box.show{display:block}
-  .hint-box ul{margin:8px 0 0 0}
+  .hint-box ul{margin:4px 0 0 0}
 
-  /* ===== Embedded house game ===== */
-  .game-stage{display:grid;grid-template-columns:340px 1fr;gap:32px;align-items:start;margin-top:14px;position:relative}
+  /* ===== The games ===== */
+  .game-stage{display:grid;grid-template-columns:340px 1fr;gap:32px;align-items:start;margin-top:12px;position:relative}
   @media (max-width:1100px){.game-stage{grid-template-columns:1fr}.hp-board{order:-1}}
   .game-left{display:flex;flex-direction:column;gap:12px;min-width:0}
-  .control-panel{position:relative;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:18px 20px;overflow:hidden;display:flex;flex-direction:column;gap:16px}
-  .control-panel::before{content:"";position:absolute;inset:auto 0 0 0;height:3px;background:linear-gradient(90deg,#34d399,#38bdf8,#a78bfa);opacity:0.6}
+  .control-panel{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:18px 20px;display:flex;flex-direction:column;gap:16px}
   .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .stat-block{display:flex;flex-direction:column;min-width:0}
-  .stat-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;color:#6ee7b7;margin-bottom:6px;white-space:nowrap}
-  .stat-label.pink{color:#f9a8d4}
-  .stat-label.blue{color:#93c5fd}
-  .stat-value{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:30px;font-weight:800;line-height:1;letter-spacing:-0.02em;background:linear-gradient(135deg,#34d399 0%,#38bdf8 55%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
-  .stat-value.low{background:none;color:var(--low)}
-  .stat-value.high{background:none;color:var(--high)}
-  .stat-value.okv{background:none;color:var(--ok)}
-  .stat-value.plain{background:none;color:#e6eef8}
-  .stat-unit{font-size:11px;color:var(--muted);font-family:ui-monospace,Menlo,monospace;margin-top:4px}
-  .panel-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.10),transparent)}
+  .stat-label{font-family:var(--data);font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:6px;white-space:nowrap}
+  .stat-label.w{color:var(--w-ink)}
+  .stat-label.b{color:var(--b-ink)}
+  .stat-value{font-family:var(--data);font-size:28px;font-weight:700;line-height:1;color:var(--ink);white-space:nowrap}
+  .stat-value.low{color:var(--under-ink)}
+  .stat-value.high{color:var(--over-ink)}
+  .stat-value.okv{color:var(--ok)}
+  .stat-value.w{color:var(--w)}
+  .stat-value.b{color:var(--b-ink)}
+  .stat-unit{font-size:11.5px;color:var(--ink-dim);font-family:var(--data);margin-top:5px}
+  .panel-divider{height:1px;background:var(--line)}
   .knob{display:flex;flex-direction:column;gap:8px}
-  .knob-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;color:#6ee7b7;display:flex;justify-content:space-between}
-  .knob-label.pink{color:#f9a8d4}
-  .knob-label span{color:var(--muted);letter-spacing:0;text-transform:none;font-weight:500;font-size:11.5px;font-family:ui-monospace,Menlo,monospace}
-  .knob-value{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:38px;font-weight:800;line-height:1;letter-spacing:-0.02em;background:linear-gradient(135deg,#34d399 0%,#38bdf8 55%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
-  .knob-value.pink{background:linear-gradient(135deg,#f9a8d4 0%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text}
-  .game-btn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 18px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#04291c;background:linear-gradient(135deg,#34d399 0%,#38bdf8 55%,#a78bfa 100%);box-shadow:0 8px 24px -6px rgba(52,211,153,0.55),inset 0 1px 0 rgba(255,255,255,0.25);transition:transform .12s ease,box-shadow .2s ease}
-  .game-btn:hover{box-shadow:0 12px 30px -8px rgba(56,189,248,0.6);transform:translateY(-1px)}
-  .game-btn:active{transform:translateY(0) scale(0.985)}
-  .game-log{font-size:12.5px;color:var(--muted);text-align:center;margin-top:2px;min-height:18px}
+  .knob-label{font-family:var(--data);font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--w-ink)}
+  .knob-label.b{color:var(--b-ink)}
+  .knob-value{font-family:var(--data);font-size:38px;font-weight:700;line-height:1;color:var(--w);white-space:nowrap}
+  .knob-value.b{color:var(--b-ink)}
+  .game-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 18px;border-radius:6px;border:1px solid var(--ink);cursor:pointer;font-family:var(--data);font-size:13px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--paper);background:var(--ink);transition:opacity .15s}
+  .game-btn:hover{opacity:0.88}
+  .game-btn:disabled{opacity:0.45}
+  .game-log{font-size:12.5px;color:var(--ink-dim);text-align:center;margin-top:2px;min-height:18px}
 
-  .hp-board{display:flex;flex-direction:column;gap:12px;width:100%;max-width:640px;justify-self:center;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:16px}
-  .hp-house{display:flex;align-items:center;gap:14px;background:#0b1220;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 14px}
-  .hp-house .ico{font-size:30px;line-height:1}
-  .hp-house .who{font-weight:700;font-size:14px}
-  .hp-house .what{font-size:12.5px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
-  .hp-house .what b{color:#e6eef8;font-weight:700}
+  .hp-board{display:flex;flex-direction:column;gap:10px;width:100%;max-width:640px;justify-self:center;background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+  .hp-house{display:flex;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:10px 14px}
+  .hp-house .ico{font-size:28px;line-height:1;filter:grayscale(1);opacity:0.8}
+  .hp-house .who{font-weight:700;font-size:14px;color:var(--ink)}
+  .hp-house .what{font-size:12.5px;color:var(--ink-dim);font-family:var(--data)}
+  .hp-house .what b{color:var(--ink);font-weight:700}
   .hp-svg{width:100%;height:auto;display:block}
-  .hp-svg text{fill:var(--muted);font-family:ui-monospace,Menlo,monospace;font-size:10.5px}
-  .hp-svg text.axis-title{fill:#cbd5e1;font-size:10px;letter-spacing:0.08em}
-  .hp-svg .grid{stroke:rgba(255,255,255,0.06);stroke-width:1}
-  .hp-svg .axis{stroke:rgba(255,255,255,0.28);stroke-width:1}
-  .hp-svg .model{stroke:#6ee7b7;stroke-width:2.5;fill:none}
-  .hp-svg .model.faint{stroke-opacity:0.35}
-  .hp-svg .truth{stroke:#fbbf24;stroke-width:2;fill:none;stroke-dasharray:6 5}
-  .hp-svg .band{fill:rgba(52,211,153,0.10)}
-  .hp-svg .resid{stroke-width:2.5;stroke-dasharray:3 3}
-  .hp-svg .resid.low{stroke:#60a5fa}
-  .hp-svg .resid.high{stroke:#fb7185}
-  .hp-svg .resid.okr{stroke:#34d399;stroke-dasharray:none}
-  .hp-svg .pt{fill:#e6eef8;stroke:#020617;stroke-width:1.5}
-  .hp-svg .pt.sold{fill:#34d399}
-  .hp-svg .pt.low{fill:#93c5fd}
-  .hp-svg .pt.high{fill:#fda4af}
-  .hp-svg .pt-ring{fill:none;stroke:#34d399;stroke-width:1.5;opacity:0.8}
-  .hp-svg text.rlab{font-size:10.5px;font-weight:700}
-  .hp-svg text.rlab.low{fill:#93c5fd}.hp-svg text.rlab.high{fill:#fda4af}.hp-svg text.rlab.okr{fill:#6ee7b7}
-  .hp-svg text.hno{fill:#64748b;font-size:9.5px}
-  .hp-legend{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:12px;color:#cbd5e1}
+  .hp-svg text{fill:var(--ink-dim);font-family:var(--data);font-size:10.5px}
+  .hp-svg text.axis-title{font-size:10px;letter-spacing:0.08em}
+  .hp-svg .grid{stroke:var(--line-soft);stroke-width:1}
+  .hp-svg .axis{stroke:var(--line-firm);stroke-width:1}
+  .hp-svg .model{stroke:var(--ink);stroke-width:2.5;fill:none}
+  .hp-svg .band{fill:var(--ink-wash)}
+  .hp-svg .band-edge{stroke:var(--line-firm);stroke-width:1;stroke-dasharray:4 4;fill:none}
+  .hp-svg .resid{stroke-width:2.5;stroke-dasharray:4 3;fill:none}
+  .hp-svg .resid.low{stroke:var(--under)}
+  .hp-svg .resid.high{stroke:var(--over)}
+  .hp-svg .resid.okr{stroke:var(--ink-dim);stroke-width:1.5;stroke-dasharray:none}
+  .hp-svg .ah-low{fill:var(--under)}
+  .hp-svg .ah-high{fill:var(--over)}
+  .hp-svg .pt{fill:var(--ink);stroke:var(--paper);stroke-width:1.5}
+  .hp-svg .pt.low{fill:var(--under)}
+  .hp-svg .pt.high{fill:var(--over)}
+  .hp-svg .pt-ring{fill:none;stroke:var(--ok);stroke-width:2}
+  .hp-svg text.rlab{font-size:11px;font-weight:700}
+  .hp-svg text.rlab.low{fill:var(--under-ink)}
+  .hp-svg text.rlab.high{fill:var(--over-ink)}
+  .hp-svg text.rlab.okr{fill:var(--ok)}
+  .hp-legend{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-size:12px;color:var(--ink-dim);font-family:var(--data)}
   .hp-legend .li{display:inline-flex;align-items:center;gap:6px}
-  .hp-legend .sw{width:16px;height:3px;border-radius:2px;display:inline-block}
-  .hp-legend .dot{width:9px;height:9px;border-radius:999px;display:inline-block}
+  .hp-legend .sw{width:18px;height:3px;background:var(--ink);display:inline-block}
+  .hp-legend .sw.band{height:10px;background:var(--ink-wash);border-top:1px dashed var(--line-firm);border-bottom:1px dashed var(--line-firm)}
+  .hp-legend .up{color:var(--under-ink);font-weight:700}
+  .hp-legend .down{color:var(--over-ink);font-weight:700}
+  .hp-legend .ring{width:11px;height:11px;border-radius:50%;border:2px solid var(--ok);display:inline-block}
 
   .game-stage.done .game-left,
-  .game-stage.done .hp-board{opacity:0.4;pointer-events:none;filter:grayscale(0.4);transition:opacity .3s,filter .3s}
-  .end-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;width:100%;max-width:460px;background:linear-gradient(180deg,#11151f,#0b0f18);border:1px solid rgba(52,211,153,0.45);border-radius:16px;padding:28px 30px;text-align:center;box-shadow:0 24px 60px -12px rgba(0,0,0,0.8);animation:winPop .3s cubic-bezier(.2,.7,.2,1)}
+  .game-stage.done .hp-board{opacity:0.35;pointer-events:none;transition:opacity .3s}
+  .end-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;width:100%;max-width:460px;background:var(--paper);border:1px solid var(--line-firm);border-top:3px solid var(--ok);border-radius:6px;padding:24px 30px;text-align:center;box-shadow:0 24px 60px -12px var(--shadow);animation:winPop .3s cubic-bezier(.2,.7,.2,1)}
   .end-card[hidden]{display:none}
-  @keyframes winPop{from{transform:translate(-50%,-50%) scale(.9);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
-  .end-emoji{font-size:52px;line-height:1;margin-bottom:10px}
-  .end-title{font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;background:linear-gradient(135deg,#34d399 0%,#38bdf8 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .end-row{font-size:15px;color:#cbd5e1;margin:6px 0;line-height:1.5}
+  @keyframes winPop{from{transform:translate(-50%,-50%) scale(.94);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+  .end-mark{font-size:34px;line-height:1;margin-bottom:8px;color:var(--ok);font-weight:700}
+  .end-title{font-family:var(--display);font-size:28px;font-weight:500;margin-bottom:8px;color:var(--ink)}
+  .end-row{font-size:15px;color:var(--ink-dim);margin:6px 0;line-height:1.5}
   .end-row code{font-size:13px}
   .end-actions{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
 
-  /* ===== Mini table for the street segment ===== */
-  table.mini{border-collapse:collapse;font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#e6eef8;width:100%}
-  table.mini th{font-family:Inter,system-ui,sans-serif;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:right;padding:4px 10px;border-bottom:1px solid rgba(255,255,255,0.1)}
-  table.mini td{text-align:right;padding:4px 10px;border-bottom:1px solid rgba(255,255,255,0.05)}
-  table.mini th:first-child,table.mini td:first-child{text-align:left}
-  table.mini td.low{color:#93c5fd}table.mini td.high{color:#fda4af}
-  table.mini tr.total td{border-top:1px solid rgba(255,255,255,0.18);font-weight:800;color:#fbbf24}
-
-  /* ===== Exercise template ===== */
-  pre.template{background:#0b1220;border:1px solid rgba(255,255,255,0.06);padding:12px;border-radius:8px;overflow:auto;font-size:13px;line-height:1.6;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e6eef8}
-  pre.template .kw{color:#818cf8}
-  pre.template .fn{color:#38bdf8}
-  pre.template .cls{color:#5eead4}
-  pre.template .num{color:#fbbf24}
-  pre.template .str{color:#86efac}
-  pre.template .com{color:#64748b;font-style:italic}
-  pre.template .op{color:#94a3b8}
-  pre.template input.inline{font-family:inherit;font-size:inherit;background:rgba(251,113,133,0.10);color:#ffd9df;border:1px solid rgba(251,113,133,0.4);border-radius:4px;padding:1px 6px;outline:none;min-width:160px;transition:background .15s,border-color .15s}
-  pre.template input.inline:focus{background:rgba(96,165,250,0.12);border-color:var(--info);color:#e6eef8}
-  pre.template input.inline.ok{background:rgba(52,211,153,0.14);border-color:var(--ok);color:#d1fae5}
-  pre.template input.inline.bad{background:rgba(251,113,133,0.18);border-color:var(--bad);color:#ffd9df}
-  .taskbox{background:#0b1220;border:1px solid rgba(52,211,153,0.30);border-left:4px solid #34d399;border-radius:8px;padding:14px 18px;margin:6px 0 14px 0}
-  .taskbox h3{margin:0 0 8px 0;font-size:15px;color:#34d399}
-  .taskbox p{margin:6px 0;color:#d1d8e6}
-  .taskbox ol,.taskbox ul{margin:6px 0 0 0;padding-left:20px}
-  .taskbox li{margin:4px 0;line-height:1.55}
-  code{background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-size:13px}
-
-  /* ===== Gate ===== */
-  .locked{display:none !important}
-  .gate{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px;gap:10px;overflow:hidden;scroll-snap-align:start}
-  .gate-icon{font-size:54px;opacity:0.9;animation:wobble 2.6s ease-in-out infinite}
-  @keyframes wobble{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
-  .gate-msg{color:var(--bad);font-weight:700;font-size:13px;letter-spacing:0.18em;text-transform:uppercase}
-  .gate-title{font-size:clamp(24px,3vw,34px);font-weight:800;letter-spacing:-0.02em;margin:6px 0 4px 0;color:#e6eef8}
-  .gate-sub{color:#cbd5e1;font-size:15px;line-height:1.55;max-width:54ch;margin:0}
+  /* ===== The exercises ===== */
+  .card{padding:56px 0 48px 0;max-width:1100px}
+  .card h1{font-family:var(--display);font-weight:500;font-size:clamp(28px,3vw,40px);margin:0 0 8px 0;color:var(--ink)}
+  pre.template{background:var(--sunk);border:1px solid var(--line);padding:18px 22px;border-radius:4px;overflow:auto;font-size:13.5px;line-height:1.85;font-family:var(--data);color:var(--ink);margin:14px 0 0 0}
+  pre.template .kw{color:var(--kw)}
+  pre.template .fn{color:var(--ink);font-weight:700}
+  pre.template .com{color:var(--faint);font-style:italic}
+  pre.template .num{color:var(--ink-dim)}
+  /* A blank waits in a neutral wash. Once submitted it is marked twice: blue
+     with a solid rule and a check, or vermillion with a dashed rule and a cross. */
+  pre.template input.inline{font-family:inherit;font-size:inherit;background:var(--ink-wash);color:var(--ink);border:none;border-bottom:2px solid var(--line-firm);border-radius:0;padding:1px 6px;outline:none;min-width:200px}
+  pre.template input.inline:focus{border-bottom-color:var(--ink)}
+  pre.template input.inline.ok{background:var(--ok-wash);border-bottom:2px solid var(--ok);color:var(--ok)}
+  pre.template input.inline.bad{background:var(--bad-wash);border-bottom:2px dashed var(--bad)}
+  pre.template .mark{display:inline-block;width:1.5em;text-align:center;font-weight:700}
+  pre.template .mark.ok{color:var(--ok)}
+  pre.template .mark.bad{color:var(--bad)}
+  .runs{font-family:var(--data);font-size:13px;color:var(--ink-dim);margin:10px 0 0 0}
+  .taskbox{background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--ink);border-radius:4px;padding:12px 18px;margin:10px 0 4px 0;max-width:900px}
+  .taskbox h3{margin:0 0 4px 0;font-family:var(--data);font-size:10.5px;letter-spacing:0.2em;text-transform:uppercase;font-weight:400;color:var(--ink-dim)}
+  .taskbox ul{margin:2px 0 0 0;padding-left:20px;color:var(--ink)}
+  .taskbox li{margin:2px 0;line-height:1.55}
 
   /* ===== Watch it learn ===== */
-  .segment.sim-seg{padding:36px 0}
-  .segment.top{justify-content:flex-start;padding-top:64px}
+  .segment.sim-seg{padding:28px 0}
+  .segment.top{justify-content:flex-start;padding-top:56px}
   .sim-grid{display:grid;grid-template-columns:340px minmax(0,640px);gap:28px;align-items:start;margin-top:10px}
   @media (max-width:1100px){.sim-grid{grid-template-columns:1fr}}
   .sim-controls{display:flex;flex-direction:column;gap:14px}
-  .ctl-group{display:flex;flex-direction:column;gap:8px;font-size:13px;color:#cbd5e1}
-  .ctl-group label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#fbbf24;font-weight:600;display:flex;justify-content:space-between}
-  .ctl-group output{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:#e6eef8}
-  input[type=range]{accent-color:#fbbf24;cursor:pointer;width:100%}
-  .chart-wrap{background:#0b1220;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 14px}
-  .chart-title{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .ctl-group{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--ink-dim)}
+  .ctl-group label{font-family:var(--data);font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-dim);display:flex;justify-content:space-between}
+  .ctl-group label.w{color:var(--w-ink)}
+  .ctl-group label.b{color:var(--b-ink)}
+  .ctl-group output{font-family:var(--data);font-weight:700;color:var(--ink);letter-spacing:0}
+  input[type=range]{accent-color:var(--ink);cursor:pointer;width:100%}
+  input[type=range].w{accent-color:var(--w)}
+  input[type=range].b{accent-color:var(--b)}
+  .chart-wrap{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+  .chart-title{font-family:var(--data);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:6px}
   .line-svg{width:100%;height:auto;display:block}
-  .line-svg .axis{stroke:rgba(255,255,255,0.25);stroke-width:1}
-  .line-svg .grid{stroke:rgba(255,255,255,0.06);stroke-width:1}
-  .line-svg text{fill:var(--muted);font-family:ui-monospace,Menlo,monospace;font-size:10px}
-  .line-svg .target{stroke:#fbbf24;stroke-dasharray:6 5;stroke-width:1.5}
-  .line-svg .zero{stroke:rgba(255,255,255,0.35);stroke-dasharray:3 4;stroke-width:1}
-  .line-svg .trace{stroke:#6ee7b7;stroke-width:2.5;fill:none;stroke-linejoin:round}
-  .line-svg .trace.blue{stroke:#93c5fd}
-  .line-svg .dot{fill:#6ee7b7}
-  .line-svg .dot.blue{fill:#93c5fd}
-  .verdict{margin-top:12px;padding:12px 16px;border-radius:10px;font-size:14px;line-height:1.55;display:none;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#e6eef8}
+  .line-svg .axis{stroke:var(--line-firm);stroke-width:1}
+  .line-svg .grid{stroke:var(--line-soft);stroke-width:1}
+  .line-svg text{fill:var(--ink-dim);font-family:var(--data);font-size:10px}
+  .line-svg .target{stroke:var(--ink-dim);stroke-dasharray:6 5;stroke-width:1.5}
+  .line-svg .zero{stroke:var(--line-firm);stroke-dasharray:3 4;stroke-width:1}
+  .line-svg .trace{stroke:var(--ink);stroke-width:2;fill:none;stroke-linejoin:round}
+  .line-svg .trace.w{stroke:var(--w)}
+  .line-svg .dot{fill:var(--ink)}
+  .line-svg .dot.w{fill:var(--w)}
+  .verdict{margin-top:12px;padding:10px 16px;border-radius:4px;font-size:14.5px;line-height:1.55;display:none;border:1px solid var(--line);border-left:3px solid var(--ink-dim);background:var(--paper-2);color:var(--ink)}
   .verdict.show{display:block}
-  .verdict.good{border-color:rgba(52,211,153,0.5);background:rgba(52,211,153,0.08)}
-  .verdict.warn{border-color:rgba(251,191,36,0.5);background:rgba(251,191,36,0.08)}
-  .verdict.bad{border-color:rgba(251,113,133,0.5);background:rgba(251,113,133,0.08)}
-  .verdict b{color:#fff}
-  .run-table{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:#cbd5e1;height:150px;overflow-y:auto;margin-top:8px}
-  .run-table div{display:grid;grid-template-columns:44px 1fr 1fr 1fr;gap:8px;padding:2px 0;border-bottom:1px dashed rgba(255,255,255,0.08)}
-  .run-table div.head{color:var(--muted);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;font-family:Inter,system-ui,sans-serif;border-bottom:1px solid rgba(255,255,255,0.15)}
+  .verdict.good{border-left-color:var(--ok);color:var(--ok);background:var(--ok-wash)}
+  .verdict.bad{border-left-color:var(--bad);color:var(--bad);background:var(--bad-wash)}
+  .run-table{font-family:var(--data);font-size:12.5px;color:var(--ink);height:170px;overflow-y:auto;margin-top:8px}
+  .run-table div{display:grid;grid-template-columns:44px 1fr 1fr 1fr;gap:8px;padding:2px 0;border-bottom:1px dashed var(--line-soft)}
+  .run-table div.head{position:sticky;top:0;background:var(--paper);color:var(--ink-dim);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--line)}
   .run-table div span:not(:first-child){text-align:right}
-  .run-table .low{color:#93c5fd}.run-table .high{color:#fda4af}.run-table .okr{color:#6ee7b7}
+  .run-table .low{color:var(--under-ink)}
+  .run-table .high{color:var(--over-ink)}
+  .run-table .okr{color:var(--ok)}
 
   /* ===== Quiz ===== */
+  .quiz-q{max-width:900px}
   .quiz-q .opts{display:flex;flex-direction:column;gap:10px;margin-top:14px}
-  .quiz-q .opts label{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:10px;background:#0b1220;border:1px solid rgba(255,255,255,0.06);cursor:pointer;font-size:15px;transition:background .15s,border-color .15s}
-  .quiz-q .opts label:hover{background:#0e1628}
-  .quiz-q .opts input{margin-top:3px}
+  .quiz-q .opts label{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:4px;background:var(--paper-2);border:1px solid var(--line);cursor:pointer;font-size:15.5px;line-height:1.5;color:var(--ink)}
+  .quiz-q .opts label:hover{border-color:var(--line-firm)}
+  .quiz-q .opts input{margin-top:4px;accent-color:var(--ink)}
   .quiz-q.answered .opts label{cursor:default}
-  .quiz-q .opts label.is-correct{border-color:var(--ok);background:rgba(52,211,153,0.08)}
-  .quiz-q .opts label.is-wrong{border-color:var(--bad);background:rgba(251,113,133,0.08)}
-  .quiz-question{font-size:19px;line-height:1.5;margin:0 0 4px 0}
-  .quiz-explain{display:none;margin-top:18px;padding:16px 20px;border-radius:10px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.35);border-left:4px solid var(--info)}
+  .quiz-q .opts label.is-correct{border-color:var(--ok);background:var(--ok-wash)}
+  .quiz-q .opts label.is-correct::after{content:"\2713";margin-left:auto;padding-left:12px;color:var(--ok);font-weight:700}
+  .quiz-q .opts label.is-wrong{border-color:var(--bad);background:var(--bad-wash)}
+  .quiz-q .opts label.is-wrong::after{content:"\2717";margin-left:auto;padding-left:12px;color:var(--bad);font-weight:700}
+  .quiz-question{font-size:19px;line-height:1.5;margin:0 0 4px 0;color:var(--ink)}
+  .quiz-explain{display:none;margin-top:16px;padding:12px 18px;border-radius:4px;background:var(--paper-2);border-left:3px solid var(--ok)}
   .quiz-explain.show{display:block}
-  .quiz-explain .verdict{display:block;margin:0 0 6px 0;padding:0;border:none;background:none;font-weight:700;font-size:14px;letter-spacing:0.04em;text-transform:uppercase;color:var(--ok)}
-  .quiz-explain.hint{background:rgba(165,180,252,0.07);border-color:rgba(165,180,252,0.3);border-left-color:#a5b4fc}
-  .quiz-explain.hint .verdict{color:#a5b4fc}
-  .quiz-explain p{margin:0;color:#e6eef8;line-height:1.6;font-size:14.5px}
-
-  /* ===== Conclusion ===== */
-  .learned-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:28px;width:100%}
-  @media (max-width:1100px){.learned-grid{grid-template-columns:repeat(2,1fr)}}
-  @media (max-width:680px){.learned-grid{grid-template-columns:1fr}}
-  .learned-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px;text-align:left}
-  .learned-card .ln{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;letter-spacing:0.14em;margin-bottom:14px;text-align:center}
-  .learned-card .lb{color:#e6eef8;font-size:14px;line-height:1.55}
-  .learned-card .lb code{font-size:12.5px}
+  .quiz-explain .verdict{display:block;margin:0 0 6px 0;padding:0;border:none;background:none;font-family:var(--data);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ok)}
+  .quiz-explain.hint{border-left-color:var(--bad)}
+  .quiz-explain.hint .verdict{color:var(--bad)}
+  .quiz-explain p{margin:0;color:var(--ink);line-height:1.6;font-size:15px}
 </style>
 </head>
 <body>
@@ -338,64 +376,64 @@
 <main>
   <!-- PAGE 1: COVER -->
   <section class="page" id="page-1">
-    <div class="hero">
+    <div class="hero" id="cover">
       <div class="hero-inner">
         <div class="hero-left">
-          <h1 class="hero-title reveal d1">Price the <span class="grad">Street</span>.</h1>
+          <h1 class="hero-title reveal d1">Price the <em>Street</em>.</h1>
           <p class="hero-sub reveal d2">Learn how a machine fits a model to data by appraising houses you have never seen: one guess, one miss, one correction at a time.</p>
         </div>
         <div class="hero-right">
           <div class="hero-street reveal d3"><div id="heroChart"></div></div>
         </div>
       </div>
-      <div class="scroll-cue reveal d4" aria-hidden="true"><div class="chev">↓</div></div>
+      <div class="scroll-cue reveal d4" aria-hidden="true"><div class="chev">&darr;</div></div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="game30">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">The game in 30 seconds.</h2>
-        <p class="segment-lead reveal d2">You are the new appraiser on Rosenweg 🏘️. Owners tell you the floor area of their house; you must name a price. <br> After every appraisal the market shouts back one number, <em>"too low by 8,789!"</em>, and nothing else. <br> Turn those shouts into a pricing rule that fits the whole street.</p>
+        <p class="segment-lead reveal d2">You are the new appraiser on Rosenweg. Owners tell you the floor area of their house; you must name a price. <br> After every appraisal the market shouts back one number, <em>"too low by 8,789!"</em>, and nothing else. <br> Turn those shouts into a pricing rule that fits the whole street.</p>
       </div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="steps3">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Three steps, one loop.</h2>
         <p class="segment-lead reveal d2">Every model you will ever fit follows the same three moves.</p>
         <div class="rule-grid" style="margin-top:14px">
-          <div class="rule-card reveal"><div class="rule-icon">👀</div><div class="rule-body"><strong>Observe.</strong><br> Houses that already sold: <br> (area <code>x₁</code>, price <code>y₁</code>), (<code>x₂</code>, <code>y₂</code>), … (<code>xₙ</code>, <code>yₙ</code>).</div></div>
-          <div class="rule-card reveal d1"><div class="rule-icon">🧪</div><div class="rule-body"><strong>Hypothesise.</strong><br> Assume price ≈ <code>w</code> · area + <code>b</code>. <br> Two unknown numbers: <code>w</code> per m², and a base price <code>b</code>.</div></div>
-          <div class="rule-card reveal d2"><div class="rule-icon">🎯</div><div class="rule-body"><strong>Predict &amp; validate.</strong><br> Appraise, hear how far off you were, adjust <code>w</code> and <code>b</code>. Repeat.</div></div>
+          <div class="rule-card reveal"><div class="rule-icon">&#128064;</div><div class="rule-body"><strong>Observe.</strong><br> Houses that already sold: <br> <span class="nw">(area <code>x₁</code>, price <code>y₁</code>),</span> <span class="nw">(<code>x₂</code>, <code>y₂</code>), ...</span> <span class="nw">(<code>xₙ</code>, <code>yₙ</code>).</span></div></div>
+          <div class="rule-card reveal d1"><div class="rule-icon">&#129514;</div><div class="rule-body"><strong>Hypothesise.</strong><br> Assume price &asymp; <code class="c-w">w</code> &middot; area + <code class="c-b">b</code>. <br> Two unknown numbers: <span class="c-w">w</span> per m&sup2;, and a base price <span class="c-b">b</span>.</div></div>
+          <div class="rule-card reveal d2"><div class="rule-icon">&#127919;</div><div class="rule-body"><strong>Predict &amp; validate.</strong><br> Appraise, hear how far off you were, adjust <span class="c-w">w</span> and <span class="c-b">b</span>. Repeat.</div></div>
         </div>
       </div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="rules4">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Four rules to play by.</h2>
         <div class="rule-grid" style="margin-top:14px">
-          <div class="rule-card reveal"><div class="rule-icon">📢</div><div class="rule-body">After every appraisal the market shouts the <strong>miss</strong> <br> <code>l = price − your price</code>. That is all you learn.</div></div>
-          <div class="rule-card reveal d1"><div class="rule-icon">📐</div><div class="rule-body"><strong><span class="c-w">w</span></strong> is your price per m². <br> It <strong>tilts</strong> your pricing rule.</div></div>
-          <div class="rule-card reveal d2"><div class="rule-icon">🧱</div><div class="rule-body"><strong><span class="c-b">b</span></strong> is the base price every house gets. <br> It <strong>lifts</strong> your pricing rule.</div></div>
-          <div class="rule-card reveal"><div class="rule-icon">🤝</div><div class="rule-body">An owner is <strong>convinced</strong> when your price lands <br> within their tolerance. Convince everyone.</div></div>
+          <div class="rule-card reveal"><div class="rule-icon">&#128226;</div><div class="rule-body">After every appraisal the market shouts the <strong>miss</strong> <code>l = price &minus; your price</code>. That is all you learn.</div></div>
+          <div class="rule-card reveal d1"><div class="rule-icon">&#128208;</div><div class="rule-body"><strong class="c-w">w</strong> is your price per m&sup2;. <br> It <strong>tilts</strong> your pricing rule.</div></div>
+          <div class="rule-card reveal d2"><div class="rule-icon">&#129521;</div><div class="rule-body"><strong class="c-b">b</strong> is the base price every house gets. <br> It <strong>lifts</strong> your pricing rule.</div></div>
+          <div class="rule-card reveal"><div class="rule-icon">&#129309;</div><div class="rule-body">An owner is <strong>convinced</strong> when your price lands within their tolerance. Convince everyone.</div></div>
         </div>
       </div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="shout">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">The market's shout.</h2>
         <p class="segment-lead reveal d2">The miss is <strong>signed</strong>: it tells you how far off you were <em>and</em> in which direction.</p>
         <div class="panel reveal d3" style="width:fit-content;min-width:680px;max-width:900px;margin-top:6px">
           <h3>How to read the miss</h3>
-          <div class="score-row score-low"><span class="score-val">l &gt; 0</span><span>your price <code>ŷ</code> was <strong>too low</strong>: the house sold for more than you said.</span></div>
-          <div class="score-row score-bad"><span class="score-val">l &lt; 0</span><span>your price was <strong>too high</strong>: you overshot.</span></div>
-          <div class="score-row score-good"><span class="score-val">|l| &lt; ε</span><span>Level 1 asks for ε = CHF 500 on one picky house.<br> Level 2 gives every owner CHF 10,000 of slack.</span></div>
+          <div class="score-row score-low"><span class="score-val">&uarr; l &gt; 0</span><span>your price <code>ŷ</code> was <strong>too low</strong>: the house sold for more than you said.</span></div>
+          <div class="score-row score-high"><span class="score-val">&darr; l &lt; 0</span><span>your price was <strong>too high</strong>: you overshot.</span></div>
+          <div class="score-row score-good"><span class="score-val">&#10003; |l| &lt; ε</span><span>Level 1 asks for ε = CHF 500 on one picky house.<br> Level 2 gives every owner CHF 10,000 of slack.</span></div>
         </div>
       </div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="keys">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Keys to press.</h2>
         <p class="segment-lead reveal d2">Nudge your two numbers with the arrows, then press <strong>Enter</strong> to appraise.</p>
@@ -404,21 +442,21 @@
           <div style="display:flex;align-items:flex-start;justify-content:center;gap:36px;flex-wrap:wrap;padding:10px 8px 4px">
             <div>
               <div class="keyboard" style="grid-template-columns:52px;grid-template-rows:repeat(2,52px)">
-                <div class="key on" style="font-size:14px">↑</div>
-                <div class="key on" style="font-size:14px">↓</div>
+                <div class="key w">&uarr;</div>
+                <div class="key w">&darr;</div>
               </div>
-              <div class="key-cap"><span class="c-w">w</span> ± 10</div>
+              <div class="key-cap"><span class="c-w lc">w</span> &plusmn; 10</div>
             </div>
             <div>
               <div class="keyboard" style="grid-template-columns:repeat(2,52px);grid-template-rows:52px">
-                <div class="key pink" style="font-size:14px">←</div>
-                <div class="key pink" style="font-size:14px">→</div>
+                <div class="key b">&larr;</div>
+                <div class="key b">&rarr;</div>
               </div>
-              <div class="key-cap"><span class="c-b">b</span> ± 5,000</div>
+              <div class="key-cap"><span class="c-b lc">b</span> &plusmn; 5,000</div>
             </div>
             <div>
               <div class="keyboard" style="grid-template-columns:repeat(3,52px);grid-template-rows:52px">
-                <div class="key on wide" style="font-size:13px">ENTER</div>
+                <div class="key wide" style="font-size:13px">ENTER</div>
               </div>
               <div class="key-cap">appraise</div>
             </div>
@@ -430,33 +468,33 @@
 
   <!-- PAGE 2: LEVEL 1, ONE HOUSE -->
   <section class="page" id="page-2">
-    <div class="segment game-seg">
+    <div class="segment game-seg" id="level1">
       <div class="segment-inner">
-        <h2 class="segment-heading reveal d1">Level 1 <span class="dim">·</span> One house.</h2>
-        <p class="segment-lead reveal d2" style="margin-bottom:10px">Rosenweg 12 just sold.<br> Your rule for now: <code>price = <span class="c-w">w</span> × area</code>.<br> Nudge <span class="c-w">w</span> with <strong>↑ ↓</strong>, press <strong>Enter</strong> to appraise, listen to the shout, nudge again. <br> The owner is picky: land within <strong>CHF 500</strong>.</p>
+        <h2 class="segment-heading reveal d1">Level 1 <span class="dim">&middot;</span> One house.</h2>
+        <p class="segment-lead reveal d2" style="margin-bottom:8px">Rosenweg 12 just sold. Your rule: <code>price = <span class="c-w">w</span> &times; area</code>.<br> <strong>&uarr; &darr;</strong> nudge <span class="c-w">w</span>, <strong>Enter</strong> appraises. The owner is picky: land within <strong>CHF 500</strong>.</p>
 
         <div class="game-stage reveal d3">
           <div class="game-left">
             <div class="control-panel">
               <div class="knob">
-                <div class="knob-label">w · price per m²</div>
+                <div class="knob-label"><span class="lc">w</span> &middot; price per m&sup2;</div>
                 <div class="knob-value" id="h1_w">900</div>
               </div>
               <div class="panel-divider"></div>
               <div class="stats-row">
                 <div class="stat-block">
-                  <div class="stat-label">Your price ŷ</div>
-                  <div class="stat-value plain" id="h1_yhat">–</div>
-                  <div class="stat-unit">= w × 234</div>
+                  <div class="stat-label">Your price <span class="lc">ŷ</span></div>
+                  <div class="stat-value" id="h1_yhat">&middot;</div>
+                  <div class="stat-unit">= w &times; 234</div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label blue">Miss l = y − ŷ</div>
-                  <div class="stat-value plain" id="h1_loss">–</div>
+                  <div class="stat-label">Miss <span class="lc">l = y &minus; ŷ</span></div>
+                  <div class="stat-value" id="h1_loss">&middot;</div>
                   <div class="stat-unit" id="h1_lossNote">the market's shout</div>
                 </div>
               </div>
             </div>
-            <button class="game-btn" id="h1_appraise"><span>📢</span><span>Appraise</span></button>
+            <button class="game-btn" id="h1_appraise">Appraise</button>
             <div class="btnrow" style="margin-top:0">
               <button class="secondary" id="h1_reset" style="flex:1">Reset</button>
             </div>
@@ -464,12 +502,12 @@
           </div>
 
           <div class="hp-board">
-            <div class="hp-house"><div class="ico">🏠</div><div><div class="who">Rosenweg 12</div><div class="what">area <b>234 m²</b> · sold for <b>CHF 198,789</b></div></div></div>
+            <div class="hp-house"><div class="ico">&#127968;</div><div><div class="who">Rosenweg 12</div><div class="what">area <b>234 m&sup2;</b> &middot; sold for <b>CHF 198,789</b></div></div></div>
             <div id="h1_chart"></div>
           </div>
 
           <div class="end-card" id="h1_end" role="dialog" aria-modal="true" hidden>
-            <div class="end-emoji">🏠</div>
+            <div class="end-mark">&#10003;</div>
             <div class="end-title">Sold!</div>
             <div class="end-row" id="h1_endSub"></div>
             <div class="end-actions">
@@ -484,17 +522,17 @@
 
   <!-- PAGE 4: DISCOVERING THE FIT LOOP -->
   <section class="page" id="page-4">
-    <div class="segment mdp-segment">
+    <div class="segment mdp-segment" id="loop">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Every guess looked the same.</h2>
         <p class="segment-lead reveal d2">You priced one house over and over, and every guess was the same four moves.</p>
         <div class="concept-card reveal d3">
           <div class="concept-tag">The loop you kept running</div>
           <ul style="margin-top:4px">
-            <li><strong>Guess</strong> a value for <code><span class="c-w">ŵ</span></code>.</li>
-            <li><strong>Predict</strong> the price: <code><span class="c-l">ŷ</span> = <span class="c-w">ŵ</span> · x</code>.</li>
-            <li><strong>Compare</strong> with what the house really sold for: the miss <code>l = y − <span class="c-l">ŷ</span></code>.</li>
-            <li><strong>Update</strong> <code><span class="c-w">ŵ</span></code> using the miss, and go again.</li>
+            <li><strong>Guess</strong> a value for <code class="c-w">ŵ</code>.</li>
+            <li><strong>Predict</strong> the price: <code>ŷ = <span class="c-w">ŵ</span> &middot; x</code>.</li>
+            <li><strong>Compare</strong> with what the house really sold for: the miss <code>l = y &minus; ŷ</code>.</li>
+            <li><strong>Update</strong> <code class="c-w">ŵ</code> using the miss, and go again.</li>
           </ul>
         </div>
         <p class="segment-lead reveal d4" style="margin-top:22px">The only step you improvised was the last one. Let's pin it down.</p>
@@ -503,53 +541,55 @@
         <svg class="viz-svg" viewBox="0 0 340 380" aria-label="the fit loop: guess, predict, loss, update, repeat">
           <defs>
             <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ld-head"/></marker>
-            <marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ld-head gold"/></marker>
+            <marker id="ahl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ld-head loop"/></marker>
           </defs>
-          <rect class="ld-box data" x="20" y="14" width="200" height="46" rx="10"/>
+          <rect class="ld-box" x="20" y="14" width="200" height="46" rx="6"/>
           <text class="tag" x="34" y="32">data</text>
           <text x="34" y="50">(x, y) = (234, 198,789)</text>
-          <rect class="ld-box pred" x="20" y="96" width="200" height="54" rx="10"/>
+          <rect class="ld-box" x="20" y="96" width="200" height="54" rx="6"/>
           <text class="tag" x="34" y="114">predict</text>
-          <text x="34" y="136">ŷ = ŵ · x</text>
-          <rect class="ld-box loss" x="20" y="186" width="200" height="54" rx="10"/>
+          <text x="34" y="136">ŷ = ŵ &middot; x</text>
+          <rect class="ld-box" x="20" y="186" width="200" height="54" rx="6"/>
           <text class="tag" x="34" y="204">compare</text>
-          <text x="34" y="226">l = y − ŷ</text>
-          <rect class="ld-box upd" x="20" y="276" width="200" height="54" rx="10"/>
+          <text x="34" y="226">l = y &minus; ŷ</text>
+          <rect class="ld-box upd" x="20" y="276" width="200" height="54" rx="6"/>
           <text class="tag" x="34" y="294">update</text>
-          <text x="34" y="316">ŵ ← ŵ + α · l</text>
+          <text x="34" y="316">ŵ &larr; ŵ + α &middot; l</text>
           <path class="ld-arrow" d="M120 60 L120 92" marker-end="url(#ah)"/>
           <path class="ld-arrow" d="M120 150 L120 182" marker-end="url(#ah)"/>
           <path class="ld-arrow" d="M120 240 L120 272" marker-end="url(#ah)"/>
-          <path class="ld-loop" d="M220 303 C 300 303, 300 123, 224 123" marker-end="url(#ahg)"/>
-          <text class="small" x="262" y="352" text-anchor="middle" style="fill:#fbbf24">repeat</text>
-          <text class="small" x="262" y="368" text-anchor="middle" style="fill:#fbbf24">until |l| &lt; ε</text>        </svg>      </div>
+          <path class="ld-loop" d="M220 303 C 300 303, 300 123, 224 123" marker-end="url(#ahl)"/>
+          <text class="small loop" x="262" y="352" text-anchor="middle">repeat</text>
+          <text class="small loop" x="262" y="368" text-anchor="middle">until |l| &lt; ε</text>
+        </svg>
+      </div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="which-way">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Which way, and how far?</h2>
         <p class="segment-lead reveal d2">Two ways to turn the shout into a correction. You probably used the second one without noticing.</p>
         <div class="why-grid">
-          <div class="concept-card red reveal d2"><span class="concept-tag">Fixed step: the first instinct</span>
-            <p class="eqn" style="font-size:16px">if l &lt; 0: ŵ ← ŵ − α<br>else:&nbsp;&nbsp;&nbsp;&nbsp;ŵ ← ŵ + α</p>
+          <div class="concept-card worse reveal d2"><span class="concept-tag">Fixed step: the first instinct</span>
+            <p class="eqn" style="font-size:16px">if l &lt; 0: ŵ &larr; ŵ &minus; α<br>else:&nbsp;&nbsp;&nbsp;&nbsp;ŵ &larr; ŵ + α</p>
             <p style="margin-top:10px">Only the <em>sign</em> of the miss is used. Every step is the same size: painfully slow when you are far off, jittery once you are close.</p></div>
-          <div class="concept-card green reveal d3"><span class="concept-tag">Proportional step: what you actually did</span>
-            <p class="eqn" style="font-size:16px">ŵ ← ŵ + α · l</p>
+          <div class="concept-card better reveal d3"><span class="concept-tag">Proportional step: what you actually did</span>
+            <p class="eqn" style="font-size:16px">ŵ &larr; ŵ + α &middot; l</p>
             <p style="margin-top:10px">Use the <em>size</em> of the miss too. Shouted "too low by 116,889"? Big correction. "Too high by 111"? A nudge. One rule handles both.</p></div>
         </div>
       </div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="fixed">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">The fixed-step algorithm.</h2>
         <p class="segment-lead reveal d2">Here is the whole thing, written as a program.</p>
         <div class="concept-card eq reveal d3" style="max-width:780px">
-          <p class="eqn">given&nbsp;&nbsp; x, y<br>guess&nbsp;&nbsp; <span class="pos">ŵ</span><br>do<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="err">ŷ</span> = <span class="pos">ŵ</span> · x<br>&nbsp;&nbsp;&nbsp;&nbsp;l = y − <span class="err">ŷ</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pos">ŵ</span> ← <span class="pos">ŵ</span> + <span class="lr">α</span> · l<br>until&nbsp;&nbsp; |l| &lt; ε</p>
+          <p class="eqn">given&nbsp;&nbsp; x, y<br>guess&nbsp;&nbsp; <span class="w">ŵ</span><br>do<br>&nbsp;&nbsp;&nbsp;&nbsp;ŷ = <span class="w">ŵ</span> &middot; x<br>&nbsp;&nbsp;&nbsp;&nbsp;l = y &minus; ŷ<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="w">ŵ</span> &larr; <span class="w">ŵ</span> + α &middot; l<br>until&nbsp;&nbsp; |l| &lt; ε</p>
           <ul style="margin-top:14px">
-            <li><code><span class="c-w">ŵ</span></code>: your current guess for the price per m².</li>
-            <li><code>l</code>: the signed miss, <em>and</em> its direction. Positive means raise the price.</li>
-            <li><code><span class="c-a">α</span></code>: the step size. You choose it, and it scales a miss in CHF into a change in CHF/m².</li>
+            <li><code class="c-w">ŵ</code>: your guess for the price per m&sup2;.</li>
+            <li><code>l</code>: the signed miss. Positive means raise the price.</li>
+            <li><code>α</code>: the step size. You choose it.</li>
             <li><code>ε</code>: the tolerance. Stop once the owner is convinced.</li>
           </ul>
         </div>
@@ -559,37 +599,31 @@
   </section>
 
   <!-- PAGE 5: EXERCISE 1 -->
-  <section class="page segment slide-scroll" id="page-5">
+  <section class="page segment slide-scroll" id="ex1">
     <div class="card reveal">
       <h1>Implementing the fixed-step fit</h1>
-      <p>Turn the loop into code: one function that appraises Rosenweg 12 again and again, listens to the miss, and nudges <code>w</code> until the owner is convinced.</p>
 
       <div class="taskbox reveal d1">
-        <h3>🎯 Your task</h3>
-        <p>Complete <code>fit_one_house(x, y, w, alpha, eps)</code> so that it returns a value of <code>w</code> whose prediction lands within <code>eps</code> of the real price.</p>
+        <h3>Your task</h3>
         <ul>
-          <li><strong>Given:</strong> the loop over rounds, the starting guess <code>w = 900</code>, the step size <code>alpha</code> and the tolerance <code>eps</code>.</li>
-          <li><strong>To do:</strong> fill in the four blanks: the <strong>prediction</strong>, the <strong>miss</strong>, the <strong>stopping test</strong>, and the <strong>update</strong>.</li>
+          <li><strong>Given:</strong> the loop over rounds.</li>
+          <li><strong>To do:</strong> fill in the four blanks: the <strong>prediction</strong>, the <strong>miss</strong>, the <strong>stopping test</strong> and the <strong>update</strong>.</li>
         </ul>
       </div>
 
-      <pre class="template"><span class="kw">def</span> <span class="fn">fit_one_house</span>(x: <span class="cls">float</span>, y: <span class="cls">float</span>, w: <span class="cls">float</span> = <span class="num">900.0</span>, alpha: <span class="cls">float</span> = <span class="num">0.002</span>, eps: <span class="cls">float</span> = <span class="num">500.0</span>, max_rounds: <span class="cls">int</span> = <span class="num">100</span>):
-    <span class="str">"""x: area in m², y: the price the house sold for. Returns the fitted w."""</span>
+      <pre class="template"><span class="kw">def</span> <span class="fn">fit_one_house</span>(x, y, w, alpha, eps, max_rounds):
     <span class="kw">for</span> t <span class="kw">in</span> <span class="fn">range</span>(max_rounds):
-        <span class="com"># 1) Predict: what does my rule say this house is worth?</span>
-        y_hat = <input class="inline" data-e1="pred" placeholder="w times the area" style="min-width:300px" />
-
-        <span class="com"># 2) Compare: the market's shout (signed!)</span>
-        loss = <input class="inline" data-e1="loss" placeholder="real price minus my price" style="min-width:300px" />
-
-        <span class="com"># 3) Stop when the owner is convinced</span>
-        <span class="kw">if</span> <input class="inline" data-e1="stop" placeholder="the miss is small enough…" style="min-width:300px" />:
+        <span class="com"># 1) predict</span>
+        y_hat = <input class="inline" data-e1="pred" placeholder="w * ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
+        <span class="com"># 2) compare</span>
+        loss = <input class="inline" data-e1="loss" placeholder="y - ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
+        <span class="com"># 3) stop?</span>
+        <span class="kw">if</span> <input class="inline" data-e1="stop" placeholder="abs(...) ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>:
             <span class="kw">break</span>
-
-        <span class="com"># 4) Update: nudge w in the direction of the miss</span>
-        w = <input class="inline" data-e1="update" placeholder="old w plus a scaled miss" style="min-width:300px" />
-
+        <span class="com"># 4) update</span>
+        w = <input class="inline" data-e1="update" placeholder="w + ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
     <span class="kw">return</span> w</pre>
+      <p class="runs">Runs on Rosenweg 12: x = 234, y = 198789, w = 900, alpha = 0.002, eps = 500, max_rounds = 100.</p>
 
       <div class="btnrow">
         <button class="primary" id="e1check">Submit answers</button>
@@ -597,59 +631,51 @@
       </div>
       <div class="feedback" id="e1fb"></div>
       <div class="hint-box" id="e1hintbox">
-        💡 Stuck? A nudge for each blank, no answers. Give it a go:
         <ul>
-          <li><strong>y_hat:</strong> your rule for one house is <em>price per m² times area</em>. Both are variables you already have.</li>
-          <li><strong>loss:</strong> the shout is <em>what it really sold for</em> minus <em>what you said</em>. Order matters: positive must mean "too low".</li>
-          <li><strong>stop:</strong> "small enough" means the <em>size</em> of the miss, ignoring its sign, is below <code>eps</code>. Python's <code>abs()</code> gives you the size.</li>
-          <li><strong>w:</strong> keep the old <code>w</code> and add the miss scaled down by <code>alpha</code>, the proportional step from the previous page.</li>
+          <li><strong>y_hat:</strong> price per m&sup2; times area.</li>
+          <li><strong>loss:</strong> what it sold for minus what you said. Positive must mean "too low".</li>
+          <li><strong>stop:</strong> the size of the miss, <code>abs(loss)</code>, is below <code>eps</code>.</li>
+          <li><strong>w:</strong> the old <code>w</code> plus the miss scaled by <code>alpha</code>.</li>
         </ul>
       </div>
     </div>
   </section>
 
-  <div class="gate" id="gate-e1">
-    <div class="gate-icon">🔒</div>
-    <div class="gate-msg">Locked</div>
-    <h3 class="gate-title">Implement the fixed-step fit to continue.</h3>
-    <p class="gate-sub">Fill in the blanks of <code>fit_one_house</code> and press <strong>Submit answers</strong>. The next chapter unlocks the moment all four are correct.</p>
-  </div>
-
   <!-- PAGE 3: LEVEL 2, THE STREET -->
-  <section class="page locked" id="page-3">
-    <div class="segment game-seg">
+  <section class="page" id="page-3">
+    <div class="segment game-seg" id="level2">
       <div class="segment-inner">
-        <h2 class="segment-heading reveal d1">Level 2 <span class="dim">·</span> The whole street.</h2>
-        <p class="segment-lead reveal d2" style="margin-bottom:10px">Eight houses sold on Rosenweg.<br> One rule must price them all: <code>price = <span class="c-w">w</span> × area + <span class="c-b">b</span></code>.<br> The market now shouts the <strong>average</strong> miss.<br> An owner is convinced within <strong>CHF 10,000</strong>.<br> Convince all eight.</p>
+        <h2 class="segment-heading reveal d1">Level 2 <span class="dim">&middot;</span> The whole street.</h2>
+        <p class="segment-lead reveal d2" style="margin-bottom:8px">Eight houses, one rule: <code>price = <span class="c-w">w</span> &times; area + <span class="c-b">b</span></code>. The market shouts the <strong>average</strong> miss.<br> <strong>&uarr; &darr;</strong> nudge <span class="c-w">w</span>, <strong>&larr; &rarr;</strong> nudge <span class="c-b">b</span>. Convince all eight owners, each within <strong>CHF 10,000</strong>.</p>
 
         <div class="game-stage reveal d3">
           <div class="game-left">
             <div class="control-panel">
               <div class="stats-row">
                 <div class="knob">
-                  <div class="knob-label">w · per m²</div>
+                  <div class="knob-label"><span class="lc">w</span> &middot; per m&sup2;</div>
                   <div class="knob-value" id="h2_w">850</div>
                 </div>
                 <div class="knob">
-                  <div class="knob-label pink">b · base price</div>
-                  <div class="knob-value pink" id="h2_b">0</div>
+                  <div class="knob-label b"><span class="lc">b</span> &middot; base price</div>
+                  <div class="knob-value b" id="h2_b">0</div>
                 </div>
               </div>
               <div class="panel-divider"></div>
               <div class="stats-row">
                 <div class="stat-block">
-                  <div class="stat-label blue">Average miss l</div>
-                  <div class="stat-value plain" id="h2_loss">–</div>
-                  <div class="stat-unit" id="h2_lossNote">mean of y − ŷ over 8 houses</div>
+                  <div class="stat-label">Average miss <span class="lc">l</span></div>
+                  <div class="stat-value" id="h2_loss">&middot;</div>
+                  <div class="stat-unit" id="h2_lossNote">mean of y &minus; ŷ over 8 houses</div>
                 </div>
                 <div class="stat-block">
                   <div class="stat-label">Owners convinced</div>
-                  <div class="stat-value" id="h2_conv">–</div>
-                  <div class="stat-unit">within ± 10,000</div>
+                  <div class="stat-value" id="h2_conv">&middot;</div>
+                  <div class="stat-unit">within &plusmn; 10,000</div>
                 </div>
               </div>
             </div>
-            <button class="game-btn" id="h2_appraise"><span>📢</span><span>Appraise the street</span></button>
+            <button class="game-btn" id="h2_appraise">Appraise the street</button>
             <div class="btnrow" style="margin-top:0">
               <button class="secondary" id="h2_reset" style="flex:1">Reset</button>
             </div>
@@ -659,16 +685,16 @@
           <div class="hp-board">
             <div id="h2_chart"></div>
             <div class="hp-legend">
-              <span class="li"><span class="sw" style="background:#6ee7b7"></span> your rule</span>
-              <span class="li"><span class="sw" style="background:rgba(52,211,153,0.35);height:8px"></span> ± 10,000 band</span>
-              <span class="li"><span class="dot" style="background:#93c5fd"></span> under-priced</span>
-              <span class="li"><span class="dot" style="background:#fda4af"></span> over-priced</span>
-              <span class="li"><span class="dot" style="background:#34d399"></span> convinced</span>
+              <span class="li"><span class="sw"></span> your rule</span>
+              <span class="li"><span class="sw band"></span> &plusmn; 10,000</span>
+              <span class="li"><span class="up">&uarr;</span> under-priced</span>
+              <span class="li"><span class="down">&darr;</span> over-priced</span>
+              <span class="li"><span class="ring"></span> convinced</span>
             </div>
           </div>
 
           <div class="end-card" id="h2_end" role="dialog" aria-modal="true" hidden>
-            <div class="end-emoji">🎉</div>
+            <div class="end-mark">&#10003;</div>
             <div class="end-title">The whole street sold!</div>
             <div class="end-row" id="h2_endSub"></div>
             <div class="end-actions">
@@ -682,53 +708,52 @@
   </section>
 
   <!-- PAGE 6: TWO KNOBS + A WHOLE STREET -->
-  <section class="page locked" id="page-6">
-    <div class="segment mdp-segment">
+  <section class="page" id="page-6">
+    <div class="segment mdp-segment" id="knobs">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Two knobs.</h2>
-        <p class="segment-lead reveal d2">On the street one number was not enough. A house has a base value before you count a single square metre: <br> <code>price = <span class="c-w">w</span> · area + <span class="c-b">b</span></code>.</p>
+        <p class="segment-lead reveal d2">A house has a base value before you count a single square metre: <br> <code>price = <span class="c-w">w</span> &middot; area + <span class="c-b">b</span></code>.</p>
         <div class="concept-card reveal d3">
-          <div class="concept-tag">Same shout, two updates</div>
-          <p>The market still shouts one miss <code>l</code>. Use it to nudge <strong>both</strong> knobs, each with its own step size:</p>
-          <p class="eqn" style="font-size:16px;margin-top:10px">&nbsp;&nbsp;<span class="err">ŷ</span> = <span class="pos">ŵ</span> · x + <span class="base">b̂</span>&nbsp;&nbsp;&nbsp;&nbsp; l = y − <span class="err">ŷ</span>&nbsp;&nbsp;&nbsp;&nbsp; <span class="pos">ŵ</span> ← <span class="pos">ŵ</span> + <span class="lr">α<sub>w</sub></span> · l&nbsp;&nbsp;&nbsp;&nbsp; <span class="base">b̂</span> ← <span class="base">b̂</span> + <span class="lr">α<sub>b</sub></span> · l</p>
-          <p style="margin-top:10px">Predict, compare, nudge both. Each knob gets its own step size: the same miss should move the base price by thousands of francs, but the price per square metre by tens. Repeat until the shout dies down.</p>
+          <div class="concept-tag">One miss, both knobs</div>
+          <p>The market still shouts one miss <code>l</code>. Both knobs move with it, each with its own step size:</p>
+          <p class="eqn" style="font-size:17px;margin-top:10px"><span class="w">ŵ</span> &larr; <span class="w">ŵ</span> + α<sub>w</sub> &middot; l<br><span class="b">b̂</span> &larr; <span class="b">b̂</span> + α<sub>b</sub> &middot; l</p>
         </div>
       </div>
       <div class="mdp-viz reveal d4">
         <svg class="viz-svg" viewBox="0 0 360 230" aria-label="w tilts the line, b lifts it">
           <defs>
-            <marker id="ah2g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:#6ee7b7"/></marker>
-            <marker id="ah2p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:#f9a8d4"/></marker>
+            <marker id="ah2w" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ld-head w"/></marker>
+            <marker id="ah2b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ld-head b"/></marker>
           </defs>
           <!-- left panel: w tilts -->
-          <text class="small" x="90" y="22" text-anchor="middle" style="fill:#6ee7b7;font-weight:700">w tilts the rule</text>
+          <text class="small w" x="90" y="22" text-anchor="middle">w tilts the rule</text>
           <line class="grid" x1="20" y1="120" x2="160" y2="120"/><line class="grid" x1="20" y1="60" x2="160" y2="60"/><line class="grid" x1="90" y1="40" x2="90" y2="190"/>
           <line class="axis" x1="20" y1="190" x2="160" y2="190"/><line class="axis" x1="20" y1="190" x2="20" y2="40"/>
           <path class="line-base" d="M20 190 L160 118"/>
           <path class="line-w" d="M20 190 L160 62"/>
-          <path class="ld-arrow" d="M150 112 C 172 98, 172 80, 152 66" marker-end="url(#ah2g)" style="stroke:#6ee7b7"/>
+          <path class="ld-arrow w" d="M150 112 C 172 98, 172 80, 152 66" marker-end="url(#ah2w)"/>
           <text class="small" x="90" y="212" text-anchor="middle">area</text>
           <!-- right panel: b lifts -->
-          <text class="small" x="270" y="22" text-anchor="middle" style="fill:#f9a8d4;font-weight:700">b lifts the rule</text>
+          <text class="small b" x="270" y="22" text-anchor="middle">b lifts the rule</text>
           <line class="grid" x1="200" y1="120" x2="340" y2="120"/><line class="grid" x1="200" y1="60" x2="340" y2="60"/><line class="grid" x1="270" y1="40" x2="270" y2="190"/>
           <line class="axis" x1="200" y1="190" x2="340" y2="190"/><line class="axis" x1="200" y1="190" x2="200" y2="40"/>
           <path class="line-base" d="M200 190 L340 118"/>
           <path class="line-b" d="M200 140 L340 68"/>
-          <path class="ld-arrow" d="M300 136 L300 96" marker-end="url(#ah2p)" style="stroke:#f9a8d4"/>
+          <path class="ld-arrow b" d="M300 136 L300 96" marker-end="url(#ah2b)"/>
           <text class="small" x="270" y="212" text-anchor="middle">area</text>
           <text class="small" x="8" y="115" text-anchor="middle" transform="rotate(-90 8 115)">price</text>
         </svg>
-        <p class="mdp-caption">w tilts · b lifts</p>
+        <p class="mdp-caption"><span class="lc">w</span> tilts &middot; <span class="lc">b</span> lifts</p>
       </div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="street">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">A whole street.</h2>
-        <p class="segment-lead reveal d2">Eight houses, eight misses. The market boils them down to <strong>two</strong> averages, one for each knob.</p>
+        <p class="segment-lead reveal d2">Eight houses, eight misses. The market averages them into <strong>one</strong>.</p>
         <div class="concept-card eq reveal d3" style="max-width:940px">
-          <p class="eqn">For each house j:<br><span class="eq-row"><span><span class="err">ŷ</span>ⱼ = <span class="pos">ŵ</span> · xⱼ + <span class="base">b̂</span></span><span>lⱼ = yⱼ − <span class="err">ŷ</span>ⱼ</span><span class="formula" aria-label="l equals one over n times the sum over j of l j"><span>l</span><span class="f-op">=</span><span class="frac"><span class="num">1</span><span class="den">n</span></span><span class="sum"><span class="lim">n</span><span class="sigma">Σ</span><span class="lim">j = 1</span></span><span>l<sub>j</sub></span></span><span class="formula" aria-label="l w equals the sum over j of x j times l j, divided by the sum over j of x j"><span>l<sub>w</sub></span><span class="f-op">=</span><span class="frac"><span class="num">Σⱼ xⱼ · lⱼ</span><span class="den">Σⱼ xⱼ</span></span></span></span></p>
-          <p style="margin-top:12px"><span class="c-b">b̂</span> listens to the plain average, <span class="c-w">ŵ</span> to the area-weighted one: <code><span class="c-b">b̂</span> ← <span class="c-b">b̂</span> + <span class="c-a">α<sub>b</sub></span> · l</code>, <code><span class="c-w">ŵ</span> ← <span class="c-w">ŵ</span> + <span class="c-a">α<sub>w</sub></span> · l<sub>w</sub></code>, until both are quiet: <code>|l| &lt; ε</code> and <code>|l<sub>w</sub>| &lt; ε</code>. <br> Why weight by area? A miss on a 234 m² house says more about the price per square metre than the same miss on a 62 m² house. The base price is added to every house alike, so for <span class="c-b">b</span> every miss counts the same.</p>
+          <p class="eqn">For each house j:<br><span class="eq-row"><span>ŷⱼ = <span class="w">ŵ</span> &middot; xⱼ + <span class="b">b̂</span></span><span>lⱼ = yⱼ &minus; ŷⱼ</span><span class="formula" aria-label="l equals one over n times the sum over j of l j"><span>l</span><span>=</span><span class="frac"><span class="num">1</span><span class="den">n</span></span><span class="sum"><span class="lim">n</span><span class="sigma">&Sigma;</span><span class="lim">j = 1</span></span><span>l<sub>j</sub></span></span></span></p>
+          <p class="eqn" style="margin-top:14px"><span class="w">ŵ</span> &larr; <span class="w">ŵ</span> + α<sub>w</sub> &middot; l&nbsp;&nbsp;&nbsp;&nbsp; <span class="b">b̂</span> &larr; <span class="b">b̂</span> + α<sub>b</sub> &middot; l&nbsp;&nbsp;&nbsp;&nbsp; until |l| &lt; ε</p>
         </div>
         <p class="segment-lead reveal d4" style="margin-top:22px">Let's write the batch version.</p>
       </div>
@@ -736,44 +761,42 @@
   </section>
 
   <!-- PAGE 7: EXERCISE 2 -->
-  <section class="page segment slide-scroll locked" id="page-7">
+  <section class="page segment slide-scroll" id="ex2">
     <div class="card reveal">
       <h1>Implementing the batch fit</h1>
-      <p>Two functions. The first measures the street's two average misses for a given rule; the second nudges both knobs until the street is priced.</p>
 
       <div class="taskbox reveal d1">
-        <h3>🎯 Your task</h3>
-        <p>Complete <code>street_loss(houses, w, b)</code> and <code>fit_street(houses, w, b, alpha_w, alpha_b, eps)</code>. <code>houses</code> is a list of <code>(area, price)</code> pairs.</p>
+        <h3>Your task</h3>
         <ul>
-          <li><strong>Given:</strong> the loop over houses, the two averages, the loop over rounds, and the stopping test.</li>
-          <li><strong>To do:</strong> fill in the five blanks: the <strong>prediction</strong> with a base price, each house's <strong>miss</strong>, the <strong>area-weighted miss</strong>, and the two <strong>updates</strong>.</li>
+          <li><strong>Given:</strong> the loops, the list of losses, the average and the stopping test.</li>
+          <li><strong>To do:</strong> fill in the four blanks: the <strong>prediction</strong> with a base price, the <strong>miss</strong>, and the two <strong>updates</strong>.</li>
         </ul>
       </div>
 
-      <pre class="template"><span class="kw">def</span> <span class="fn">street_loss</span>(houses: <span class="cls">list</span>, w: <span class="cls">float</span>, b: <span class="cls">float</span>):
-    <span class="str">"""The market's two shouts for the whole street: the plain average miss, and the area-weighted average miss."""</span>
-    n = <span class="fn">len</span>(houses)
-    total_area = <span class="fn">sum</span>(x <span class="kw">for</span> (x, y) <span class="kw">in</span> houses)
-    losses, weighted = [], []
-    <span class="kw">for</span> (x, y) <span class="kw">in</span> houses:
-        y_hat = <input class="inline" data-e2="pred" placeholder="w times area, plus the base price" style="min-width:320px" />
-        loss = <input class="inline" data-e2="loss" placeholder="this house's miss" style="min-width:220px" />
+      <pre class="template"><span class="kw">def</span> <span class="fn">street_loss</span>(x, y, w, b):
+    n = <span class="fn">len</span>(x)
+    losses = []
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n):
+        area = x[i]
+        price = y[i]
+        <span class="com"># predict</span>
+        y_hat = <input class="inline" data-e2="pred" placeholder="w * area ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
+        <span class="com"># compare</span>
+        loss = <input class="inline" data-e2="loss" placeholder="price - ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
         losses.<span class="fn">append</span>(loss)
-        weighted.<span class="fn">append</span>(<input class="inline" data-e2="weighted" placeholder="this house's miss, weighted by its area" style="min-width:320px" />)
-    <span class="kw">return</span> <span class="fn">sum</span>(losses) / n, <span class="fn">sum</span>(weighted) / total_area
+    <span class="kw">return</span> <span class="fn">sum</span>(losses) / n
 
 
-<span class="kw">def</span> <span class="fn">fit_street</span>(houses: <span class="cls">list</span>, w: <span class="cls">float</span> = <span class="num">0.0</span>, b: <span class="cls">float</span> = <span class="num">0.0</span>, alpha_w: <span class="cls">float</span> = <span class="num">0.005</span>, alpha_b: <span class="cls">float</span> = <span class="num">0.7</span>, eps: <span class="cls">float</span> = <span class="num">500.0</span>, max_rounds: <span class="cls">int</span> = <span class="num">200</span>):
+<span class="kw">def</span> <span class="fn">fit_street</span>(x, y, w, b, alpha_w, alpha_b, eps, max_rounds):
     <span class="kw">for</span> t <span class="kw">in</span> <span class="fn">range</span>(max_rounds):
-        loss, weighted_loss = <span class="fn">street_loss</span>(houses, w, b)
-        <span class="kw">if</span> <span class="fn">abs</span>(loss) &lt; eps <span class="kw">and</span> <span class="fn">abs</span>(weighted_loss) &lt; eps:
+        loss = <span class="fn">street_loss</span>(x, y, w, b)
+        <span class="kw">if</span> <span class="fn">abs</span>(loss) &lt; eps:
             <span class="kw">break</span>
-
-        <span class="com"># w listens to the area-weighted miss, b to the plain one</span>
-        w = <input class="inline" data-e2="upw" placeholder="old w plus a scaled weighted miss" style="min-width:320px" />
-        b = <input class="inline" data-e2="upb" placeholder="old b plus a scaled miss" style="min-width:320px" />
-
+        <span class="com"># update: both use the same loss</span>
+        w = <input class="inline" data-e2="upw" placeholder="w + ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
+        b = <input class="inline" data-e2="upb" placeholder="b + ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
     <span class="kw">return</span> w, b</pre>
+      <p class="runs">Runs on the eight houses with w = 0, b = 0, alpha_w = 0.002, alpha_b = 0.08, eps = 500, max_rounds = 100.</p>
 
       <div class="btnrow">
         <button class="primary" id="e2check">Submit answers</button>
@@ -781,45 +804,36 @@
       </div>
       <div class="feedback" id="e2fb"></div>
       <div class="hint-box" id="e2hintbox">
-        💡 Stuck? A nudge for each blank, no answers. Give it a go:
         <ul>
-          <li><strong>y_hat:</strong> the Level 1 prediction, plus the base price <code>b</code> that every house gets.</li>
-          <li><strong>loss:</strong> the same miss as before, real price minus your price, for <em>this</em> house.</li>
-          <li><strong>weighted.append(…):</strong> this house's miss times its area. A miss on a big house should count more for the price per square metre.</li>
-          <li><strong>w, b:</strong> both updates have the shape of the one-house update: old value plus a step size times a miss. <code>w</code> takes <code>alpha_w</code> and the weighted miss, <code>b</code> takes <code>alpha_b</code> and the plain one.</li>
+          <li><strong>y_hat:</strong> the Level 1 prediction, plus the base price <code>b</code>.</li>
+          <li><strong>loss:</strong> the same miss as before: what it sold for minus what you said.</li>
+          <li><strong>w, b:</strong> the old value plus its own step size times the same <code>loss</code>.</li>
         </ul>
       </div>
     </div>
   </section>
 
-  <div class="gate locked" id="gate-e2">
-    <div class="gate-icon">🔒</div>
-    <div class="gate-msg">Locked</div>
-    <h3 class="gate-title">Implement the batch fit to continue.</h3>
-    <p class="gate-sub">Fill in the blanks of <code>street_loss</code> and <code>fit_street</code> and press <strong>Submit answers</strong>. The simulation, quiz and recap unlock once all five are correct.</p>
-  </div>
-
   <!-- PAGE 8: WATCH IT LEARN -->
-  <section class="page locked" id="page-8">
-    <div class="segment sim-seg top">
+  <section class="page" id="page-8">
+    <div class="segment sim-seg top" id="learn-one">
       <div class="segment-inner">
-        <h2 class="segment-heading reveal d1">Watch it learn <span class="dim">·</span> one house.</h2>
-        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_one_house</code> on Rosenweg 12, starting from <code>w = 900</code>.<br> Pick a step size <code><span class="c-a">α</span></code> and run it. <br> Watch how the misses shrink, or don't.</p>
+        <h2 class="segment-heading reveal d1">Watch it learn <span class="dim">&middot;</span> one house.</h2>
+        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_one_house</code> on Rosenweg 12, from <code>w = 900</code>. Pick a step size <code>α</code> and run it.</p>
         <div class="sim-grid reveal d3">
           <div class="sim-controls">
             <div class="control-panel">
-              <div class="ctl-group"><label>step size α <output id="d1_aOut">0.0020</output></label><input type="range" id="d1_alpha" min="0.0005" max="0.009" step="0.0005" value="0.002"></div>
+              <div class="ctl-group"><label><span>step size <span class="lc">α</span></span><output id="d1_aOut">0.0020</output></label><input type="range" id="d1_alpha" min="0.0005" max="0.009" step="0.0005" value="0.002"></div>
               <div class="stats-row">
-                <div class="stat-block"><div class="stat-label">w after run</div><div class="stat-value" id="d1_w">–</div></div>
-                <div class="stat-block"><div class="stat-label blue">last miss</div><div class="stat-value plain" id="d1_l">–</div></div>
+                <div class="stat-block"><div class="stat-label w"><span class="lc">w</span> after run</div><div class="stat-value w" id="d1_w">&middot;</div></div>
+                <div class="stat-block"><div class="stat-label">last miss</div><div class="stat-value" id="d1_l">&middot;</div></div>
               </div>
             </div>
-            <button class="game-btn" id="d1_run"><span>▶</span><span>Run the loop</span></button>
+            <button class="game-btn" id="d1_run">Run the loop</button>
             <div class="verdict" id="d1_verdict"></div>
           </div>
           <div>
             <div class="chart-wrap">
-              <div class="chart-title">w round by round · dashed = the w that prices the house exactly</div>
+              <div class="chart-title"><span class="lc">w</span> round by round &middot; dashed: the <span class="lc">w</span> that prices the house exactly</div>
               <div id="d1_chart"></div>
             </div>
             <div class="run-table" id="d1_table"></div>
@@ -828,31 +842,30 @@
       </div>
     </div>
 
-    <div class="segment sim-seg top">
+    <div class="segment sim-seg top" id="learn-street">
       <div class="segment-inner">
-        <h2 class="segment-heading reveal d1">Watch it learn <span class="dim">·</span> the street.</h2>
-        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_street</code> on all eight houses, starting from <code>w = 0, b = 0</code>, knowing nothing. <br> It hears two averages: the plain miss steers <span class="c-b">b</span>, the area-weighted miss steers <span class="c-w">w</span>.</p>
+        <h2 class="segment-heading reveal d1">Watch it learn <span class="dim">&middot;</span> the street.</h2>
+        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_street</code> on all eight houses, from <code>w = 0, b = 0</code>. Both knobs hear the same average miss. <br> Change the step sizes and watch where the line lands.</p>
         <div class="sim-grid reveal d3">
           <div class="sim-controls">
             <div class="control-panel">
               <div class="stats-row">
-                <div class="ctl-group"><label><span>step α<sub>w</sub></span><output id="d2_awOut">0.0050</output></label><input type="range" id="d2_alphaW" min="0.001" max="0.012" step="0.0005" value="0.005"></div>
-                <div class="ctl-group"><label><span>step α<sub>b</sub></span><output id="d2_abOut">0.70</output></label><input type="range" id="d2_alphaB" min="0.1" max="1.5" step="0.05" value="0.7"></div>
+                <div class="ctl-group"><label class="w"><span>step <span class="lc">α<sub>w</sub></span></span><output id="d2_awOut">0.0020</output></label><input type="range" class="w" id="d2_alphaW" min="0.0005" max="0.008" step="0.0005" value="0.002"></div>
+                <div class="ctl-group"><label class="b"><span>step <span class="lc">α<sub>b</sub></span></span><output id="d2_abOut">0.08</output></label><input type="range" class="b" id="d2_alphaB" min="0.01" max="0.4" step="0.01" value="0.08"></div>
               </div>
               <div class="stats-row">
-                <div class="stat-block"><div class="stat-label">w</div><div class="stat-value" id="d2_w">0</div></div>
-                <div class="stat-block"><div class="stat-label pink">b</div><div class="stat-value" id="d2_b" style="background:linear-gradient(135deg,#f9a8d4,#a78bfa);-webkit-background-clip:text;background-clip:text">0</div></div>
-                <div class="stat-block"><div class="stat-label blue">average miss l</div><div class="stat-value plain" id="d2_l">–</div></div>
-                <div class="stat-block"><div class="stat-label blue">weighted miss l<sub>w</sub></div><div class="stat-value plain" id="d2_lw">–</div></div>
-                <div class="stat-block"><div class="stat-label">convinced</div><div class="stat-value plain" id="d2_conv">–</div></div>
+                <div class="stat-block"><div class="stat-label w"><span class="lc">w</span></div><div class="stat-value w" id="d2_w">0</div></div>
+                <div class="stat-block"><div class="stat-label b"><span class="lc">b</span></div><div class="stat-value b" id="d2_b">0</div></div>
+                <div class="stat-block"><div class="stat-label">average miss <span class="lc">l</span></div><div class="stat-value" id="d2_l">&middot;</div></div>
+                <div class="stat-block"><div class="stat-label">convinced</div><div class="stat-value" id="d2_conv">&middot;</div></div>
               </div>
             </div>
-            <button class="game-btn" id="d2_run"><span>▶</span><span>Run the loop</span></button>
+            <button class="game-btn" id="d2_run">Run the loop</button>
+            <div class="verdict" id="d2_verdict"></div>
           </div>
           <div style="display:flex;flex-direction:column;gap:12px">
             <div class="chart-wrap" style="padding:10px 12px"><div id="d2_chart"></div></div>
-            <div class="chart-wrap"><div class="chart-title">average miss l, round by round</div><div id="d2_lchart"></div></div>
-            <div class="verdict" id="d2_verdict" style="margin-top:0"></div>
+            <div class="chart-wrap"><div class="chart-title">average miss <span class="lc">l</span>, round by round</div><div id="d2_lchart"></div></div>
           </div>
         </div>
       </div>
@@ -860,59 +873,59 @@
   </section>
 
   <!-- PAGE 9: QUIZ -->
-  <section class="page locked" id="page-9">
-    <div class="segment">
+  <section class="page" id="page-9">
+    <div class="segment" id="quiz-1">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Reading the shout.</h2>
-        <div class="quiz-q reveal d2" data-q="1" data-correct="B" data-hint="l = y − ŷ. If l is positive, which of the two prices is the bigger one?">
+        <div class="quiz-q reveal d2" data-q="1" data-correct="B" data-hint="l = y - ŷ. If l is positive, which of the two prices is the bigger one?">
           <p class="quiz-question">The market shouts <code>l = +8,789</code> for Rosenweg 12. What does that tell you?</p>
           <div class="opts">
-            <label><input type="radio" name="q1" value="A"> A) Your price was 8,789 too high, so lower <code>w</code>.</label>
-            <label><input type="radio" name="q1" value="B"> B) Your price was 8,789 too low, so raise <code>w</code>.</label>
-            <label><input type="radio" name="q1" value="C"> C) The house is worth 8,789 per square metre.</label>
-            <label><input type="radio" name="q1" value="D"> D) Nothing. A single shout carries no information.</label>
+            <label><input type="radio" name="q1" value="A"> <span>A) Your price was 8,789 too high, so lower <code>w</code>.</span></label>
+            <label><input type="radio" name="q1" value="B"> <span>B) Your price was 8,789 too low, so raise <code>w</code>.</span></label>
+            <label><input type="radio" name="q1" value="C"> <span>C) The house is worth 8,789 per square metre.</span></label>
+            <label><input type="radio" name="q1" value="D"> <span>D) Nothing. A single shout carries no information.</span></label>
           </div>
           <div class="btnrow"><button class="primary q-submit">Submit answer</button></div>
           <div class="quiz-explain"><div class="verdict"></div>
-            <p><code>l = y − ŷ &gt; 0</code> means the real price <code>y</code> sits above your prediction <code>ŷ</code>: you under-priced the house by 8,789. The update <code>ŵ ← ŵ + α · l</code> adds a positive amount, so the next prediction is higher. The sign of the miss <em>is</em> the direction of the correction.</p>
+            <p><code>l = y &minus; ŷ &gt; 0</code>: the house sold for 8,789 more than you said. <code>ŵ &larr; ŵ + α &middot; l</code> then raises <code>ŵ</code>. The sign of the miss is the direction of the correction.</p>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="quiz-2">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Choosing the step size.</h2>
         <div class="quiz-q reveal d2" data-q="2" data-correct="B" data-hint="One update changes the prediction by α · l · x. Compare that with the miss l itself when α · x is larger than 2.">
           <p class="quiz-question">You pick a big step size, <code>α = 0.05</code>, for Rosenweg 12 (<code>x = 234</code>). What happens round after round?</p>
           <div class="opts">
-            <label><input type="radio" name="q2" value="A"> A) It converges faster, since bigger steps are always better.</label>
-            <label><input type="radio" name="q2" value="B"> B) The miss flips sign every round and grows: each correction overshoots by more than the last.</label>
-            <label><input type="radio" name="q2" value="C"> C) Nothing changes, since <code>α</code> only matters for <code>b</code>.</label>
-            <label><input type="radio" name="q2" value="D"> D) The loop stops after one round because <code>|l| &lt; ε</code>.</label>
+            <label><input type="radio" name="q2" value="A"> <span>A) It converges faster, since bigger steps are always better.</span></label>
+            <label><input type="radio" name="q2" value="B"> <span>B) The miss flips sign every round and grows: each correction overshoots by more than the last.</span></label>
+            <label><input type="radio" name="q2" value="C"> <span>C) Nothing changes, since <code>α</code> only matters for <code>b</code>.</span></label>
+            <label><input type="radio" name="q2" value="D"> <span>D) The loop stops after one round because <code>|l| &lt; ε</code>.</span></label>
           </div>
           <div class="btnrow"><button class="primary q-submit">Submit answer</button></div>
           <div class="quiz-explain"><div class="verdict"></div>
-            <p>A nudge of <code>α · l</code> in <code>w</code> moves the prediction by <code>α · l · x = 11.7 · l</code>. You do not just close the gap, you fly almost twelve gaps past it and land further away on the other side. Whenever <code>α · x &gt; 2</code> the loop diverges. The right <code>α</code> depends on the scale of <code>x</code>, which is why it looks so tiny here (around 0.001–0.004).</p>
+            <p>One update moves the prediction by <code>α &middot; l &middot; x = 11.7 &middot; l</code>: past the target and further away on the other side. Whenever <code>α &middot; x &gt; 2</code> the loop diverges, which is why <code>α</code> is tiny here, around 0.001 to 0.004.</p>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="segment">
+    <div class="segment" id="quiz-3">
       <div class="segment-inner">
-        <h2 class="segment-heading reveal d1">Two knobs, two averages.</h2>
-        <div class="quiz-q reveal d2" data-q="3" data-correct="B" data-hint="Which knob adds the same amount to every house, whatever its size? And can +15,000 on a small house and −15,000 on a big one average out to zero?">
-          <p class="quiz-question">In the street loop, why does <code>b</code> listen to the plain average miss while <code>w</code> listens to the area-weighted one?</p>
+        <h2 class="segment-heading reveal d1">Two knobs, one miss.</h2>
+        <div class="quiz-q reveal d2" data-q="3" data-correct="B" data-hint="Each round moves w by α_w · l and b by α_b · l. What stays the same from one round to the next?">
+          <p class="quiz-question">Two runs of <code>fit_street</code> start from <code>w = 0, b = 0</code>, and both stop with the average miss below <code>ε</code>. One convinces all eight owners, the other only five. What made the difference?</p>
           <div class="opts">
-            <label><input type="radio" name="q3" value="A"> A) Because bigger houses are worth more, so they deserve a bigger share of every update.</label>
-            <label><input type="radio" name="q3" value="B"> B) Because <code>b</code> adds the same amount to every house, so every miss counts alike for it, while a miss on a big house says more about the price per square metre than the same miss on a small one.</label>
-            <label><input type="radio" name="q3" value="C"> C) Because <code>w</code> must always change faster than <code>b</code>.</label>
-            <label><input type="radio" name="q3" value="D"> D) It makes no difference; either average would steer both knobs.</label>
+            <label><input type="radio" name="q3" value="A"> <span>A) One run took more rounds than the other.</span></label>
+            <label><input type="radio" name="q3" value="B"> <span>B) The ratio of the two step sizes, <code>α<sub>w</sub></code> to <code>α<sub>b</sub></code>.</span></label>
+            <label><input type="radio" name="q3" value="C"> <span>C) The tolerance <code>ε</code>.</span></label>
+            <label><input type="radio" name="q3" value="D"> <span>D) Nothing: the same loop always ends on the same line.</span></label>
           </div>
           <div class="btnrow"><button class="primary q-submit">Submit answer</button></div>
           <div class="quiz-explain"><div class="verdict"></div>
-            <p>The plain average only says whether the street is priced too high or too low <em>overall</em>. It cannot tell "too steep" from "too high": small houses under-priced and big houses over-priced can average out to zero with a tilted line. Weighting each miss by the area breaks that tie, because the big houses pull harder on the slope. That is why <code>w</code> needs the weighted average, and why the line ends up through the whole street once both averages are quiet.</p>
+            <p>Every round moves <code>w</code> and <code>b</code> in the same proportion, <code>α<sub>w</sub></code> to <code>α<sub>b</sub></code>. Any line through the average house silences the average miss, so that proportion decides which line the loop stops on: too steep, too flat, or one that convinces the whole street.</p>
           </div>
         </div>
       </div>
@@ -920,21 +933,48 @@
   </section>
 
   <!-- PAGE 10: CONCLUSION -->
-  <section class="page locked" id="page-10">
-    <div class="hero" style="background:radial-gradient(900px 460px at 50% 30%,rgba(52,211,153,0.14),transparent 60%)">
+  <section class="page" id="page-10">
+    <div class="hero" id="end">
       <div class="hero-inner" style="grid-template-columns:1fr;text-align:center;max-width:1180px;justify-items:center">
         <div class="hero-left" style="display:flex;flex-direction:column;align-items:center;text-align:center;width:100%">
-          <h1 class="hero-title reveal d1">You fitted your first <span class="grad">model</span>.</h1>
-          <p class="hero-sub reveal d2" style="max-width:66ch">You turned a list of sold houses into a pricing rule <code>y = w · x + b</code>, <br> the same guess-compare-correct loop that trains every machine-learning model.</p>        </div>
+          <h1 class="hero-title reveal d1">You fitted your first <em>model</em>.</h1>
+          <p class="hero-sub reveal d2" style="max-width:66ch">You turned a list of sold houses into a pricing rule <code>y = w &middot; x + b</code>, <br> the same guess-compare-correct loop that trains every machine-learning model.</p>
+        </div>
       </div>
     </div>
   </section>
 </main>
 
 <script>
-  // ===== Always start at the first page on load / refresh =====
+  // ===== Dev flags, carried by the hash =====
+  // #ex2 opens on that slide. Slide ids: cover, game30, steps3, rules4, shout,
+  // keys, level1, loop, which-way, fixed, ex1, level2, knobs, street, ex2,
+  // learn-one, learn-street, quiz-1, quiz-2, quiz-3, end. Flags follow, joined by &:
+  //   play1=900,850,849       appraise Rosenweg 12 at each of these w
+  //   play2=850:0,720:30000   appraise the street at each w:b
+  //   fill                    type the right answers into both exercises and submit
+  //   wrong                   the same with one wrong answer in each
+  //   run1                    run the one-house loop to its end (alpha=0.004 sets the step)
+  //   run2                    run the street loop to its end (aw=0.004&ab=0.05 set the steps)
+  //   answer=1B,3A            pick and submit those quiz answers
+  // Example: cx_house-pricing-game.html#learn-street&run2&aw=0.004
+  const DEV = (function(){
+    const o = { target: null, flags: {} };
+    decodeURIComponent(location.hash.slice(1)).split('&').filter(Boolean).forEach((p, i) => {
+      const k = p.split('=')[0];
+      if (i === 0 && p.indexOf('=') < 0 && document.getElementById(p)) o.target = p;
+      else o.flags[k] = p.length > k.length ? p.slice(k.length + 1) : true;
+    });
+    return o;
+  })();
+
+  // ===== Start at the first slide on load, or at the one the hash names =====
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  window.addEventListener('load', () => window.scrollTo(0, 0));
+  window.addEventListener('load', () => {
+    const t = DEV.target && document.getElementById(DEV.target);
+    if (t) t.scrollIntoView({ behavior: 'instant', block: 'start' });
+    else window.scrollTo(0, 0);
+  });
 
   // ===== Disable arrow-key page scrolling (whole document) =====
   // Arrow keys never scroll the page; they still work inside text fields.
@@ -957,10 +997,17 @@
   });
 
   // ===== Helpers =====
-  function norm(s){ return (s||'').replace(/\s+/g,'').replace(/"/g,"'"); }
-  function setInputState(el, ok){ el.classList.remove('ok','bad'); el.classList.add(ok ? 'ok' : 'bad'); }
-  function unlock(el){ if(!el) return; el.classList.remove('locked'); el.querySelectorAll('.reveal').forEach(r => io.observe(r)); }
-  document.querySelectorAll('input.inline').forEach(inp => inp.addEventListener('input', () => inp.classList.remove('ok','bad')));
+  const MINUS = '−', CHECK = '✓', CROSS = '✗', UP = '↑', DOWN = '↓', EMPTY = '·';
+  // A submitted blank is marked twice: its colour, and a check or a cross after it.
+  function setInputState(el, ok){
+    el.classList.remove('ok','bad'); el.classList.add(ok ? 'ok' : 'bad');
+    const m = el.nextElementSibling;
+    if (m && m.classList.contains('mark')) { m.className = 'mark ' + (ok ? 'ok' : 'bad'); m.textContent = ok ? CHECK : CROSS; }
+  }
+  document.querySelectorAll('input.inline').forEach(inp => inp.addEventListener('input', () => {
+    inp.classList.remove('ok','bad');
+    const m = inp.nextElementSibling; if (m && m.classList.contains('mark')) { m.className = 'mark'; m.textContent = ''; }
+  }));
   function bindHint(btnId, boxId){
     document.getElementById(btnId).addEventListener('click', function(){
       const shown = document.getElementById(boxId).classList.toggle('show');
@@ -969,8 +1016,8 @@
   }
   const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
   const fmtN = v => Math.round(Math.abs(v)).toLocaleString('en-US');
-  const fmtM = v => (v < 0 ? '−' : '') + fmtN(v);                 // plain number, proper minus sign
-  const fmtS = v => (v < 0 ? '−' : '+') + fmtN(v);                // always signed
+  const fmtM = v => (v < 0 ? MINUS : '') + fmtN(v);                 // plain number, proper minus sign
+  const fmtS = v => (v < 0 ? MINUS : '+') + fmtN(v);                // always signed
   function pageInView(el){
     const sec = el.closest('.page'); if (!sec) return true;
     const r = sec.getBoundingClientRect(); const mid = window.innerHeight / 2;
@@ -978,8 +1025,90 @@
   }
   function typing(ev){ const tag = (ev.target && ev.target.tagName) || ''; return ['INPUT','TEXTAREA','SELECT'].includes(tag); }
 
+  // ===== Blank checking =====
+  // An answer is read as a small Python expression and compared with the model
+  // answers in a canonical form, so spaces, redundant brackets, the order of a
+  // sum or a product, and the direction of a comparison do not matter.
+  function canon(src){
+    src = String(src || '').replace(/^\s*[A-Za-z_]\w*\s*=(?!=)/, '').trim();   // a pasted "y_hat =" in front
+    const toks = [], re = /\s*(\d+\.\d*|\.\d+|\d+|[A-Za-z_]\w*|\*\*|<=|>=|==|!=|[-+*\/()<>,\[\]])/y;
+    let i = 0;
+    while (i < src.length) {
+      re.lastIndex = i;
+      const m = re.exec(src);
+      if (!m) { if (/^\s*$/.test(src.slice(i))) break; return null; }
+      toks.push(m[1]); i = re.lastIndex;
+    }
+    let p = 0;
+    const peek = () => toks[p];
+    const isNum = t => /^(\d|\.\d)/.test(t || ''), isId = t => /^[A-Za-z_]/.test(t || '');
+    function atom(){
+      const t = toks[p];
+      if (t === '(') { p++; const e = cmp(); if (toks[p] !== ')') throw 0; p++; return e; }
+      if (isNum(t)) { p++; return { k: 'n', v: String(parseFloat(t)) }; }
+      if (isId(t)) {
+        p++;
+        let e = { k: 'n', v: t };
+        if (peek() === '(') {
+          p++; const args = [];
+          if (peek() !== ')') { args.push(cmp()); while (peek() === ',') { p++; args.push(cmp()); } }
+          if (toks[p] !== ')') throw 0; p++;
+          e = { k: 'call', f: t, args };
+        }
+        while (peek() === '[') { p++; const ix = cmp(); if (toks[p] !== ']') throw 0; p++; e = { k: 'idx', a: e, i: ix }; }
+        return e;
+      }
+      throw 0;
+    }
+    function power(){ const a = atom(); if (peek() === '**') { p++; return { k: 'pow', a, b: unary() }; } return a; }
+    function unary(){
+      if (peek() === '-') { p++; return { k: 'sum', t: [{ s: -1, e: unary() }] }; }
+      if (peek() === '+') { p++; return unary(); }
+      return power();
+    }
+    function prod(){
+      const f = [];
+      const add = (e, d) => { if (e.k === 'prod') e.f.forEach(x => f.push({ d: x.d * d, e: x.e })); else f.push({ d, e }); };
+      add(unary(), 1);
+      while (peek() === '*' || peek() === '/') { const o = toks[p++]; add(unary(), o === '*' ? 1 : -1); }
+      return (f.length === 1 && f[0].d === 1) ? f[0].e : { k: 'prod', f };
+    }
+    function sum(){
+      const t = [];
+      const add = (e, s) => { if (e.k === 'sum') e.t.forEach(x => t.push({ s: x.s * s, e: x.e })); else t.push({ s, e }); };
+      add(prod(), 1);
+      while (peek() === '+' || peek() === '-') { const o = toks[p++]; add(prod(), o === '+' ? 1 : -1); }
+      return (t.length === 1 && t[0].s === 1) ? t[0].e : { k: 'sum', t };
+    }
+    function cmp(){
+      const xs = [sum()], ops = [];
+      while (['<','<=','>','>=','==','!='].includes(peek())) { ops.push(toks[p++]); xs.push(sum()); }
+      if (!ops.length) return xs[0];
+      if (ops.every(o => o === '>' || o === '>=')) { xs.reverse(); ops.reverse(); for (let j = 0; j < ops.length; j++) ops[j] = ops[j] === '>' ? '<' : '<='; }
+      return { k: 'cmp', xs, ops };
+    }
+    function str(e){
+      switch (e.k) {
+        case 'n': return e.v;
+        case 'call': return e.f + '(' + e.args.map(str).join(',') + ')';
+        case 'idx': return str(e.a) + '[' + str(e.i) + ']';
+        case 'pow': return 'pow(' + str(e.a) + ',' + str(e.b) + ')';
+        case 'sum': return 'S(' + e.t.map(x => (x.s > 0 ? '+' : '-') + str(x.e)).sort().join(',') + ')';
+        case 'prod': return 'P(' + e.f.map(x => (x.d > 0 ? '*' : '/') + str(x.e)).sort().join(',') + ')';
+        case 'cmp': return 'C(' + e.xs.map((x, j) => (j ? e.ops[j - 1] : '') + str(x)).join('') + ')';
+      }
+      return '?';
+    }
+    try { const e = cmp(); if (p !== toks.length) return null; return str(e); }
+    catch (err) { return null; }
+  }
+  function matches(answer, accepted){
+    const c = canon(answer);
+    return c !== null && accepted.some(a => canon(a) === c);
+  }
+
   // ===== The toy dataset: Rosenweg =====
-  // A fictitious street. The hidden rule that generated the prices is price = 720 · area + 30,000, plus a little noise.
+  // A fictitious street. The hidden rule that generated the prices is price = 720 * area + 30,000, plus a little noise.
   const STREET = [
     { no: 3,  x: 62,  y: 76900 },
     { no: 5,  x: 85,  y: 87450 },
@@ -998,11 +1127,14 @@
   function convinced(w, b){ let k = 0; for (const h of STREET) if (Math.abs(h.y - (w*h.x + b)) <= TOL2) k++; return k; }
 
   // ===== Scatter chart (area vs price) =====
+  // A miss is drawn from the rule to the house: blue with an upward arrow when the
+  // house sold for more than the rule says, vermillion with a downward arrow when
+  // it sold for less, and a ringed dot when the owner is convinced.
   function makeScatter(host, opts){
     opts = opts || {};
     const NS = 'http://www.w3.org/2000/svg';
     const W = opts.w || 560, H = opts.h || 360, pl = 60, pr = 16, pt = 18, pb = 40;
-    const XMAX = 260, YMAX = 260000;
+    const XMAX = 260, YMAX = 260000, R = opts.r || 6;
     const svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('class', 'hp-svg');
     host.appendChild(svg);
@@ -1012,10 +1144,16 @@
     const Yc = y => clamp(Y(y), pt - 200, H - pb + 200);
     function el(tag, attrs, txt){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (txt != null) e.textContent = txt; return e; }
     function render(s){
-      // s: { points, w, b, tol, band, showResid, showTrue, sold(bool for one-house), labels }
+      // s: { points, w, b, tol, band, showResid, labels, houseNo }
       while (svg.firstChild) svg.removeChild(svg.firstChild);
       const defs = el('defs', {}); const cp = el('clipPath', { id: uid });
-      cp.appendChild(el('rect', { x: pl, y: pt, width: W - pl - pr, height: H - pt - pb })); defs.appendChild(cp); svg.appendChild(defs);
+      cp.appendChild(el('rect', { x: pl, y: pt, width: W - pl - pr, height: H - pt - pb })); defs.appendChild(cp);
+      ['low', 'high'].forEach(k => {
+        const m = el('marker', { id: uid + '-' + k, viewBox: '0 0 10 10', refX: 8, refY: 5, markerUnits: 'userSpaceOnUse', markerWidth: 9, markerHeight: 9, orient: 'auto-start-reverse' });
+        m.appendChild(el('path', { d: 'M0 0 L10 5 L0 10 z', class: 'ah-' + k }));
+        defs.appendChild(m);
+      });
+      svg.appendChild(defs);
       if (!opts.bare){
         for (let gx = 50; gx <= 250; gx += 50){ svg.appendChild(el('line', { x1: X(gx), y1: pt, x2: X(gx), y2: H - pb, class: 'grid' })); svg.appendChild(el('text', { x: X(gx), y: H - pb + 15, 'text-anchor': 'middle' }, gx)); }
         for (let gy = 50000; gy <= 250000; gy += 50000){ svg.appendChild(el('line', { x1: pl, y1: Y(gy), x2: W - pr, y2: Y(gy), class: 'grid' })); svg.appendChild(el('text', { x: pl - 8, y: Y(gy) + 3, 'text-anchor': 'end' }, (gy/1000) + 'k')); }
@@ -1031,23 +1169,31 @@
       if (s.band && s.tol){
         const pts = [[0, yAt(0) + s.tol], [XMAX, yAt(XMAX) + s.tol], [XMAX, yAt(XMAX) - s.tol], [0, yAt(0) - s.tol]];
         g.appendChild(el('polygon', { points: pts.map(p => X(p[0]).toFixed(1) + ',' + Yc(p[1]).toFixed(1)).join(' '), class: 'band' }));
+        [1, -1].forEach(sg => g.appendChild(el('line', { x1: X(0), y1: Yc(yAt(0) + sg * s.tol), x2: X(XMAX), y2: Yc(yAt(XMAX) + sg * s.tol), class: 'band-edge' })));
       }
-      if (s.showTrue) g.appendChild(el('line', { x1: X(0), y1: Yc(TRUE_B), x2: X(XMAX), y2: Yc(TRUE_W*XMAX + TRUE_B), class: 'truth' }));
-      if (s.showLine !== false) g.appendChild(el('line', { x1: X(0), y1: Yc(yAt(0)), x2: X(XMAX), y2: Yc(yAt(XMAX)), class: 'model' + (s.faint ? ' faint' : '') }));
+      g.appendChild(el('line', { x1: X(0), y1: Yc(yAt(0)), x2: X(XMAX), y2: Yc(yAt(XMAX)), class: 'model' }));
       for (const p of s.points){
         const yh = yAt(p.x), l = p.y - yh;
         const tol = s.tol || 0;
         const cls = (tol && Math.abs(l) <= tol) ? 'okr' : (l > 0 ? 'low' : 'high');
         if (s.showResid){
-          g.appendChild(el('line', { x1: X(p.x), y1: Y(p.y), x2: X(p.x), y2: Yc(yh), class: 'resid ' + cls }));
+          const y1 = Yc(yh), y2 = Y(p.y), len = Math.abs(y2 - y1);
+          if (cls === 'okr') {
+            if (len > 2) g.appendChild(el('line', { x1: X(p.x), y1, x2: X(p.x), y2, class: 'resid okr' }));
+          } else {
+            // stop short of the dot so the arrowhead stays visible
+            const arrow = len > 14, dir = y2 < y1 ? -1 : 1;
+            const a = { x1: X(p.x), y1, x2: X(p.x), y2: arrow ? y2 - dir * (R + 2) : y2, class: 'resid ' + cls };
+            if (arrow) a['marker-end'] = `url(#${uid}-${cls})`;
+            g.appendChild(el('line', a));
+          }
           if (s.labels){
             const ty = clamp((Y(p.y) + Yc(yh)) / 2, pt + 8, H - pb - 4);
-            svg.appendChild(el('text', { x: X(p.x) + 8, y: ty + 3, class: 'rlab ' + cls }, fmtS(l)));
+            svg.appendChild(el('text', { x: X(p.x) + 9, y: ty + 3, class: 'rlab ' + cls }, (cls === 'okr' ? CHECK + ' ' : '') + fmtS(l)));
           }
         }
-        const ptCls = s.showResid ? (cls === 'okr' ? 'sold' : cls) : '';
-        svg.appendChild(el('circle', { cx: X(p.x), cy: Y(p.y), r: opts.r || 6, class: 'pt ' + ptCls }));
-        if (s.showResid && cls === 'okr') svg.appendChild(el('circle', { cx: X(p.x), cy: Y(p.y), r: (opts.r || 6) + 4, class: 'pt-ring' }));
+        svg.appendChild(el('circle', { cx: X(p.x), cy: Y(p.y), r: R, class: 'pt' + (s.showResid && cls !== 'okr' ? ' ' + cls : '') }));
+        if (s.showResid && cls === 'okr') svg.appendChild(el('circle', { cx: X(p.x), cy: Y(p.y), r: R + 4, class: 'pt-ring' }));
         if (s.houseNo) svg.appendChild(el('text', { x: X(p.x), y: Y(p.y) - 11, 'text-anchor': 'middle', class: 'hno' }, 'Nr ' + p.no));
       }
     }
@@ -1062,13 +1208,14 @@
   })();
 
   // ===== Level 1: one house =====
+  const L1 = {};
   (function(){
     const chartHost = document.getElementById('h1_chart'); if (!chartHost) return;
     const stage = chartHost.closest('.game-stage');
     const wEl = document.getElementById('h1_w');
     const els = { yhat: document.getElementById('h1_yhat'), loss: document.getElementById('h1_loss'), note: document.getElementById('h1_lossNote'),
                   log: document.getElementById('h1_log'), end: document.getElementById('h1_end'), endSub: document.getElementById('h1_endSub') };
-    const chart = makeScatter(chartHost, {});
+    const chart = makeScatter(chartHost, { h: 330 });
     let st;
     function reset(){
       st = { w: 900, round: 0, hist: [], won: false, pending: true };
@@ -1082,9 +1229,9 @@
         els.yhat.textContent = fmtN(last.yhat);
         els.loss.textContent = fmtS(last.loss);
         els.loss.className = 'stat-value ' + ({ okr: 'okv', low: 'low', high: 'high' })[lossClass(last.loss)];
-        els.note.textContent = Math.abs(last.loss) < EPS1 ? 'sold, within CHF 500' : (last.loss > 0 ? 'too low, raise w' : 'too high, lower w');
+        els.note.textContent = Math.abs(last.loss) < EPS1 ? CHECK + ' sold, within CHF 500' : (last.loss > 0 ? UP + ' too low, raise w' : DOWN + ' too high, lower w');
       } else {
-        els.yhat.textContent = '–'; els.loss.textContent = '–'; els.loss.className = 'stat-value plain'; els.note.textContent = 'the market\'s shout';
+        els.yhat.textContent = EMPTY; els.loss.textContent = EMPTY; els.loss.className = 'stat-value'; els.note.textContent = 'the market\'s shout';
       }
       chart.render({ points: [HOUSE1], w: st.w, b: 0, tol: EPS1, showResid: !st.pending, labels: true });
     }
@@ -1106,6 +1253,7 @@
       }
       render();
     }
+    L1.play = list => list.forEach(v => { setW(v); appraise(); });
     document.getElementById('h1_appraise').addEventListener('click', appraise);
     document.getElementById('h1_reset').addEventListener('click', reset);
     document.getElementById('h1_again').addEventListener('click', reset);
@@ -1121,13 +1269,14 @@
   })();
 
   // ===== Level 2: the street =====
+  const L2 = {};
   (function(){
     const chartHost = document.getElementById('h2_chart'); if (!chartHost) return;
     const stage = chartHost.closest('.game-stage');
     const wEl = document.getElementById('h2_w'), bEl = document.getElementById('h2_b');
     const els = { loss: document.getElementById('h2_loss'), note: document.getElementById('h2_lossNote'), conv: document.getElementById('h2_conv'),
                   log: document.getElementById('h2_log'), end: document.getElementById('h2_end'), endSub: document.getElementById('h2_endSub') };
-    const chart = makeScatter(chartHost, {});
+    const chart = makeScatter(chartHost, { h: 330 });
     let st;
     function reset(){
       const w0 = (window._hp && window._hp.w1) ? window._hp.w1 : 850;
@@ -1140,10 +1289,10 @@
       if (last){
         els.loss.textContent = fmtS(last.loss);
         els.loss.className = 'stat-value ' + (last.conv === N ? 'okv' : (last.loss > 0 ? 'low' : 'high'));
-        els.note.textContent = last.conv === N ? 'the whole street nods' : (last.loss > 0 ? 'on average too low' : 'on average too high');
+        els.note.textContent = last.conv === N ? CHECK + ' the whole street nods' : (last.loss > 0 ? UP + ' on average too low' : DOWN + ' on average too high');
         els.conv.textContent = last.conv + '/' + N;
       } else {
-        els.loss.textContent = '–'; els.loss.className = 'stat-value plain'; els.note.textContent = 'mean of y − ŷ over 8 houses'; els.conv.textContent = '–';
+        els.loss.textContent = EMPTY; els.loss.className = 'stat-value'; els.note.textContent = 'mean of y ' + MINUS + ' ŷ over 8 houses'; els.conv.textContent = EMPTY;
       }
       chart.render({ points: STREET, w: st.w, b: st.b, tol: TOL2, band: true, showResid: !st.pending, houseNo: false });
     }
@@ -1157,11 +1306,12 @@
       st.pending = false;
       if (conv === N){
         st.won = true;
-        els.endSub.innerHTML = `Your rule <code>price = ${fmtN(st.w)} · area ${st.b < 0 ? '−' : '+'} ${fmtN(st.b)}</code> convinced all ${N} owners in <strong>${st.round}</strong> round${st.round === 1 ? '' : 's'}. <br> Average miss: <strong>${fmtS(loss)}</strong>.`;
+        els.endSub.innerHTML = `Your rule <code>price = ${fmtN(st.w)} · area ${st.b < 0 ? MINUS : '+'} ${fmtN(st.b)}</code> convinced all ${N} owners in <strong>${st.round}</strong> round${st.round === 1 ? '' : 's'}. <br> Average miss: <strong>${fmtS(loss)}</strong>.`;
         els.end.hidden = false; stage.classList.add('done');
       }
       render();
     }
+    L2.play = list => list.forEach(([w, b]) => { setW(w); setB(b); appraise(); });
     document.getElementById('h2_appraise').addEventListener('click', appraise);
     document.getElementById('h2_reset').addEventListener('click', reset);
     document.getElementById('h2_again').addEventListener('click', reset);
@@ -1186,66 +1336,54 @@
 
   // ===== Exercise 1: the fixed-step fit =====
   const e1Expected = {
-    pred:   ["w*x", "x*w"],
-    loss:   ["y-y_hat"],
-    stop:   ["abs(loss)<eps", "abs(loss)<=eps", "eps>abs(loss)", "eps>=abs(loss)"],
-    update: ["w+alpha*loss", "w+loss*alpha", "alpha*loss+w", "loss*alpha+w"]
+    pred:   ['w*x'],
+    loss:   ['y-y_hat'],
+    stop:   ['abs(loss)<eps', 'abs(loss)<=eps', 'abs(y-y_hat)<eps', 'abs(y-y_hat)<=eps', '-eps<loss<eps'],
+    update: ['w+alpha*loss', 'w+alpha*(y-y_hat)']
   };
   document.getElementById('e1check').addEventListener('click', () => {
     let correct = 0, total = 0;
     for (const key of Object.keys(e1Expected)) {
       total++;
       const el = document.querySelector(`input[data-e1="${key}"]`);
-      const val = norm(el.value);
-      const ok = e1Expected[key].some(a => norm(a) === val);
+      const ok = matches(el.value, e1Expected[key]);
       setInputState(el, ok);
       if (ok) correct++;
     }
     const fb = document.getElementById('e1fb');
     if (correct === total) {
-      fb.className = '';
-      const g = document.getElementById('gate-e1'); if (g) g.classList.add('locked');
-      unlock(document.getElementById('page-3'));
-      unlock(document.getElementById('page-6'));
-      unlock(document.getElementById('page-7'));
-      unlock(document.getElementById('gate-e2'));
-      setTimeout(() => { if (window._slideNav) window._slideNav.advance(); }, 50);
+      fb.className = 'feedback ok';
+      fb.textContent = CHECK + ' All four correct.';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = `❌ ${correct}/${total} correct. Each blank is one line of the loop: predict, compare, test the size of the miss, then step w.`;
+      fb.textContent = CROSS + ` ${correct}/${total} correct. Predict, compare, stop, update: one line each.`;
     }
   });
   bindHint('e1hint','e1hintbox');
 
   // ===== Exercise 2: the batch fit =====
   const e2Expected = {
-    pred: ["w*x+b", "x*w+b", "b+w*x", "b+x*w"],
-    loss: ["y-y_hat"],
-    weighted: ["loss*x", "x*loss"],
-    upw:  ["w+alpha_w*weighted_loss", "w+weighted_loss*alpha_w", "alpha_w*weighted_loss+w", "weighted_loss*alpha_w+w"],
-    upb:  ["b+alpha_b*loss", "b+loss*alpha_b", "alpha_b*loss+b", "loss*alpha_b+b"]
+    pred: ['w*area+b', 'w*x[i]+b'],
+    loss: ['price-y_hat', 'y[i]-y_hat'],
+    upw:  ['w+alpha_w*loss'],
+    upb:  ['b+alpha_b*loss']
   };
   document.getElementById('e2check').addEventListener('click', () => {
     let correct = 0, total = 0;
     for (const key of Object.keys(e2Expected)) {
       total++;
       const el = document.querySelector(`input[data-e2="${key}"]`);
-      const val = norm(el.value);
-      const ok = e2Expected[key].some(a => norm(a) === val);
+      const ok = matches(el.value, e2Expected[key]);
       setInputState(el, ok);
       if (ok) correct++;
     }
     const fb = document.getElementById('e2fb');
     if (correct === total) {
-      fb.className = '';
-      const g = document.getElementById('gate-e2'); if (g) g.classList.add('locked');
-      unlock(document.getElementById('page-8'));
-      unlock(document.getElementById('page-9'));
-      unlock(document.getElementById('page-10'));
-      setTimeout(() => { if (window._slideNav) window._slideNav.advance(); }, 50);
+      fb.className = 'feedback ok';
+      fb.textContent = CHECK + ' All four correct.';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = `❌ ${correct}/${total} correct. Predict with the base price, take each miss, weight it by the area, then nudge w on the weighted miss and b on the plain one.`;
+      fb.textContent = CROSS + ` ${correct}/${total} correct. Predict with the base price, take the miss, then move w and b with the same loss.`;
     }
   });
   bindHint('e2hint','e2hintbox');
@@ -1280,15 +1418,17 @@
       if (cfg.zero && 0 >= yMin && 0 <= yMax) svg.appendChild(el('line', { x1: padL, y1: Y(0), x2: W - padR, y2: Y(0), class: 'zero' }));
       if (points.length){
         const cy = y => clamp(Y(y), padT - 4, H - padB + 4);
+        const tone = cfg.color === 'w' ? ' w' : '';
         const d = points.map((p, i) => (i ? 'L' : 'M') + X(p.x).toFixed(1) + ' ' + cy(p.y).toFixed(1)).join(' ');
-        svg.appendChild(el('path', { d, class: 'trace' + (cfg.color === 'blue' ? ' blue' : '') }));
-        points.forEach(p => svg.appendChild(el('circle', { cx: X(p.x), cy: cy(p.y), r: 3, class: 'dot' + (cfg.color === 'blue' ? ' blue' : '') })));
+        svg.appendChild(el('path', { d, class: 'trace' + tone }));
+        points.forEach(p => svg.appendChild(el('circle', { cx: X(p.x), cy: cy(p.y), r: 3, class: 'dot' + tone })));
       }
     }
     return { render };
   }
 
   // ===== Watch it learn 1: one house =====
+  const D1 = {};
   (function(){
     const chartHost = document.getElementById('d1_chart'); if (!chartHost) return;
     const chart = makeLineChart(chartHost, { h: 210 });
@@ -1302,16 +1442,31 @@
       let lo = Math.min(TARGET, ...pts.map(p => p.y)), hi = Math.max(TARGET, ...pts.map(p => p.y));
       lo = clamp(lo, -500, 4000); hi = clamp(hi, -500, 4000);
       const pad = Math.max(40, (hi - lo) * 0.15);
-      chart.render(pts, { xMax: Math.max(rows.length - 1, 5), yMin: lo - pad, yMax: hi + pad, target: TARGET });
-      let html = '<div class="head"><span>round</span><span>w</span><span>ŷ = w · 234</span><span>miss l</span></div>';
-      rows.forEach(r => { const cls = Math.abs(r.loss) < EPS1 ? 'okr' : (r.loss > 0 ? 'low' : 'high'); html += `<div><span>${r.t}</span><span>${Number.isFinite(r.w) && Math.abs(r.w) < 1e7 ? fmtM(r.w) : '∞'}</span><span>${Math.abs(r.yhat) < 1e9 ? fmtM(r.yhat) : '∞'}</span><span class="${cls}">${Math.abs(r.loss) < 1e9 ? fmtS(r.loss) : '∞'}</span></div>`; });
+      chart.render(pts, { xMax: Math.max(rows.length - 1, 5), yMin: lo - pad, yMax: hi + pad, target: TARGET, color: 'w' });
+      let html = '<div class="head"><span>round</span><span class="lc">w</span><span class="lc">ŷ = w · 234</span><span>miss <span class="lc">l</span></span></div>';
+      rows.forEach(r => { const cls = Math.abs(r.loss) < EPS1 ? 'okr' : (r.loss > 0 ? 'low' : 'high'); html += `<div><span>${r.t}</span><span>${Number.isFinite(r.w) && Math.abs(r.w) < 1e7 ? fmtM(r.w) : '∞'}</span><span>${Math.abs(r.yhat) < 1e9 ? fmtM(r.yhat) : '∞'}</span><span class="${cls}">${cls === 'okr' ? CHECK + ' ' : ''}${Math.abs(r.loss) < 1e9 ? fmtS(r.loss) : '∞'}</span></div>`; });
       tbl.innerHTML = html; tbl.scrollTop = tbl.scrollHeight;
       const last = rows[rows.length - 1];
       wEl.textContent = Math.abs(last.w) < 1e7 ? fmtM(last.w) : '∞';
       lEl.textContent = Math.abs(last.loss) < 1e9 ? fmtS(last.loss) : '∞';
       lEl.className = 'stat-value ' + (Math.abs(last.loss) < EPS1 ? 'okv' : (last.loss > 0 ? 'low' : 'high'));
     }
-    function run(){
+    function finish(rows, alpha){
+      runBtn.disabled = false; aIn.disabled = false;
+      const last = rows[rows.length - 1];
+      const ax = alpha * HOUSE1.x;
+      if (Math.abs(last.loss) < EPS1){
+        verdict.className = 'verdict show good';
+        verdict.textContent = `${CHECK} Sold after ${rows.length - 1} update${rows.length - 1 === 1 ? '' : 's'}.`;
+      } else if (ax > 2){
+        verdict.className = 'verdict show bad';
+        verdict.textContent = CROSS + ' Diverged.';
+      } else {
+        verdict.className = 'verdict show';
+        verdict.textContent = `Still not sold after ${MAXR} rounds.`;
+      }
+    }
+    function run(instant){
       if (timer) return;
       const alpha = parseFloat(aIn.value);
       const rows = []; let w = 900;
@@ -1321,94 +1476,103 @@
         if (Math.abs(loss) < EPS1) break;
         w = w + alpha * loss;
       }
-      verdict.className = 'verdict'; runBtn.disabled = true; aIn.disabled = true;
+      verdict.className = 'verdict';
+      if (instant){ draw(rows); finish(rows, alpha); return; }
+      runBtn.disabled = true; aIn.disabled = true;
       let i = 0;
       timer = setInterval(() => {
         i++; draw(rows.slice(0, i));
-        if (i >= rows.length){
-          clearInterval(timer); timer = null; runBtn.disabled = false; aIn.disabled = false;
-          const last = rows[rows.length - 1];
-          const ax = alpha * HOUSE1.x;
-          if (Math.abs(last.loss) < EPS1){
-            verdict.className = 'verdict show good';
-            verdict.innerHTML = `<b>Sold after ${rows.length - 1} update${rows.length - 1 === 1 ? '' : 's'}.</b>`;
-          } else if (ax > 2){
-            verdict.className = 'verdict show bad';
-            verdict.innerHTML = `<b>Diverged.</b>`;
-          } else {
-            verdict.className = 'verdict show warn';
-            verdict.innerHTML = `<b>Still not sold after ${MAXR} rounds.</b>`;
-          }
-        }
+        if (i >= rows.length){ clearInterval(timer); timer = null; finish(rows, alpha); }
       }, 240);
     }
-    runBtn.addEventListener('click', run);
+    D1.run = run;
+    runBtn.addEventListener('click', () => run(false));
     chart.render([], { xMax: 5, yMin: 800, yMax: 950, target: TARGET });
   })();
 
   // ===== Watch it learn 2: the street =====
+  // fit_street as the exercise writes it: one average miss per round, and both
+  // knobs move with it, each by its own step size. Every round therefore moves
+  // (w, b) in the same direction (alpha_w, alpha_b), and the loop stops on the
+  // first line through the average house that it reaches: the ratio of the two
+  // step sizes decides which line that is. At the defaults, 0.002 and 0.08, it
+  // lands next to the least-squares line of the eight houses in 13 rounds.
+  const D2 = {};
   (function(){
     const chartHost = document.getElementById('d2_chart'); if (!chartHost) return;
     const scatter = makeScatter(chartHost, { h: 270 });
     const lchart = makeLineChart(document.getElementById('d2_lchart'), { h: 110 });
     const awIn = document.getElementById('d2_alphaW'), awOut = document.getElementById('d2_awOut');
     const abIn = document.getElementById('d2_alphaB'), abOut = document.getElementById('d2_abOut');
-    const wEl = document.getElementById('d2_w'), bEl = document.getElementById('d2_b'), lEl = document.getElementById('d2_l'), lwEl = document.getElementById('d2_lw'), cEl = document.getElementById('d2_conv');
+    const wEl = document.getElementById('d2_w'), bEl = document.getElementById('d2_b'), lEl = document.getElementById('d2_l'), cEl = document.getElementById('d2_conv');
     const verdict = document.getElementById('d2_verdict'), runBtn = document.getElementById('d2_run');
-    const MAXR = 150, TOTAL_AREA = STREET.reduce((s, h) => s + h.x, 0);
-    function weightedLoss(w, b){ let s = 0; for (const h of STREET) s += (h.y - (w*h.x + b)) * h.x; return s / TOTAL_AREA; }
+    const MAXR = 150;
     let timer = null, cur = { w: 0, b: 0 }, trace = [];
     awIn.addEventListener('input', () => { awOut.textContent = parseFloat(awIn.value).toFixed(4); });
     abIn.addEventListener('input', () => { abOut.textContent = parseFloat(abIn.value).toFixed(2); });
-    function showMiss(el, v){
-      el.textContent = Math.abs(v) < 1e9 ? fmtS(v) : '∞';
-      el.className = 'stat-value ' + (Math.abs(v) < EPS1 ? 'okv' : (v > 0 ? 'low' : 'high'));
-    }
     function draw(){
       scatter.render({ points: STREET, w: cur.w, b: cur.b, tol: TOL2, band: true, showResid: true });
       const ys = trace.map(p => p.y);
       const lo = Math.min(0, ...ys), hi = Math.max(0, ...ys);
       const range = Math.max(hi - lo, 1000);
-      lchart.render(trace, { xMax: Math.max(trace.length - 1, 5), yMin: clamp(lo, -2e6, 2e6) - range * 0.1, yMax: clamp(hi, -2e6, 2e6) + range * 0.1, zero: true, color: 'blue', fmt: v => Math.abs(v) >= 1000 ? (v / 1000).toFixed(0) + 'k' : fmtM(v) });
+      lchart.render(trace, { xMax: Math.max(trace.length - 1, 5), yMin: clamp(lo, -2e6, 2e6) - range * 0.1, yMax: clamp(hi, -2e6, 2e6) + range * 0.1, zero: true, fmt: v => Math.abs(v) >= 1000 ? (v < 0 ? MINUS : '') + Math.abs(v / 1000).toFixed(0) + 'k' : fmtM(v) });
       wEl.textContent = Math.abs(cur.w) < 1e6 ? fmtM(cur.w) : '∞';
       bEl.textContent = Math.abs(cur.b) < 1e8 ? fmtM(cur.b) : '∞';
-      showMiss(lEl, streetLoss(cur.w, cur.b));
-      showMiss(lwEl, weightedLoss(cur.w, cur.b));
+      const l = streetLoss(cur.w, cur.b);
+      lEl.textContent = Math.abs(l) < 1e9 ? fmtS(l) : '∞';
+      lEl.className = 'stat-value ' + (Math.abs(l) < EPS1 ? 'okv' : (l > 0 ? 'low' : 'high'));
       cEl.textContent = convinced(cur.w, cur.b) + '/' + N;
     }
-    function run(){
+    function finish(frames, stopped, diverged){
+      runBtn.disabled = false; awIn.disabled = false; abIn.disabled = false;
+      const rounds = frames.length - 1, k = convinced(cur.w, cur.b);
+      const rs = `${rounds} round${rounds === 1 ? '' : 's'}`;
+      if (stopped && k === N){
+        verdict.className = 'verdict show good';
+        verdict.textContent = `${CHECK} Stopped after ${rs}. All ${N} owners convinced.`;
+      } else if (stopped){
+        verdict.className = 'verdict show';
+        verdict.textContent = `Stopped after ${rs}, but only ${k} of ${N} owners convinced.`;
+      } else if (diverged){
+        verdict.className = 'verdict show bad';
+        verdict.textContent = CROSS + ' Diverged.';
+      } else {
+        verdict.className = 'verdict show';
+        verdict.textContent = `Still closing in after ${MAXR} rounds.`;
+      }
+    }
+    function run(instant){
       if (timer) return;
       const alphaW = parseFloat(awIn.value), alphaB = parseFloat(abIn.value);
-      const frames = []; let w = 0, b = 0, converged = false, diverged = false;
+      const frames = []; let w = 0, b = 0, stopped = false, diverged = false;
       frames.push({ w, b, l: streetLoss(w, b) });
       for (let t = 0; t < MAXR; t++){
-        const loss = streetLoss(w, b), wloss = weightedLoss(w, b);
-        if (Math.abs(loss) < EPS1 && Math.abs(wloss) < EPS1){ converged = true; break; }
-        w = w + alphaW * wloss;               // w listens to the area-weighted miss
-        b = b + alphaB * loss;                // b listens to the plain miss
+        const loss = streetLoss(w, b);
+        if (Math.abs(loss) < EPS1){ stopped = true; break; }
+        w = w + alphaW * loss;               // both knobs hear the same average miss,
+        b = b + alphaB * loss;               // each with its own step size
         frames.push({ w, b, l: streetLoss(w, b) });
         if (!isFinite(w) || Math.abs(w) > 1e5){ diverged = true; break; }
       }
-      verdict.className = 'verdict'; runBtn.disabled = true; awIn.disabled = true; abIn.disabled = true;
+      verdict.className = 'verdict';
+      if (instant){
+        trace = frames.map((f, i) => ({ x: i, y: f.l }));
+        cur = { w: frames[frames.length - 1].w, b: frames[frames.length - 1].b };
+        draw(); finish(frames, stopped, diverged); return;
+      }
+      runBtn.disabled = true; awIn.disabled = true; abIn.disabled = true;
       trace = []; let i = 0;
       timer = setInterval(() => {
         const f = frames[i]; cur = { w: f.w, b: f.b }; trace.push({ x: i, y: f.l }); draw(); i++;
-        if (i >= frames.length){
-          clearInterval(timer); timer = null; runBtn.disabled = false; awIn.disabled = false; abIn.disabled = false;
-          if (converged){
-            verdict.className = 'verdict show good';
-            verdict.innerHTML = `<b>The whole street sold after ${frames.length - 1} round${frames.length - 1 === 1 ? '' : 's'}.</b>`;
-          } else if (diverged){
-            verdict.className = 'verdict show bad';
-            verdict.innerHTML = `<b>Diverged.</b>`;
-          } else {
-            verdict.className = 'verdict show warn';
-            verdict.innerHTML = `<b>Still closing in after ${MAXR} rounds.</b>`;
-          }
-        }
+        if (i >= frames.length){ clearInterval(timer); timer = null; finish(frames, stopped, diverged); }
       }, 120);
     }
-    runBtn.addEventListener('click', run);
+    D2.run = run;
+    D2.set = (aw, ab) => {
+      if (isFinite(aw)) { awIn.value = aw; awOut.textContent = parseFloat(awIn.value).toFixed(4); }
+      if (isFinite(ab)) { abIn.value = ab; abOut.textContent = parseFloat(abIn.value).toFixed(2); }
+    };
+    runBtn.addEventListener('click', () => run(false));
     trace = [{ x: 0, y: streetLoss(0, 0) }];
     draw(); trace = [];
   })();
@@ -1428,12 +1592,12 @@
         q.classList.add('answered');
         q.querySelectorAll('.opts label').forEach(lab => { lab.querySelector('input').disabled = true; if (lab.querySelector('input').value === correctAns) lab.classList.add('is-correct'); });
         btn.disabled = true;
-        ex.className = 'quiz-explain show'; ex.querySelector('.verdict').textContent = '✓ Correct'; p.innerHTML = explanation;
-        setTimeout(() => { if (window._slideNav) window._slideNav.advance(); }, 1400);
+        ex.className = 'quiz-explain show'; ex.querySelector('.verdict').textContent = CHECK + ' Correct'; p.innerHTML = explanation;
+        if (!DEV.flags.answer) setTimeout(() => { if (window._slideNav) window._slideNav.advance(); }, 1400);
       } else {
         sel.closest('label').classList.add('is-wrong');
         ex.className = 'quiz-explain show hint';
-        ex.querySelector('.verdict').textContent = 'Not quite. Here\'s a hint:';
+        ex.querySelector('.verdict').textContent = CROSS + ' Not quite. Here\'s a hint:';
         p.textContent = q.dataset.hint;
         btn.textContent = 'Try again';
       }
@@ -1443,11 +1607,44 @@
   // ===== Slide navigation =====
   window._slideNav = {
     advance: () => {
-      const slides = Array.from(document.querySelectorAll('.hero,.segment,.gate')).filter(el => !el.closest('.locked'));
+      const slides = Array.from(document.querySelectorAll('.hero,.segment'));
       const next = slides.find(el => el.getBoundingClientRect().top > 50);
       if (next) next.scrollIntoView({behavior:'smooth', block:'start'});
     }
   };
+
+  // ===== Dev flags that need the page built =====
+  (function(){
+    const F = DEV.flags;
+    const nums = s => String(s).split(',').map(parseFloat).filter(isFinite);
+    function type(sel, v){ const el = document.querySelector(sel); if (el) el.value = v; }
+    if (typeof F.play1 === 'string') L1.play(nums(F.play1));
+    if (typeof F.play2 === 'string') L2.play(F.play2.split(',').map(s => s.split(':').map(parseFloat)).filter(p => p.length === 2 && p.every(isFinite)));
+    if (F.fill || F.wrong) {
+      type('input[data-e1="pred"]', 'w * x');
+      type('input[data-e1="loss"]', 'y - y_hat');
+      type('input[data-e1="stop"]', F.wrong ? 'loss < eps' : 'abs(loss) < eps');
+      type('input[data-e1="update"]', 'w + alpha * loss');
+      type('input[data-e2="pred"]', 'w * area + b');
+      type('input[data-e2="loss"]', F.wrong ? 'y_hat - price' : 'price - y_hat');
+      type('input[data-e2="upw"]', 'w + alpha_w * loss');
+      type('input[data-e2="upb"]', 'b + alpha_b * loss');
+      document.getElementById('e1check').click();
+      document.getElementById('e2check').click();
+    }
+    if (F.run1) {
+      if (typeof F.alpha === 'string') { const a = document.getElementById('d1_alpha'); a.value = F.alpha; document.getElementById('d1_aOut').textContent = parseFloat(a.value).toFixed(4); }
+      D1.run(true);
+    }
+    if (F.run2) { D2.set(parseFloat(F.aw), parseFloat(F.ab)); D2.run(true); }
+    if (typeof F.answer === 'string') {
+      F.answer.split(',').forEach(a => {
+        const q = document.querySelector('.quiz-q[data-q="' + a.charAt(0) + '"]');
+        const r = q && q.querySelector('input[value="' + a.charAt(1) + '"]');
+        if (r) { r.checked = true; q.querySelector('.q-submit').click(); }
+      });
+    }
+  })();
 </script>
 </body>
 </html>

@@ -1,0 +1,60 @@
+/* Square One: the three vendored faces. All SIL Open Font License 1.1; the
+   licence texts sit beside the files in vendor/fonts/. Latin subsets from
+   Fontsource, version 5. Nothing is fetched at run time. */
+
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("../vendor/fonts/barlow-condensed-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("../vendor/fonts/barlow-condensed-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("../vendor/fonts/barlow-condensed-latin-800-normal.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("../vendor/fonts/barlow-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("../vendor/fonts/barlow-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Barlow";
+  src: url("../vendor/fonts/barlow-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../vendor/fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../vendor/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}

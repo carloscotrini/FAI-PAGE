@@ -60,6 +60,7 @@ export const day: Day = {
       time: '08:30',
       title: 'Learning by guessing: Popper, Robbins-Monro and house prices',
       type: 'lecture',
+      links: [{ label: 'SQUARE ONE, the opening show', url: viz('square-root-show') }],
     },
     {
       time: '09:30',
@@ -67,10 +68,8 @@ export const day: Day = {
       type: 'lab',
       links: [
         { label: 'Square roots, by hand', url: viz('square-roots-robbins-monro', 'cx_robbins-monro.html') },
-        { label: "The genie's riddle", url: viz('genie-game', 'cx_genie-game.html') },
-        { label: 'Approximation game', url: viz('approximation-game', 'cx_approximation-game.html') },
         { label: 'Price the street', url: viz('price-the-street', 'cx_house-pricing-game.html') },
-        { label: 'House prices, two ways', url: viz('house-prices-rm-gd') },
+        { label: 'House prices, one house at a time', url: viz('house-prices-rm') },
       ],
     },
     { time: '10:00', title: 'Coffee break, until 10:30', type: 'break' },
@@ -78,6 +77,7 @@ export const day: Day = {
       time: '10:30',
       title: 'Gradient descent and neural networks',
       type: 'lecture',
+      links: [{ label: 'One grasshopper, then two', url: viz('two-grasshoppers') }],
     },
     {
       time: '11:30',
@@ -135,21 +135,15 @@ export const day: Day = {
 
     {
       group: 'Block 1, learning by guessing',
+      label: 'SQUARE ONE, the opening show',
+      url: viz('square-root-show'),
+      note: 'The quiz show that opens the day: guess the side of Switzerland folded into a square, solve w = 1 + 1/w, then watch a machine play.',
+    },
+    {
+      group: 'Block 1, learning by guessing',
       label: 'Square roots, by hand',
       url: viz('square-roots-robbins-monro', 'cx_robbins-monro.html'),
-      note: 'Two problems solved with the same update rule: a square root, and the equation w = 1 + 1/w.',
-    },
-    {
-      group: 'Block 1, learning by guessing',
-      label: "The genie's riddle",
-      url: viz('genie-game', 'cx_genie-game.html'),
-      note: 'The genie grants nothing until you name its number. One clue, and a guess you keep correcting.',
-    },
-    {
-      group: 'Block 1, learning by guessing',
-      label: 'Approximation game',
-      url: viz('approximation-game', 'cx_approximation-game.html'),
-      note: 'Guess the side of a square of unknown area, and watch whether it fits the gap.',
+      note: 'Two problems solved with the same update rule: a square root first, then the equation w = 1 + 1/w.',
     },
     {
       group: 'Block 1, learning by guessing',
@@ -159,9 +153,9 @@ export const day: Day = {
     },
     {
       group: 'Block 1, learning by guessing',
-      label: 'House prices, learned two ways',
-      url: viz('house-prices-rm-gd'),
-      note: 'Ten houses and a line, fitted one house at a time and then by gradient descent, with the grasshopper on the loss curve.',
+      label: 'House prices, one house at a time',
+      url: viz('house-prices-rm'),
+      note: 'Ten houses and a line. Each round one house, picked at random, nudges the price per square metre by a fixed step.',
     },
 
     {
@@ -169,6 +163,12 @@ export const day: Day = {
       label: 'Grasshopper',
       url: viz('grasshopper', 'cx_grasshopper.html'),
       note: 'You are a grasshopper in a valley you cannot see. Find the lowest point.',
+    },
+    {
+      group: 'Block 2, gradient descent and neural networks',
+      label: 'One grasshopper, then two',
+      url: viz('two-grasshoppers'),
+      note: 'The grasshopper on the loss curve of ten houses, then stopping distances with two knobs: a bowl, and two grasshoppers hopping at once.',
     },
     {
       group: 'Block 2, gradient descent and neural networks',

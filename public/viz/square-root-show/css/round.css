@@ -1,0 +1,366 @@
+/* Square One: pages 1 and 2, the two guessing rounds, and the two views
+   (the square, the bars) that the run page reuses. */
+
+.page-round {
+  display: grid;
+  grid-template-columns: 27.5rem minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  column-gap: 2rem;
+  row-gap: 0.8rem;
+}
+
+.round-head { grid-column: 1 / -1; }
+.round-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.round-title {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 2.3rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+.round-sub {
+  margin: 0.4rem 0 0;
+  font-size: 1.12rem;
+  color: var(--ink-2);
+}
+
+.round-left {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 0.5rem;
+}
+.round-right {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 0.7rem;
+}
+
+/* The number, big, like a scoreboard. */
+.bignum {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 4.3rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  text-shadow: 0 0 1.4rem rgba(118, 140, 255, 0.25);
+}
+.bignum .unit {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.bignum.eq { font-size: 3.5rem; gap: 0.45rem; align-items: center; }
+.frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.62em;
+  line-height: 1.02;
+  vertical-align: middle;
+}
+.frac > span { padding: 0 0.12em; }
+.frac > span:first-child { border-bottom: 0.07em solid currentColor; }
+.eq .op { color: var(--gold-ink); font-weight: 600; }
+
+.view-panel {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  overflow: hidden;
+}
+.view-panel > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* The guess bar: an answer bar with the host's number in it. */
+.guess-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  position: relative;
+}
+.guess-bar {
+  --cut: 1.6rem;
+  --loz-line: linear-gradient(90deg, var(--gold-lo), var(--gold-hi) 50%, var(--gold-lo));
+  --loz-fill: linear-gradient(180deg, var(--panel-solid), var(--panel-solid));
+  flex: 1;
+  height: 3.7rem;
+  margin: 0;
+}
+.guess-bar > .loz-in {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0 0.5rem 0 2.1rem;
+}
+.guess-label {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.9rem;
+  color: var(--gold-ink);
+  white-space: nowrap;
+}
+.guess-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 2.3rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  caret-color: var(--gold);
+}
+.guess-input::placeholder { color: var(--faint); }
+.guess-bar:focus-within { --loz-line: linear-gradient(90deg, var(--gold), var(--gold-hi) 50%, var(--gold)); }
+.btn-check {
+  --cut: 1.2rem;
+  height: 2.8rem;
+  flex: 0 0 auto;
+}
+.btn-check > .loz-in { font-size: 1.15rem; padding: 0 1.5rem 0 1.7rem; }
+.round-tools { display: flex; gap: 0.45rem; }
+
+.nudge {
+  position: absolute;
+  left: 2.2rem;
+  top: calc(100% + 0.35rem);
+  padding: 0.25rem 0.7rem;
+  border-radius: 0.5rem;
+  background: var(--panel-solid);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-soft);
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--ink-2);
+  opacity: 0;
+  transform: translateY(-0.3rem);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  z-index: 3;
+}
+.nudge.show { opacity: 1; transform: none; }
+
+/* The round tables. */
+.round-table { flex: 1; min-height: 0; }
+.round-table .tbl-head,
+.round-table .tbl-row { --cols: 7.6rem 11.4rem 9.6rem minmax(0, 1fr); }
+/* Row padding and gap are budgeted so the rehearsed eight guesses fit at
+   1280x720 without the table scrolling (measured over CDP). */
+.round-table .tbl-body { gap: 0.2rem; }
+.round-table .tbl-row { min-height: 2.6rem; padding-top: 0.1rem; padding-bottom: 0.1rem; cursor: default; }
+.round-table .c-guess { --frac: 4.4ch; }
+.round-table .c-est,
+.round-table .c-loss { --frac: 6.7ch; }
+#round2 .round-table .c-guess { --frac: 5.5ch; }
+.round-table .num { font-size: 1.55rem; }
+.round-table .th.upd { text-align: left; align-items: flex-start; padding-left: 1rem; }
+.round-table .c-upd { padding-left: 1rem; }
+.round-table .c-guess { color: var(--ink); }
+.round-table .c-est { color: var(--ink-2); }
+.round-table .c-loss { color: var(--ink-2); }
+#round2 .round-table .tbl-head,
+#round2 .round-table .tbl-row { --cols: 7.6rem 10.6rem 10.4rem minmax(0, 1fr); }
+
+/* ===== the square view (round 1 and the run page) ===== */
+
+.sq-floor { fill: var(--sq-floor); }
+.sq-target {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 0.55;
+  vector-effect: non-scaling-stroke;
+}
+.sq-target.thick { stroke-width: 2.5; }
+.sq-guess {
+  fill: var(--sq-guess-fill);
+  stroke: var(--sq-guess-line);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.sq-guess.solved { fill: var(--gold-fill); stroke: var(--gold); }
+.sq-trail rect {
+  fill: none;
+  stroke: var(--sq-trail);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.sq-trail rect.hi { stroke: var(--ink-2); stroke-dasharray: 3 3; }
+.sq-diff.up .fill { fill: var(--up-fill); }
+.sq-diff.down .fill { fill: var(--down-fill); }
+/* The pattern overlay (dots for a gap, hatching for an overhang) gets its
+   fill="url(#...)" from views.js, because each view has its own ids. */
+.pat-dot { fill: var(--up); opacity: 0.55; }
+.pat-line { stroke: var(--down); stroke-width: 0.35; opacity: 0.8; }
+.sq-label {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 4.4px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  /* a thin halo so the number stays clean over the dots or the hatching */
+  paint-order: stroke;
+  stroke: var(--panel-solid);
+  stroke-width: 0.9px;
+  stroke-linejoin: round;
+}
+.sq-label.loss.up { fill: var(--up-ink); }
+.sq-label.loss.down { fill: var(--down-ink); }
+.sq-arrow { stroke-width: 0.7; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.sq-arrow.up { stroke: var(--up-ink); }
+.sq-arrow.down { stroke: var(--down-ink); }
+.sq-side {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 5.2px;
+  fill: var(--muted);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.sq-side.solved { fill: var(--gold-ink); }
+.sq-area {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 4.2px;
+  fill: var(--faint);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.sq-badge circle { fill: var(--gold); }
+.sq-badge path { fill: none; stroke: var(--on-gold); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.sq-badge { transform-box: fill-box; transform-origin: center; animation: badge-in 0.6s var(--ease-out) both; }
+@keyframes badge-in {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: none; }
+}
+.sq-off { fill: var(--down-ink); }
+
+/* ===== the bars view (round 2) ===== */
+
+.bar-base { stroke: var(--line-2); stroke-width: 0.5; }
+.bar-guess {
+  fill: var(--sq-guess-fill);
+  stroke: var(--sq-guess-line);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.bar-target {
+  fill: var(--gold-wash);
+  stroke: var(--gold);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.bar-guess.solved,
+.bar-target.solved { fill: var(--gold-fill); stroke: var(--gold); }
+.bar-level {
+  stroke: var(--gold);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.8;
+}
+.bar-name {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 5px;
+  fill: var(--ink-2);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.bar-val {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 4.1px;
+  fill: var(--muted);
+  text-anchor: middle;
+}
+.bar-val.in { fill: var(--ink-2); }
+.bar-eq {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 9px;
+  fill: var(--gold-ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.reveal-big {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 8px;
+  fill: var(--gold-ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.reveal-small {
+  font-family: var(--f-sans);
+  font-weight: 600;
+  font-size: 3.6px;
+  letter-spacing: 0.35px;
+  fill: var(--ink-2);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.reveal { animation: rise 0.8s var(--ease-out) both; animation-delay: 0.3s; }
+
+/* ===== the corner magnifier ===== */
+
+.loupe-bg { fill: var(--panel-solid); }
+.loupe-ring {
+  fill: none;
+  stroke: var(--line-2);
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+.loupe-lead {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.7;
+}
+.loupe-target {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+}
+.loupe-guess {
+  fill: none;
+  stroke: var(--sq-guess-line);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.loupe-x {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 4.2px;
+  fill: var(--muted);
+  text-anchor: middle;
+  dominant-baseline: central;
+}

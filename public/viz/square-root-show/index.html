@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Square One</title>
+  <!-- Offline by design: every file below is in this folder. No CDN, no
+       fetch, no server. Double click this file and it runs from file://. -->
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/title.css">
+  <link rel="stylesheet" href="css/round.css">
+  <link rel="stylesheet" href="css/code.css">
+  <link rel="stylesheet" href="css/run.css">
+</head>
+<body>
+
+  <div class="lights" aria-hidden="true"></div>
+
+  <nav class="strip" id="strip" aria-label="Show progress">
+    <button class="brand" type="button" data-go="0" title="Start (0)"><span class="brand-logo"></span>SQUARE ONE</button>
+    <div class="tabs" role="tablist">
+      <button class="tab" type="button" data-go="1" title="Round 1 (1)"><span class="tab-num">1</span><span class="tab-name">The square</span><span class="tab-check-slot"></span></button>
+      <button class="tab" type="button" data-go="2" title="Round 2 (2)"><span class="tab-num">2</span><span class="tab-name">The golden number</span><span class="tab-check-slot"></span></button>
+      <span class="tab-sep" aria-hidden="true"></span>
+      <button class="tab" type="button" data-go="3" title="Final: live coding (3)"><span class="tab-num">3</span><span class="tab-name">The machine</span></button>
+      <button class="tab" type="button" data-go="4" title="Final: the code (4)"><span class="tab-num">4</span><span class="tab-name">The code</span></button>
+      <button class="tab" type="button" data-go="5" title="Final: the run (5)"><span class="tab-num">5</span><span class="tab-name">The run</span></button>
+    </div>
+    <div class="strip-tools">
+      <button class="icon-btn" type="button" id="theme-btn" title="Night or daylight studio (t)"></button>
+      <button class="icon-btn" type="button" id="full-btn" title="Full screen (f)"></button>
+    </div>
+  </nav>
+
+  <main class="stage" id="stage">
+
+    <!-- ===== 0: the title card ===== -->
+    <section class="page page-title" data-page="0" aria-label="Square One">
+      <div class="title-wrap">
+        <svg class="logo" viewBox="0 0 120 120" aria-hidden="true">
+          <rect class="lg-floor" x="10" y="16" width="94" height="94"/>
+          <rect class="lg-trail lg-draw d3" x="10" y="2" width="108" height="108"/>
+          <rect class="lg-trail lg-draw d4" x="10" y="37" width="73" height="73"/>
+          <rect class="lg-guess-bg" x="10" y="48" width="62" height="62"/>
+          <rect class="lg-guess" x="10" y="48" width="62" height="62"/>
+          <path class="lg-edge lg-draw d2" d="M10 48 H72 V110"/>
+          <rect class="lg-target lg-draw" x="10" y="16" width="94" height="94"/>
+        </svg>
+        <h1 class="show-title">SQUARE ONE</h1>
+        <p class="tagline">Guess. Check. Correct.</p>
+        <div class="rounds">
+          <button class="round-card" type="button" data-go="1" id="card-1">
+            <span class="rc-kicker">Round 1</span>
+            <span class="rc-name">The square</span>
+            <span class="rc-icon-slot" data-icon="square"></span>
+            <span class="rc-check-slot"></span>
+          </button>
+          <button class="round-card" type="button" data-go="2" id="card-2">
+            <span class="rc-kicker">Round 2</span>
+            <span class="rc-name">The golden number</span>
+            <span class="rc-icon-slot" data-icon="bars"></span>
+            <span class="rc-check-slot"></span>
+          </button>
+          <button class="round-card" type="button" data-go="3" id="card-3">
+            <span class="rc-kicker">Final</span>
+            <span class="rc-name">The machine</span>
+            <span class="rc-icon-slot" data-icon="code"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 1: round 1, the square ===== -->
+    <section class="page page-round" data-page="1" id="round1" aria-label="Round 1, the square">
+      <header class="round-head">
+        <div class="round-kicker">
+          <span class="chip loz"><span class="loz-in">Round 1</span></span>
+          <h2 class="round-title">The square</h2>
+        </div>
+        <p class="round-sub">Switzerland, 41&thinsp;285&nbsp;km<sup>2</sup>, folded into a perfect square. How long is each side?</p>
+      </header>
+      <div class="round-left">
+        <div class="bignum"><span class="bignum-val" id="r1-big">41&thinsp;285</span><span class="unit">km<sup>2</sup></span></div>
+        <div class="view-panel panel"><svg class="r1-view" role="img" aria-label="The target square and the latest guess"></svg></div>
+      </div>
+      <div class="round-right">
+        <div class="guess-row">
+          <form class="guess-bar loz" autocomplete="off">
+            <div class="loz-in">
+              <label class="guess-label" for="r1-input">w&nbsp;=</label>
+              <input class="guess-input" id="r1-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" maxlength="24">
+              <button class="btn-check btn-gold loz" type="submit"><span class="loz-in">Check<span class="icon-slot" data-icon="enter"></span></span></button>
+            </div>
+          </form>
+          <div class="round-tools">
+            <button class="icon-btn" type="button" data-act="undo" title="Undo last guess (Ctrl+Z)"><span class="icon-slot" data-icon="undo"></span></button>
+            <button class="icon-btn" type="button" data-act="reset" title="Reset round (click twice)"><span class="icon-slot" data-icon="reset"></span></button>
+          </div>
+          <div class="nudge" role="status" aria-live="polite"></div>
+        </div>
+        <div class="tbl round-table">
+          <div class="tbl-head">
+            <div class="th"><span class="th-word">Guess</span><span class="th-math">w</span></div>
+            <div class="th"><span class="th-word">Estimate</span><span class="th-math">w<sup>2</sup></span></div>
+            <div class="th"><span class="th-word">Loss</span><span class="th-math">|41&thinsp;285 &minus; w<sup>2</sup>|</span></div>
+            <div class="th upd"><span class="th-word">Update</span><span class="th-math">&nbsp;</span></div>
+          </div>
+          <div class="tbl-body" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 2: round 2, the golden number ===== -->
+    <section class="page page-round" data-page="2" id="round2" aria-label="Round 2, the golden number">
+      <header class="round-head">
+        <div class="round-kicker">
+          <span class="chip loz"><span class="loz-in">Round 2</span></span>
+          <h2 class="round-title">The golden number</h2>
+        </div>
+      </header>
+      <div class="round-left">
+        <div class="bignum eq"><span>w</span><span class="op">=</span><span>1</span><span class="op">+</span><span class="frac"><span>1</span><span>w</span></span></div>
+        <div class="view-panel panel"><svg class="r2-view" role="img" aria-label="Two bars, w and 1 + 1/w"></svg></div>
+      </div>
+      <div class="round-right">
+        <div class="guess-row">
+          <form class="guess-bar loz" autocomplete="off">
+            <div class="loz-in">
+              <label class="guess-label" for="r2-input">w&nbsp;=</label>
+              <input class="guess-input" id="r2-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" maxlength="24">
+              <button class="btn-check btn-gold loz" type="submit"><span class="loz-in">Check<span class="icon-slot" data-icon="enter"></span></span></button>
+            </div>
+          </form>
+          <div class="round-tools">
+            <button class="icon-btn" type="button" data-act="undo" title="Undo last guess (Ctrl+Z)"><span class="icon-slot" data-icon="undo"></span></button>
+            <button class="icon-btn" type="button" data-act="reset" title="Reset round (click twice)"><span class="icon-slot" data-icon="reset"></span></button>
+          </div>
+          <div class="nudge" role="status" aria-live="polite"></div>
+        </div>
+        <div class="tbl round-table">
+          <div class="tbl-head">
+            <div class="th"><span class="th-word">Guess</span><span class="th-math">w</span></div>
+            <div class="th"><span class="th-word">Estimate</span><span class="th-math">1 + 1/w</span></div>
+            <div class="th"><span class="th-word">Loss</span><span class="th-math">|w &minus; (1 + 1/w)|</span></div>
+            <div class="th upd"><span class="th-word">Update</span><span class="th-math">&nbsp;</span></div>
+          </div>
+          <div class="tbl-body" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 3: the final, live coding. Deliberately empty. ===== -->
+    <section class="page page-live" data-page="3" aria-label="Live coding">
+      <div class="editor" id="editor">
+        <div class="ed-gutter" aria-hidden="true"><pre class="ed-nums"></pre></div>
+        <div class="ed-body">
+          <div class="ed-curline" aria-hidden="true"></div>
+          <pre class="ed-hl" aria-hidden="true"><code></code></pre>
+          <textarea class="ed-input" wrap="off" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" aria-label="Code"></textarea>
+        </div>
+        <div class="ed-tools">
+          <button class="icon-btn" type="button" data-act="smaller" title="Smaller text">A<span class="pm">&minus;</span></button>
+          <button class="icon-btn" type="button" data-act="bigger" title="Bigger text">A<span class="pm">+</span></button>
+          <button class="icon-btn" type="button" data-act="clear" title="Clear (click twice)"><span class="icon-slot" data-icon="trash"></span></button>
+        </div>
+        <button class="btn-gold loz ed-run" type="button" data-act="run" title="Run (Ctrl+Enter)"><span class="loz-in">Run<span class="icon-slot" data-icon="play"></span></span></button>
+      </div>
+    </section>
+
+    <!-- ===== 4: the final, the code ===== -->
+    <section class="page page-code" data-page="4" aria-label="The code">
+      <div class="code-wrap">
+        <pre class="code-card" id="code-card"></pre>
+        <button class="btn-gold loz code-run" type="button" data-act="run" title="Run (Enter)"><span class="loz-in">Run<span class="icon-slot" data-icon="play"></span></span></button>
+      </div>
+    </section>
+
+    <!-- ===== 5: the final, the run ===== -->
+    <section class="page page-run" data-page="5" id="run" aria-label="The run">
+      <div class="run-top">
+        <div class="call" aria-label="The call"></div>
+        <div class="run-controls">
+          <button class="icon-btn" type="button" data-act="restart" title="Restart (r)"><span class="icon-slot" data-icon="restart"></span></button>
+          <button class="icon-btn" type="button" data-act="step" title="One step (s)"><span class="icon-slot" data-icon="step"></span></button>
+          <button class="play-btn" type="button" data-act="play" title="Play or pause (space)"><span class="icon-slot i-play" data-icon="play"></span><span class="icon-slot i-pause" data-icon="pause"></span></button>
+          <div class="speed" role="group" aria-label="Speed">
+            <button type="button" data-speed="0.5">0.5&times;</button>
+            <button type="button" data-speed="1" class="on">1&times;</button>
+            <button type="button" data-speed="2">2&times;</button>
+            <button type="button" data-speed="4">4&times;</button>
+          </div>
+          <button class="icon-btn" type="button" data-act="end" title="To the end (e)"><span class="icon-slot" data-icon="end"></span></button>
+        </div>
+      </div>
+      <div class="run-main">
+        <div class="tbl run-table">
+          <div class="tbl-head">
+            <div class="th"><span class="th-word">Step</span><span class="th-math">&nbsp;</span></div>
+            <div class="th"><span class="th-word">Guess</span><span class="th-math">w</span></div>
+            <div class="th"><span class="th-word">Estimate</span><span class="th-math">w * w</span></div>
+            <div class="th"><span class="th-word">Loss</span><span class="th-math">l</span></div>
+            <div class="th upd"><span class="th-word">Update</span><span class="th-math">alpha * l</span></div>
+          </div>
+          <div class="tbl-body"></div>
+        </div>
+        <div class="run-side">
+          <div class="view-panel panel"><svg class="run-view" role="img" aria-label="The target square and the machine's guess"></svg></div>
+          <div class="info-card panel" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/logic.js"></script>
+  <script src="js/highlight.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/views.js"></script>
+  <script src="js/round.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/run.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

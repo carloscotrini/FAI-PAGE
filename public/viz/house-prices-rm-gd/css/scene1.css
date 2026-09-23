@@ -1,7 +1,0 @@
-/* Scene 1: the table beside the scatter. */
-
-.scene[data-scene="1"] .data-table { width: 100%; }
-.scene[data-scene="1"] .panel-body { display: flex; }
-
-/* one line at the foot of the stage rather than three in a narrow column */
-.scene[data-scene="1"] .footnote { max-width: none; }

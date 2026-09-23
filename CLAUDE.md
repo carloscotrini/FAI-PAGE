@@ -37,6 +37,13 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   only. The rsync command in `README.md` refreshes them. Each page is browser
   only with vendored libraries, so it works from this subpath as it does from a
   laptop.
+- **Withdrawing a page is a manual `git rm` here.** The rsync in `README.md` has no
+  `--delete`, so a page removed from the private repository stays published until
+  its directory is removed from `public/viz/` by hand. On 23.09.2026 the genie's
+  riddle and the approximation game were withdrawn that way, and
+  `house-prices-rm-gd/` was replaced by `house-prices-rm/` (block 1) and
+  `two-grasshoppers/` (block 2). The same day `square-root-show/`, the opening
+  quiz show, was added; its `tests/` folder is not copied (`--exclude tests`).
 - Two things are LINKED on purpose, never copied here. The marble jar guessing
   page is served by `carloscotrini/fai-hs26`, because the block-3 slide prints
   that address and its QR code; a copy here would drift the day its sheet

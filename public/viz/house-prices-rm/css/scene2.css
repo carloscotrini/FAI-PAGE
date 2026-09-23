@@ -1,0 +1,10 @@
+/* Scene 2: the scatter on the left; on the right the readouts, the update line,
+   the code and the controls, in that order. */
+
+.side-col {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}

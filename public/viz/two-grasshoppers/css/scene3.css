@@ -1,0 +1,6 @@
+/* Scene 3: the stops, the bowl, and the two grasshoppers stacked on the
+   right. The two profile panels share one column, so their hills sit one
+   above the other at the same height scale. */
+
+.scene[data-scene="3"] .col { gap: 8px; }
+.scene[data-scene="3"] .panel-title .sym { font-size: 20px; }

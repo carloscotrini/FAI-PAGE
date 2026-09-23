@@ -1,0 +1,35 @@
+/* Scene 2: the forty stops across the whole stage, and the model in the top
+   left corner of the plot, which the data never reaches. */
+
+.scene[data-scene="2"] .panel-head .btn { margin-left: 14px; padding: 3px 12px; font-size: 14px; }
+
+.model-box {
+  position: absolute;
+  left: 92px;
+  top: 26px;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  align-items: baseline;
+  padding: 10px 18px 8px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.m-term {
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 30px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.m-term sup { font-size: 0.6em; }
+
+.m-gloss {
+  font-size: 15px;
+  color: var(--muted);
+  text-align: center;
+  letter-spacing: 0.03em;
+}
