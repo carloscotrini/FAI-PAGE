@@ -109,7 +109,7 @@ export function HomePage() {
           <section className="resources">
             <h2>Materials</h2>
             <p className="resources__note">
-              Every game and visualization of the day, by block. The slides go up once they are final.
+              The slides of each block, then every game and visualization of the day, by block.
             </p>
             {groups.map((g, gi) => (
               <div className="resgroup" key={gi}>
