@@ -630,7 +630,7 @@
         <span class="com"># 3) update</span>
         w = <input class="inline" data-e1="update" placeholder="w + ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
     <span class="kw">return</span> w</pre>
-      <p class="runs">Runs on Rosenweg 12: x = 234, y = 198789, w = 900, alpha = 0.002, max_rounds = 20.</p>
+      <p class="runs">Runs on Rosenweg 12: x = 234, y = 198789, w = 400, alpha = 0.002, max_rounds = 20.</p>
 
       <div class="btnrow">
         <button class="primary" id="e1check">Submit answers</button>
@@ -757,7 +757,7 @@
         <p class="segment-lead reveal d2">Eight houses, eight misses. The market averages them into <strong>one</strong>.</p>
         <div class="concept-card eq reveal d3" style="max-width:940px">
           <p class="eqn">For each house j:<br><span class="eq-row"><span>ŷⱼ = <span class="w">ŵ</span> &middot; xⱼ + <span class="b">b̂</span></span><span>lⱼ = yⱼ &minus; ŷⱼ</span><span class="formula" aria-label="l equals one over n times the sum over j of l j"><span>l</span><span>=</span><span class="frac"><span class="num">1</span><span class="den">n</span></span><span class="sum"><span class="lim">n</span><span class="sigma">&Sigma;</span><span class="lim">j = 1</span></span><span>l<sub>j</sub></span></span></span></p>
-          <p class="eqn" style="margin-top:14px"><span class="w">ŵ</span> &larr; <span class="w">ŵ</span> + α<sub>w</sub> &middot; l&nbsp;&nbsp;&nbsp;&nbsp; <span class="b">b̂</span> &larr; <span class="b">b̂</span> + α<sub>b</sub> &middot; l&nbsp;&nbsp;&nbsp;&nbsp; until |l| &lt; ε</p>
+          <p class="eqn" style="margin-top:14px"><span class="w">ŵ</span> &larr; <span class="w">ŵ</span> + α<sub>w</sub> &middot; l&nbsp;&nbsp;&nbsp;&nbsp; <span class="b">b̂</span> &larr; <span class="b">b̂</span> + α<sub>b</sub> &middot; l&nbsp;&nbsp;&nbsp;&nbsp; max_rounds times</p>
         </div>
         <p class="segment-lead reveal d4" style="margin-top:22px">Let's write the batch version.</p>
       </div>
@@ -772,7 +772,7 @@
       <div class="taskbox reveal d1">
         <h3>Your task</h3>
         <ul>
-          <li><strong>Given:</strong> the loops, the list of losses, the average and the stopping test.</li>
+          <li><strong>Given:</strong> the loops, the list of losses and the average.</li>
           <li><strong>To do:</strong> fill in the four blanks: the <strong>prediction</strong> with a base price, the <strong>miss</strong>, and the two <strong>updates</strong>.</li>
         </ul>
       </div>
@@ -791,16 +791,14 @@
     <span class="kw">return</span> <span class="fn">sum</span>(losses) / n
 
 
-<span class="kw">def</span> <span class="fn">fit_street</span>(x, y, w, b, alpha_w, alpha_b, eps, max_rounds):
+<span class="kw">def</span> <span class="fn">fit_street</span>(x, y, w, b, alpha_w, alpha_b, max_rounds):
     <span class="kw">for</span> t <span class="kw">in</span> <span class="fn">range</span>(max_rounds):
         loss = <span class="fn">street_loss</span>(x, y, w, b)
-        <span class="kw">if</span> <span class="fn">abs</span>(loss) &lt; eps:
-            <span class="kw">break</span>
         <span class="com"># update: both use the same loss</span>
         w = <input class="inline" data-e2="upw" placeholder="w + ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
         b = <input class="inline" data-e2="upb" placeholder="b + ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
     <span class="kw">return</span> w, b</pre>
-      <p class="runs">Runs on the eight houses with w = 0, b = 0, alpha_w = 0.002, alpha_b = 0.08, eps = 500, max_rounds = 100.</p>
+      <p class="runs">Runs on the eight houses with w = 0, b = 0, alpha_w = 0.002, alpha_b = 0.08, max_rounds = 40.</p>
 
       <div class="btnrow">
         <button class="primary" id="e2check">Submit answers</button>
@@ -822,7 +820,7 @@
     <div class="segment sim-seg top" id="learn-one">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Watch it learn <span class="dim">&middot;</span> one house.</h2>
-        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_one_house</code> on Rosenweg 12, from <code>w = 900</code>, for 20 rounds. Pick a step size <code>α</code> and run it.</p>
+        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_one_house</code> on Rosenweg 12, from <code>w = 400</code>, for 20 rounds. Pick a step size <code>α</code> and run it.</p>
         <div class="sim-grid reveal d3">
           <div class="sim-controls">
             <div class="control-panel">
@@ -849,7 +847,7 @@
     <div class="segment sim-seg top" id="learn-street">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Watch it learn <span class="dim">&middot;</span> the street.</h2>
-        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_street</code> on all eight houses, from <code>w = 0, b = 0</code>. Both knobs hear the same average miss. <br> Change the step sizes and watch where the line lands.</p>
+        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_street</code> on all eight houses, from <code>w = 0, b = 0</code>, for 40 rounds. Both knobs hear the same average miss. <br> Change the step sizes and watch where the line lands.</p>
         <div class="sim-grid reveal d3">
           <div class="sim-controls">
             <div class="control-panel">
@@ -920,11 +918,11 @@
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Two knobs, one miss.</h2>
         <div class="quiz-q reveal d2" data-q="3" data-correct="B" data-hint="Each round moves w by α_w · l and b by α_b · l. What stays the same from one round to the next?">
-          <p class="quiz-question">Two runs of <code>fit_street</code> start from <code>w = 0, b = 0</code>, and both stop with the average miss below <code>ε</code>. One convinces all eight owners, the other only five. What made the difference?</p>
+          <p class="quiz-question">Two runs of <code>fit_street</code> start from <code>w = 0, b = 0</code>, and both end with an average miss of almost zero. One convinces all eight owners, the other only five. What made the difference?</p>
           <div class="opts">
             <label><input type="radio" name="q3" value="A"> <span>A) One run took more rounds than the other.</span></label>
             <label><input type="radio" name="q3" value="B"> <span>B) The ratio of the two step sizes, <code>α<sub>w</sub></code> to <code>α<sub>b</sub></code>.</span></label>
-            <label><input type="radio" name="q3" value="C"> <span>C) The tolerance <code>ε</code>.</span></label>
+            <label><input type="radio" name="q3" value="C"> <span>C) The order in which the houses were read.</span></label>
             <label><input type="radio" name="q3" value="D"> <span>D) Nothing: the same loop always ends on the same line.</span></label>
           </div>
           <div class="btnrow"><button class="primary q-submit">Submit answer</button></div>
@@ -954,8 +952,8 @@
   // #ex2 opens on that slide. Slide ids: cover, game30, steps3, rules4, shout,
   // keys, level1, loop, which-way, fixed, ex1, level2, knobs, street, ex2,
   // learn-one, learn-street, quiz-1, quiz-2, quiz-3, end. Flags follow, joined by &:
-  //   play1=900,850,849       appraise Rosenweg 12 at each of these w
-  //   play2=850:0,720:30000   appraise the street at each w:b
+  //   play1=500,600,700       nudge Rosenweg 12 to each of these w (it starts at 400)
+  //   play2=500:0,700:30000   nudge the street to each w:b (it starts at 400:0)
   //   fill                    type the right answers into both exercises and submit
   //   wrong                   the same with one wrong answer in each
   //   run1                    run the one-house loop to its end (alpha=0.004 sets the step)
@@ -1477,7 +1475,7 @@
     function run(instant){
       if (timer) return;
       const alpha = parseFloat(aIn.value);
-      const rows = []; let w = 900;
+      const rows = []; let w = 400;
       for (let t = 0; t < MAXR; t++){
         const yhat = w * HOUSE1.x, loss = HOUSE1.y - yhat;
         rows.push({ t, w, yhat, loss });
@@ -1494,16 +1492,17 @@
     }
     D1.run = run;
     runBtn.addEventListener('click', () => run(false));
-    chart.render([], { xMax: 5, yMin: 800, yMax: 950, target: TARGET });
+    chart.render([], { xMax: 5, yMin: 350, yMax: 950, target: TARGET });
   })();
 
   // ===== Watch it learn 2: the street =====
   // fit_street as the exercise writes it: one average miss per round, and both
   // knobs move with it, each by its own step size. Every round therefore moves
-  // (w, b) in the same direction (alpha_w, alpha_b), and the loop stops on the
-  // first line through the average house that it reaches: the ratio of the two
-  // step sizes decides which line that is. At the defaults, 0.002 and 0.08, it
-  // lands next to the least-squares line of the eight houses in 13 rounds.
+  // (w, b) in the same direction (alpha_w, alpha_b), and the loop settles on the
+  // line through the average house that this direction reaches: the ratio of
+  // the two step sizes decides which line that is. There is no stopping test;
+  // it runs 40 rounds. At the defaults, 0.002 and 0.08, it settles at
+  // w = 726.70, b = 29 068, next to the least-squares line, all eight convinced.
   const D2 = {};
   (function(){
     const chartHost = document.getElementById('d2_chart'); if (!chartHost) return;
@@ -1513,7 +1512,7 @@
     const abIn = document.getElementById('d2_alphaB'), abOut = document.getElementById('d2_abOut');
     const wEl = document.getElementById('d2_w'), bEl = document.getElementById('d2_b'), lEl = document.getElementById('d2_l'), cEl = document.getElementById('d2_conv');
     const verdict = document.getElementById('d2_verdict'), runBtn = document.getElementById('d2_run');
-    const MAXR = 150;
+    const MAXR = 40;
     let timer = null, cur = { w: 0, b: 0 }, trace = [];
     awIn.addEventListener('input', () => { awOut.textContent = parseFloat(awIn.value).toFixed(4); });
     abIn.addEventListener('input', () => { abOut.textContent = parseFloat(abIn.value).toFixed(2); });
@@ -1530,32 +1529,27 @@
       lEl.className = 'stat-value ' + (Math.abs(l) < EPS1 ? 'okv' : (l > 0 ? 'low' : 'high'));
       cEl.textContent = convinced(cur.w, cur.b) + '/' + N;
     }
-    function finish(frames, stopped, diverged){
+    function finish(frames, diverged){
       runBtn.disabled = false; awIn.disabled = false; abIn.disabled = false;
       const rounds = frames.length - 1, k = convinced(cur.w, cur.b);
-      const rs = `${rounds} round${rounds === 1 ? '' : 's'}`;
-      if (stopped && k === N){
-        verdict.className = 'verdict show good';
-        verdict.textContent = `${CHECK} Stopped after ${rs}. All ${N} owners convinced.`;
-      } else if (stopped){
-        verdict.className = 'verdict show';
-        verdict.textContent = `Stopped after ${rs}, but only ${k} of ${N} owners convinced.`;
-      } else if (diverged){
+      if (diverged){
         verdict.className = 'verdict show bad';
         verdict.textContent = CROSS + ' Diverged.';
+      } else if (k === N){
+        verdict.className = 'verdict show good';
+        verdict.textContent = `${CHECK} After ${rounds} rounds: all ${N} owners convinced.`;
       } else {
         verdict.className = 'verdict show';
-        verdict.textContent = `Still closing in after ${MAXR} rounds.`;
+        verdict.textContent = `After ${rounds} rounds: only ${k} of ${N} owners convinced.`;
       }
     }
     function run(instant){
       if (timer) return;
       const alphaW = parseFloat(awIn.value), alphaB = parseFloat(abIn.value);
-      const frames = []; let w = 0, b = 0, stopped = false, diverged = false;
+      const frames = []; let w = 0, b = 0, diverged = false;
       frames.push({ w, b, l: streetLoss(w, b) });
       for (let t = 0; t < MAXR; t++){
         const loss = streetLoss(w, b);
-        if (Math.abs(loss) < EPS1){ stopped = true; break; }
         w = w + alphaW * loss;               // both knobs hear the same average miss,
         b = b + alphaB * loss;               // each with its own step size
         frames.push({ w, b, l: streetLoss(w, b) });
@@ -1565,13 +1559,13 @@
       if (instant){
         trace = frames.map((f, i) => ({ x: i, y: f.l }));
         cur = { w: frames[frames.length - 1].w, b: frames[frames.length - 1].b };
-        draw(); finish(frames, stopped, diverged); return;
+        draw(); finish(frames, diverged); return;
       }
       runBtn.disabled = true; awIn.disabled = true; abIn.disabled = true;
       trace = []; let i = 0;
       timer = setInterval(() => {
         const f = frames[i]; cur = { w: f.w, b: f.b }; trace.push({ x: i, y: f.l }); draw(); i++;
-        if (i >= frames.length){ clearInterval(timer); timer = null; finish(frames, stopped, diverged); }
+        if (i >= frames.length){ clearInterval(timer); timer = null; finish(frames, diverged); }
       }, 120);
     }
     D2.run = run;
