@@ -32,10 +32,9 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   and `blocks/`). When the plan changes, change `day.ts` to match.
 - **Blocks 3 and 4 were swapped on 23.09.2026**, on the lecturer's order:
   statistical learning theory and agentic AI at 13:00, ensembles at 15:00, so
-  the marble jar and the UN games are block 4 now. Until the private
-  repository's `materials/block-3/` and `materials/block-4/` folders are swapped
-  as well, `block-3.pdf` is the ensembles deck, so check what a PDF holds before
-  publishing it under a block label.
+  the marble jar and the UN games are block 4 now. The private repository's
+  `materials/block-3/` and `materials/block-4/` folders and their PDFs swapped
+  the same day, so `block-N.pdf` is block N's deck again.
 - **The slides are `SOON` on purpose.** The lecturer has cuts to make in blocks
   1, 2 and 3, and the BMAI precedent is to publish a deck when it is final.
   Publish one only when he says so; the procedure is in `README.md`.

@@ -128,9 +128,6 @@ export const day: Day = {
     // The decks are SOON until the lecturer has made the cuts for the day.
     // Publishing: copy block-N.pdf from fai-hs26-private/materials/block-N/slides/
     // into public/slides/ and replace SOON with deck('block-N.pdf').
-    // Blocks 3 and 4 were swapped on 23.09.2026. Until the private repository's
-    // block-3/ and block-4/ folders are swapped too, block-3.pdf is the ensembles
-    // deck: check what a PDF holds before publishing it under a label.
     { group: 'Slides', label: 'Block 1, learning by guessing', url: SOON },
     { group: 'Slides', label: 'Block 2, gradient descent and neural networks', url: SOON },
     { group: 'Slides', label: 'Block 3, statistical learning theory and agentic AI', url: SOON },
