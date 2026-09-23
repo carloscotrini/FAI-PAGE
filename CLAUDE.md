@@ -40,7 +40,9 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   `fai-hs26-private/materials/minimal/block-N-minimal.pdf`, the manager-level
   cut of each block. That folder is rebuilt only on his command, so copy it
   again, or publish the full decks instead, only when he says so. The
-  procedure is in `README.md`.
+  procedure is in `README.md`. **They are linked from the schedule**, as a
+  "Slides" chip on each of the four lectures, and on his word they are not
+  listed under Materials.
 - `public/viz/` holds copies of `fai-hs26-private/materials/viz/`, runtime files
   only. The rsync command in `README.md` refreshes them. Each page is browser
   only with vendored libraries, so it works from this subpath as it does from a

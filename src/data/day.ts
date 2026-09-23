@@ -55,12 +55,19 @@ export const day: Day = {
   summary:
     'One day, four blocks. It starts from the oldest idea in the field, learning by guessing and correcting, and follows it through gradient descent and neural networks to statistical learning theory, language models and agents, then ends with ensembles and the wisdom of the crowd. Every block has a hands-on part that runs in the browser, with nothing to install.',
 
+  // Each lecture's "Slides" chip is the MINIMAL, manager-level version of its
+  // block, published 23.09.2026 on the lecturer's word: public/slides/, copied
+  // unchanged from fai-hs26-private/materials/minimal/block-N-minimal.pdf. That
+  // folder is rebuilt only on his command; copy again only when he says so.
   sessions: [
     {
       time: '08:30',
       title: 'Learning by guessing: Popper, Robbins-Monro and house prices',
       type: 'lecture',
-      links: [{ label: 'SQUARE ONE, the opening show', url: viz('square-root-show') }],
+      links: [
+        { label: 'Slides', url: deck('block-1-minimal.pdf') },
+        { label: 'SQUARE ONE, the opening show', url: viz('square-root-show') },
+      ],
     },
     {
       time: '09:30',
@@ -77,7 +84,10 @@ export const day: Day = {
       time: '10:30',
       title: 'Gradient descent and neural networks',
       type: 'lecture',
-      links: [{ label: 'One grasshopper, then two', url: viz('two-grasshoppers') }],
+      links: [
+        { label: 'Slides', url: deck('block-2-minimal.pdf') },
+        { label: 'One grasshopper, then two', url: viz('two-grasshoppers') },
+      ],
     },
     {
       time: '11:30',
@@ -95,6 +105,7 @@ export const day: Day = {
       time: '13:00',
       title: 'Statistical learning theory and agentic AI',
       type: 'lecture',
+      links: [{ label: 'Slides', url: deck('block-3-minimal.pdf') }],
     },
     {
       time: '14:00',
@@ -108,6 +119,7 @@ export const day: Day = {
       title: 'Ensembles: the wisdom of the crowd',
       type: 'lecture',
       links: [
+        { label: 'Slides', url: deck('block-4-minimal.pdf') },
         { label: 'Your row and your code', url: GUESSING_PAGE },
         { label: 'The marble jar', url: viz('marble-jar', 'wisdom-of-crowds.html') },
       ],
@@ -124,16 +136,9 @@ export const day: Day = {
     { time: '16:20', title: 'Wrap-up, questions and feedback', type: 'lecture' },
   ],
 
+  // The slides are NOT listed here: the lecturer wants them in the schedule,
+  // one "Slides" chip per lecture (23.09.2026).
   resources: [
-    // Published 23.09.2026 on the lecturer's word: the MINIMAL, manager-level
-    // version of each block, copied unchanged from
-    // fai-hs26-private/materials/minimal/block-N-minimal.pdf into public/slides/.
-    // That folder is rebuilt only on his command; copy again only when he says so.
-    { group: 'Slides', label: 'Block 1, learning by guessing', url: deck('block-1-minimal.pdf') },
-    { group: 'Slides', label: 'Block 2, gradient descent and neural networks', url: deck('block-2-minimal.pdf') },
-    { group: 'Slides', label: 'Block 3, statistical learning theory and agentic AI', url: deck('block-3-minimal.pdf') },
-    { group: 'Slides', label: 'Block 4, ensembles', url: deck('block-4-minimal.pdf') },
-
     {
       group: 'Block 1, learning by guessing',
       label: 'SQUARE ONE, the opening show',

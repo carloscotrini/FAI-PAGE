@@ -44,10 +44,11 @@ command, and so is this copy. When he says so, copy again from the site root:
 cp ../fai-hs26-private/materials/minimal/block-*-minimal.pdf public/slides/
 ```
 
-then push. The links in `src/data/day.ts` are `deck('block-N-minimal.pdf')`. To
-publish a full deck instead, copy `materials/block-N/slides/block-N.pdf` and
-point its entry at `deck('block-N.pdf')`. A deck not yet published takes `SOON`
-and shows as "Soon".
+then push. Each lecture in the schedule links its deck as a "Slides" chip,
+`deck('block-N-minimal.pdf')` in `src/data/day.ts`; on the lecturer's word the
+slides are not listed under Materials. To publish a full deck instead, copy
+`materials/block-N/slides/block-N.pdf` and point that chip at
+`deck('block-N.pdf')`.
 
 ## Refreshing a visualization
 
