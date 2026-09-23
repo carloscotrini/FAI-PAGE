@@ -43,6 +43,12 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   procedure is in `README.md`. **They are linked from the schedule**, as a
   "Slides" chip on each of the four lectures, and on his word they are not
   listed under Materials.
+- **One link, one place.** Since the evening of 23.09.2026 the schedule
+  carries nothing but those Slides chips, and every game, visualization and
+  outside page is listed once, under Materials, with its note. Until then each
+  game was also a chip on its session, so every link showed twice (the UN games
+  three times), and the lecturer asked for the duplicates to go. Add a new page
+  under Materials only.
 - `public/viz/` holds copies of `fai-hs26-private/materials/viz/`, runtime files
   only. The rsync command in `README.md` refreshes them. Each page is browser
   only with vendored libraries, so it works from this subpath as it does from a
@@ -54,11 +60,13 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   `house-prices-rm-gd/` was replaced by `house-prices-rm/` (block 1) and
   `two-grasshoppers/` (block 2). The same day `square-root-show/`, the opening
   quiz show, was added; its `tests/` folder is not copied (`--exclude tests`).
-- Two things are LINKED on purpose, never copied here. The marble jar guessing
-  page is served by `carloscotrini/fai-hs26`, because the ensembles slide
-  (block 4) prints that address and its QR code; a copy here would drift the
-  day its sheet address is filled in. The spy game is served by the BMAI course
-  site, where the agentic AI slide (block 3) points.
+- Three things are LINKED on purpose, never copied here. The marble jar
+  guessing page is served by `carloscotrini/fai-hs26`, because the ensembles
+  slide (block 4) prints that address and its QR code; a copy here would drift.
+  The shared sheet of the same round is linked through its short address,
+  `fai-hs26/sheet/`, which forwards to the Google Sheet and is what the slide
+  prints (`SHEET` in `day.ts`). The spy game is served by the BMAI course site,
+  where the agentic AI slide (block 3) points.
 
 ## Deploying
 

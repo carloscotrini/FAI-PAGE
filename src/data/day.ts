@@ -39,6 +39,13 @@ export const viz = (name: string, page = 'index.html'): string =>
  */
 export const GUESSING_PAGE = 'https://carloscotrini.github.io/fai-hs26/marble-jar-guessing/';
 
+/**
+ * The marble jar round's shared Google Sheet, through the short address the
+ * block 4 slide prints: fai-hs26/sheet/ forwards to the sheet itself. Link the
+ * short address, so a change of sheet is one edit in fai-hs26.
+ */
+export const SHEET = 'https://carloscotrini.github.io/fai-hs26/sheet/';
+
 /** The spy game, served by the BMAI course site, where part 2's slide points. */
 export const SPY_GAME = 'https://eth-bmai-hs26.github.io/BMAI-PAGE/viz/we2/spy-game/';
 
@@ -67,41 +74,24 @@ export const day: Day = {
       time: '08:30',
       title: 'Learning by guessing: Popper, Robbins-Monro and house prices',
       type: 'lecture',
-      links: [
-        { label: 'Slides', url: deck('block-1-minimal.pdf') },
-        { label: 'SQUARE ONE, the opening show', url: viz('square-root-show') },
-      ],
+      links: [{ label: 'Slides', url: deck('block-1-minimal.pdf') }],
     },
     {
       time: '09:30',
       title: 'Guess, check, correct',
       type: 'lab',
-      links: [
-        { label: 'Square roots, by hand', url: viz('square-roots-robbins-monro', 'cx_robbins-monro.html') },
-        { label: 'Price the street', url: viz('price-the-street', 'cx_house-pricing-game.html') },
-        { label: 'House prices, one house at a time', url: viz('house-prices-rm') },
-      ],
     },
     { time: '10:00', title: 'Coffee break, until 10:30', type: 'break' },
     {
       time: '10:30',
       title: 'Gradient descent and neural networks',
       type: 'lecture',
-      links: [
-        { label: 'Slides', url: deck('block-2-minimal.pdf') },
-        { label: 'One grasshopper, then two', url: viz('two-grasshoppers') },
-      ],
+      links: [{ label: 'Slides', url: deck('block-2-minimal.pdf') }],
     },
     {
       time: '11:30',
       title: 'The grasshopper, and a network that bends',
       type: 'lab',
-      links: [
-        { label: 'Grasshopper', url: viz('grasshopper', 'cx_grasshopper.html') },
-        { label: 'Ramps, bumps, anything', url: viz('universal-approximation') },
-        { label: 'The curve and the landscape', url: viz('nn-fit-landscape') },
-        { label: 'TensorFlow Playground', url: PLAYGROUND },
-      ],
     },
     { time: '12:00', title: 'Lunch, until 13:00', type: 'break' },
     {
@@ -114,34 +104,26 @@ export const day: Day = {
       time: '14:00',
       title: 'The Hidden Layer: play the spy game',
       type: 'lab',
-      links: [{ label: 'The spy game', url: SPY_GAME }],
     },
     { time: '14:30', title: 'Coffee break, until 15:00', type: 'break' },
     {
       time: '15:00',
       title: 'Ensembles: tax the knobs, or ask a crowd',
       type: 'lecture',
-      links: [
-        { label: 'Slides', url: deck('block-4-minimal.pdf') },
-        { label: 'The UN games', url: viz('un-games') },
-        { label: 'Your row and your code', url: GUESSING_PAGE },
-        { label: 'The marble jar', url: viz('marble-jar', 'wisdom-of-crowds.html') },
-      ],
+      links: [{ label: 'Slides', url: deck('block-4-minimal.pdf') }],
     },
     {
       time: '16:00',
       title: 'The UN games, in your hands',
       type: 'lab',
-      links: [
-        { label: 'The UN games', url: viz('un-games') },
-        { label: 'The forest grows', url: viz('random-forest-deepdive') },
-      ],
     },
     { time: '16:20', title: 'Wrap-up, questions and feedback', type: 'lecture' },
   ],
 
   // The slides are NOT listed here: the lecturer wants them in the schedule,
-  // one "Slides" chip per lecture (23.09.2026).
+  // one "Slides" chip per lecture (23.09.2026). And every game is listed ONLY
+  // here, since the same evening: the schedule carried them too, and he asked
+  // for the duplicate links to go. One link, one place.
   resources: [
     {
       group: 'Block 1, learning by guessing',
@@ -217,6 +199,12 @@ export const day: Day = {
       label: 'Your row and your code, for the marble jar',
       url: GUESSING_PAGE,
       note: 'Nothing to type: it picks four letters for you and tells you which row of the shared sheet to write your guess in.',
+    },
+    {
+      group: 'Block 4, ensembles',
+      label: 'The shared sheet, for your guess',
+      url: SHEET,
+      note: 'The Google Sheet the room\'s guesses go into. Type your code and your guess in the row the page gave you. In a private browser tab you stay anonymous there.',
     },
     {
       group: 'Block 4, ensembles',

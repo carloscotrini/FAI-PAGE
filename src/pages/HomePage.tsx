@@ -96,7 +96,7 @@ export function HomePage() {
         <div className="container">
           <div className="section__head">
             <h2>The day</h2>
-            <p>Four blocks of 90 minutes: a lecture, then a hands-on part in the browser.</p>
+            <p>Four blocks of 90 minutes: a lecture, then a hands-on part in the browser. Each lecture's slides are on its row; the games are under Materials, by block.</p>
           </div>
           <div className="days days--single">
             <ScheduleTable day="Saturday" date="26 September 2026" sessions={day.sessions} room={day.place} />
