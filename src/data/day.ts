@@ -53,12 +53,15 @@ export const day: Day = {
   place: 'Stampfenbachstrasse 73/75, Zürich',
   lecturer: 'Carlos Cotrini',
   summary:
-    'One day, four blocks. It starts from the oldest idea in the field, learning by guessing and correcting, and follows it through gradient descent and neural networks to statistical learning theory, language models and agents, then ends with ensembles and the wisdom of the crowd. Every block has a hands-on part that runs in the browser, with nothing to install.',
+    'One day, four blocks. It starts from the oldest idea in the field, learning by guessing and correcting, and follows it through gradient descent and neural networks to statistical learning theory, language models and agents, then ends with a model that memorises and the two ways to tame it: a tax on its knobs, or a crowd. Every block has a hands-on part that runs in the browser, with nothing to install.',
 
   // Each lecture's "Slides" chip is the MINIMAL, manager-level version of its
   // block, published 23.09.2026 on the lecturer's word: public/slides/, copied
   // unchanged from fai-hs26-private/materials/minimal/block-N-minimal.pdf. That
   // folder is rebuilt only on his command; copy again only when he says so.
+  // Block 4's minimal deck predates that block's storyline of 23.09.2026 (the
+  // full deck was rearranged the same evening), so it keeps the old order until
+  // he asks for a rebuild.
   sessions: [
     {
       time: '08:30',
@@ -116,21 +119,22 @@ export const day: Day = {
     { time: '14:30', title: 'Coffee break, until 15:00', type: 'break' },
     {
       time: '15:00',
-      title: 'Ensembles: the wisdom of the crowd',
+      title: 'Ensembles: tax the knobs, or ask a crowd',
       type: 'lecture',
       links: [
         { label: 'Slides', url: deck('block-4-minimal.pdf') },
+        { label: 'The UN games', url: viz('un-games') },
         { label: 'Your row and your code', url: GUESSING_PAGE },
         { label: 'The marble jar', url: viz('marble-jar', 'wisdom-of-crowds.html') },
       ],
     },
     {
       time: '16:00',
-      title: 'Bagging, random forests and the UN games',
+      title: 'The UN games, in your hands',
       type: 'lab',
       links: [
-        { label: 'The forest grows', url: viz('random-forest-deepdive') },
         { label: 'The UN games', url: viz('un-games') },
+        { label: 'The forest grows', url: viz('random-forest-deepdive') },
       ],
     },
     { time: '16:20', title: 'Wrap-up, questions and feedback', type: 'lecture' },
@@ -204,6 +208,12 @@ export const day: Day = {
 
     {
       group: 'Block 4, ensembles',
+      label: 'The UN games',
+      url: viz('un-games'),
+      note: "You are the UN's new forecaster. Eleven scenes: a model that memorises the countries it saw, one built from nonsense that scores perfectly on them, and two models that predict about equally well and disagree about what mattered.",
+    },
+    {
+      group: 'Block 4, ensembles',
       label: 'Your row and your code, for the marble jar',
       url: GUESSING_PAGE,
       note: 'Nothing to type: it picks four letters for you and tells you which row of the shared sheet to write your guess in.',
@@ -219,12 +229,6 @@ export const day: Day = {
       label: 'The forest grows',
       url: viz('random-forest-deepdive'),
       note: 'A tree cannot draw a spiral. A hundred of them, each grown on a resample and averaged, can.',
-    },
-    {
-      group: 'Block 4, ensembles',
-      label: 'The UN games',
-      url: viz('un-games'),
-      note: 'Spurious regression in eleven scenes: a model built from nonsense that scores perfectly on the countries it saw, and two models that predict about equally well and disagree about what mattered.',
     },
   ],
 };
