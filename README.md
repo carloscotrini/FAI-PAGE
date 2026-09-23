@@ -55,5 +55,5 @@ rsync -a --exclude precompute --exclude "*.py" --exclude "verify*" \
 
 Two things on the page are links rather than copies, on purpose: the marble jar
 guessing page, served by https://github.com/carloscotrini/fai-hs26 because the
-block-3 slide prints its address in a QR code, and the spy game, served by the
-BMAI course site, where the block-4 slide points.
+ensembles slide (block 4) prints its address in a QR code, and the spy game,
+served by the BMAI course site, where the agentic AI slide (block 3) points.

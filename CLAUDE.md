@@ -30,8 +30,14 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
 - `src/data/day.ts` is the single source of truth. The plan it follows lives in
   the private repository `carloscotrini/fai-hs26-private` (`docs/schedule.md`
   and `blocks/`). When the plan changes, change `day.ts` to match.
+- **Blocks 3 and 4 were swapped on 23.09.2026**, on the lecturer's order:
+  statistical learning theory and agentic AI at 13:00, ensembles at 15:00, so
+  the marble jar and the UN games are block 4 now. Until the private
+  repository's `materials/block-3/` and `materials/block-4/` folders are swapped
+  as well, `block-3.pdf` is the ensembles deck, so check what a PDF holds before
+  publishing it under a block label.
 - **The slides are `SOON` on purpose.** The lecturer has cuts to make in blocks
-  1, 2 and 4, and the BMAI precedent is to publish a deck when it is final.
+  1, 2 and 3, and the BMAI precedent is to publish a deck when it is final.
   Publish one only when he says so; the procedure is in `README.md`.
 - `public/viz/` holds copies of `fai-hs26-private/materials/viz/`, runtime files
   only. The rsync command in `README.md` refreshes them. Each page is browser
@@ -45,10 +51,10 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   `two-grasshoppers/` (block 2). The same day `square-root-show/`, the opening
   quiz show, was added; its `tests/` folder is not copied (`--exclude tests`).
 - Two things are LINKED on purpose, never copied here. The marble jar guessing
-  page is served by `carloscotrini/fai-hs26`, because the block-3 slide prints
-  that address and its QR code; a copy here would drift the day its sheet
-  address is filled in. The spy game is served by the BMAI course site, where
-  the block-4 slide points.
+  page is served by `carloscotrini/fai-hs26`, because the ensembles slide
+  (block 4) prints that address and its QR code; a copy here would drift the
+  day its sheet address is filled in. The spy game is served by the BMAI course
+  site, where the agentic AI slide (block 3) points.
 
 ## Deploying
 

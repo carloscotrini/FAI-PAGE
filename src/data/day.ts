@@ -33,8 +33,8 @@ export const viz = (name: string, page = 'index.html'): string =>
 
 /**
  * The marble jar guessing page. Hosted on its own, by the public repository
- * carloscotrini/fai-hs26, because the block-3 slide prints this address and
- * encodes it in a QR code. Link it; do not copy it here, or the two copies
+ * carloscotrini/fai-hs26, because the ensembles deck (block 4) prints this
+ * address and encodes it in a QR code. Link it; do not copy it here, or the two copies
  * drift apart the day the sheet address is filled in.
  */
 export const GUESSING_PAGE = 'https://carloscotrini.github.io/fai-hs26/marble-jar-guessing/';
@@ -53,7 +53,7 @@ export const day: Day = {
   place: 'Stampfenbachstrasse 73/75, Zürich',
   lecturer: 'Carlos Cotrini',
   summary:
-    'One day, four blocks. It starts from the oldest idea in the field, learning by guessing and correcting, and follows it through gradient descent and neural networks, through ensembles and the wisdom of the crowd, to statistical learning theory, language models and agents. Every block has a hands-on part that runs in the browser, with nothing to install.',
+    'One day, four blocks. It starts from the oldest idea in the field, learning by guessing and correcting, and follows it through gradient descent and neural networks to statistical learning theory, language models and agents, then ends with ensembles and the wisdom of the crowd. Every block has a hands-on part that runs in the browser, with nothing to install.',
 
   sessions: [
     {
@@ -193,35 +193,35 @@ export const day: Day = {
     },
 
     {
-      group: 'Block 3, ensembles',
+      group: 'Block 3, statistical learning theory and agentic AI',
+      label: 'The Hidden Layer, the spy game',
+      url: SPY_GAME,
+      note: 'Play the mission by hand, then watch an AI agent play it. Playing by hand needs no key.',
+    },
+
+    {
+      group: 'Block 4, ensembles',
       label: 'Your row and your code, for the marble jar',
       url: GUESSING_PAGE,
       note: 'Nothing to type: it picks four letters for you and tells you which row of the shared sheet to write your guess in.',
     },
     {
-      group: 'Block 3, ensembles',
+      group: 'Block 4, ensembles',
       label: 'The marble jar',
       url: viz('marble-jar', 'wisdom-of-crowds.html'),
       note: 'How many marbles are in the jar? The room, averaged, against every single guess.',
     },
     {
-      group: 'Block 3, ensembles',
+      group: 'Block 4, ensembles',
       label: 'The forest grows',
       url: viz('random-forest-deepdive'),
       note: 'A tree cannot draw a spiral. A hundred of them, each grown on a resample and averaged, can.',
     },
     {
-      group: 'Block 3, ensembles',
+      group: 'Block 4, ensembles',
       label: 'The UN games',
       url: viz('un-games'),
       note: 'Spurious regression in eleven scenes: a model built from nonsense that scores perfectly on the countries it saw, and two models that predict about equally well and disagree about what mattered.',
-    },
-
-    {
-      group: 'Block 4, statistical learning theory and agentic AI',
-      label: 'The Hidden Layer, the spy game',
-      url: SPY_GAME,
-      note: 'Play the mission by hand, then watch an AI agent play it. Playing by hand needs no key.',
     },
   ],
 };
