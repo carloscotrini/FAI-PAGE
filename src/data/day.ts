@@ -193,7 +193,7 @@ export const day: Day = {
       group: 'Block 3, ensembles',
       label: 'Your row and your code, for the marble jar',
       url: GUESSING_PAGE,
-      note: 'Enter your birthday and three digits of your phone number, and it tells you where to write your guess.',
+      note: 'Nothing to type: it picks four letters for you and tells you which row of the shared sheet to write your guess in.',
     },
     {
       group: 'Block 3, ensembles',
