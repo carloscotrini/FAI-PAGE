@@ -31,14 +31,23 @@ publishes `dist/` to GitHub Pages.
 | `src/data/calendar.ts` | The day as one calendar event (times in UTC) |
 | `src/pages/HomePage.tsx` | The one page: hero, schedule, materials, "before you come" |
 | `public/viz/` | Copies of the day's games and visualizations, runtime files only |
-| `public/slides/` | The lecture decks, once published (empty until then) |
+| `public/slides/` | The four minimal decks, `block-N-minimal.pdf`, published 23.09.2026 |
 
 ## Publishing the slides
 
-The four decks are listed as "Soon" until the lecturer has made the cuts. To
-publish one, copy `materials/block-N/slides/block-N.pdf` from the private
-repository `carloscotrini/fai-hs26-private` into `public/slides/`, replace `SOON`
-with `deck('block-N.pdf')` in `src/data/day.ts`, and push.
+Since 23.09.2026 the page serves the MINIMAL version of each block, the
+manager-level cut in `materials/minimal/` of the private repository
+`carloscotrini/fai-hs26-private`. That folder is rebuilt only on the lecturer's
+command, and so is this copy. When he says so, copy again from the site root:
+
+```bash
+cp ../fai-hs26-private/materials/minimal/block-*-minimal.pdf public/slides/
+```
+
+then push. The links in `src/data/day.ts` are `deck('block-N-minimal.pdf')`. To
+publish a full deck instead, copy `materials/block-N/slides/block-N.pdf` and
+point its entry at `deck('block-N.pdf')`. A deck not yet published takes `SOON`
+and shows as "Soon".
 
 ## Refreshing a visualization
 

@@ -125,13 +125,14 @@ export const day: Day = {
   ],
 
   resources: [
-    // The decks are SOON until the lecturer has made the cuts for the day.
-    // Publishing: copy block-N.pdf from fai-hs26-private/materials/block-N/slides/
-    // into public/slides/ and replace SOON with deck('block-N.pdf').
-    { group: 'Slides', label: 'Block 1, learning by guessing', url: SOON },
-    { group: 'Slides', label: 'Block 2, gradient descent and neural networks', url: SOON },
-    { group: 'Slides', label: 'Block 3, statistical learning theory and agentic AI', url: SOON },
-    { group: 'Slides', label: 'Block 4, ensembles', url: SOON },
+    // Published 23.09.2026 on the lecturer's word: the MINIMAL, manager-level
+    // version of each block, copied unchanged from
+    // fai-hs26-private/materials/minimal/block-N-minimal.pdf into public/slides/.
+    // That folder is rebuilt only on his command; copy again only when he says so.
+    { group: 'Slides', label: 'Block 1, learning by guessing', url: deck('block-1-minimal.pdf') },
+    { group: 'Slides', label: 'Block 2, gradient descent and neural networks', url: deck('block-2-minimal.pdf') },
+    { group: 'Slides', label: 'Block 3, statistical learning theory and agentic AI', url: deck('block-3-minimal.pdf') },
+    { group: 'Slides', label: 'Block 4, ensembles', url: deck('block-4-minimal.pdf') },
 
     {
       group: 'Block 1, learning by guessing',

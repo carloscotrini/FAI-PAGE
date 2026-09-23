@@ -35,9 +35,12 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   the marble jar and the UN games are block 4 now. The private repository's
   `materials/block-3/` and `materials/block-4/` folders and their PDFs swapped
   the same day, so `block-N.pdf` is block N's deck again.
-- **The slides are `SOON` on purpose.** The lecturer has cuts to make in blocks
-  1, 2 and 3, and the BMAI precedent is to publish a deck when it is final.
-  Publish one only when he says so; the procedure is in `README.md`.
+- **The slides are the MINIMAL versions, published 23.09.2026 on the
+  lecturer's word.** `public/slides/block-N-minimal.pdf` are unchanged copies of
+  `fai-hs26-private/materials/minimal/block-N-minimal.pdf`, the manager-level
+  cut of each block. That folder is rebuilt only on his command, so copy it
+  again, or publish the full decks instead, only when he says so. The
+  procedure is in `README.md`.
 - `public/viz/` holds copies of `fai-hs26-private/materials/viz/`, runtime files
   only. The rsync command in `README.md` refreshes them. Each page is browser
   only with vendored libraries, so it works from this subpath as it does from a
