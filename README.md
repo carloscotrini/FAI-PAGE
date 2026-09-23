@@ -60,8 +60,14 @@ copy again from the site root:
 rsync -a --exclude precompute --exclude "*.py" --exclude "verify*" \
   --exclude README.md --exclude CLAUDE.md --exclude PROVENANCE.md \
   --exclude .gitignore --exclude __pycache__ --exclude docs --exclude .DS_Store \
-  --exclude "*.sh" ../fai-hs26-private/materials/viz/ public/viz/
+  --exclude "*.sh" --exclude "grasshopper/src" \
+  ../fai-hs26-private/materials/viz/ public/viz/
 ```
+
+The grasshopper is served as ONE built file, `grasshopper/cx_grasshopper.html`.
+Its editable source is `grasshopper/src/` in the private repository, and
+`python3 build.py` there rebuilds the single file; `src/` itself is never
+copied here.
 
 Two things on the page are links rather than copies, on purpose: the marble jar
 guessing page, served by https://github.com/carloscotrini/fai-hs26 because the

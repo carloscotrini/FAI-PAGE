@@ -53,6 +53,14 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   only. The rsync command in `README.md` refreshes them. Each page is browser
   only with vendored libraries, so it works from this subpath as it does from a
   laptop.
+- **The grasshopper is one built file.** `public/viz/grasshopper/cx_grasshopper.html`
+  is a copy of the private repository's `materials/viz/grasshopper/cx_grasshopper.html`,
+  which `build.py` there inlines from `src/` (the rsync in `README.md` excludes
+  `grasshopper/src`). It was adapted on 23.09.2026 at the lecturer's request (tap
+  controls for phones and tablets, a Measure station with friendly numbers, the
+  two-knob station of the slides, the slides' notation, the code station in
+  Python), and the same file replaced the grasshopper on the BMAI course site
+  that day. Refresh it with a plain copy after `python3 build.py` there.
 - **Withdrawing a page is a manual `git rm` here.** The rsync in `README.md` has no
   `--delete`, so a page removed from the private repository stays published until
   its directory is removed from `public/viz/` by hand. On 23.09.2026 the genie's
