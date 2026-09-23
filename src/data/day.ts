@@ -93,6 +93,18 @@ export const day: Day = {
     { time: '12:00', title: 'Lunch, until 13:00', type: 'break' },
     {
       time: '13:00',
+      title: 'Statistical learning theory and agentic AI',
+      type: 'lecture',
+    },
+    {
+      time: '14:00',
+      title: 'The Hidden Layer: play the spy game',
+      type: 'lab',
+      links: [{ label: 'The spy game', url: SPY_GAME }],
+    },
+    { time: '14:30', title: 'Coffee break, until 15:00', type: 'break' },
+    {
+      time: '15:00',
       title: 'Ensembles: the wisdom of the crowd',
       type: 'lecture',
       links: [
@@ -101,25 +113,13 @@ export const day: Day = {
       ],
     },
     {
-      time: '14:00',
+      time: '16:00',
       title: 'Bagging, random forests and the UN games',
       type: 'lab',
       links: [
         { label: 'The forest grows', url: viz('random-forest-deepdive') },
         { label: 'The UN games', url: viz('un-games') },
       ],
-    },
-    { time: '14:30', title: 'Coffee break, until 15:00', type: 'break' },
-    {
-      time: '15:00',
-      title: 'Statistical learning theory and agentic AI',
-      type: 'lecture',
-    },
-    {
-      time: '16:00',
-      title: 'The Hidden Layer: play the spy game',
-      type: 'lab',
-      links: [{ label: 'The spy game', url: SPY_GAME }],
     },
     { time: '16:20', title: 'Wrap-up, questions and feedback', type: 'lecture' },
   ],
@@ -128,10 +128,13 @@ export const day: Day = {
     // The decks are SOON until the lecturer has made the cuts for the day.
     // Publishing: copy block-N.pdf from fai-hs26-private/materials/block-N/slides/
     // into public/slides/ and replace SOON with deck('block-N.pdf').
+    // Blocks 3 and 4 were swapped on 23.09.2026. Until the private repository's
+    // block-3/ and block-4/ folders are swapped too, block-3.pdf is the ensembles
+    // deck: check what a PDF holds before publishing it under a label.
     { group: 'Slides', label: 'Block 1, learning by guessing', url: SOON },
     { group: 'Slides', label: 'Block 2, gradient descent and neural networks', url: SOON },
-    { group: 'Slides', label: 'Block 3, ensembles', url: SOON },
-    { group: 'Slides', label: 'Block 4, statistical learning theory and agentic AI', url: SOON },
+    { group: 'Slides', label: 'Block 3, statistical learning theory and agentic AI', url: SOON },
+    { group: 'Slides', label: 'Block 4, ensembles', url: SOON },
 
     {
       group: 'Block 1, learning by guessing',
@@ -211,7 +214,7 @@ export const day: Day = {
       group: 'Block 3, ensembles',
       label: 'The UN games',
       url: viz('un-games'),
-      note: 'Spurious regression in ten scenes: two models that predict equally well and disagree about what mattered.',
+      note: 'Spurious regression in eleven scenes: a model built from nonsense that scores perfectly on the countries it saw, and two models that predict about equally well and disagree about what mattered.',
     },
 
     {

@@ -21,6 +21,7 @@
     "Tell them apart",
     "Fitting everything",
     "Predicted against actual",
+    "The Scrabble model",
     "Regularisation",
     "What the models kept",
     "One split, then a hundred",

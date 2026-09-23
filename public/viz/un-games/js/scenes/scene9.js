@@ -1,167 +1,398 @@
-/* Scene 9. Takeaways.
+/* Scene 9. One split, then a hundred.
  *
- * The close. Six lines, one per chapter beat, each one anchored to a number
- * the viz has already put on screen. Nothing new is computed here that the
- * student has not seen: every figure below is read or recomputed straight out
- * of DATA, so a change upstream moves this card with it.
+ * Chapter five, the trust. Every number this story has quoted came out of one
+ * random train and test split of the 254 countries, seed 42. Deal the cards
+ * again ninety nine more times and the single number becomes a wide cloud.
+ * The width of that cloud is the lesson.
  *
- * Interaction: none. This is a card the lecturer talks over, which is why it
- * carries no control and no step engine.
+ * Interaction: single state and direct. One toggle, 100 resampled splits
+ * against 5 fold cross validation, and a hover readout that prints the exact
+ * score under the pointer. No step engine: the comparison the student has to
+ * make is between two marks on the same row, and it is available in one frame.
  *
- * The one picture is the crash sparkline, chapter two seen from a distance:
- * train climbing while test falls out of the frame. It is a quarter of the
- * scene, it has no axes and no ticks, and it exists so the last slide is not
- * a wall of type.
+ * Encoding. No feature roles appear here, so the role palette stays out of it.
+ * The cloud is drawn in the train grey and the seed 42 score in the darker test
+ * ink, and on top of that tonal difference the seed marker is a DIAMOND with a
+ * dashed stem while every resampled score is a small circle. Shape and weight
+ * carry it, so the row reads in greyscale.
+ *
+ * Every number comes from DATA.trust. The quartiles, the medians, the off
+ * chart counts and the count of negative splits are recomputed here from the
+ * raw score arrays rather than read out of the stored summary, so nothing on
+ * the slide can drift from the payload.
  *
  * Globals used: d3, Plot, UI, Stats, DATA. */
 
 window.scenes.scene9 = function (root) {
   const D = window.DATA;
+  const T = D.trust;
 
-  /* ================================================ every number, from DATA */
+  /* ===================================================== the clamped x axis */
 
-  // 1. The ranking of the 50 strongest correlations with log10 GDP.
-  const TOP_N = 50;
-  const ranked = D.bait.features.slice().sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
-  const top = ranked.slice(0, TOP_N);
-  const nIncidental = top.filter(f => f.role === "incidental").length;
-  const nCausalTop = top.filter(f => f.role === "causal").length;
+  /* OLS at the cliff reaches scores far below zero on its worst splits, while
+   * the taxed models and the forest stay near zero or above it. On a shared
+   * axis wide enough for the worst case, the other rows collapse into a smear.
+   * So the axis is clamped and the points outside it are drawn at the wall and
+   * counted out loud. The clamp is the same in both modes on purpose, so the
+   * toggle compares like with like. */
+  const CLAMP_LO = -2;
+  const CLAMP_HI = 1;
 
-  // 2. The strongest spurious column, and the causal columns it outranks.
-  const strongestSpurious = ranked.find(f => f.role === "spurious");
-  const causalBeaten = ranked.filter(
-    f => f.role === "causal" && Math.abs(f.r) < Math.abs(strongestSpurious.r)).length;
-  const nCausal = D.meta.roleCounts.causal;
+  /* ============================================================ the jitter */
 
-  // 3. The crash, read at p = n_train.
-  const C = D.crash;
-  const atN = C.ps.indexOf(C.nTrain);
-  const trainAtN = C.trainR2[atN];
-  const testAtN = C.testR2[atN];
-  let worst = 0;
-  C.testR2.forEach((v, i) => { if (v < C.testR2[worst]) worst = i; });
+  /* Mulberry32, seeded once with a pinned constant. The offsets are generated
+   * at build time and reused on every redraw, so a resize or a theme flip
+   * never reshuffles the cloud, and two runs of the viz draw the same picture.
+   * The constant below is a date and has nothing to do with the split seed. */
+  const JITTER_SEED = 20260902;
 
-  // 4. The patch. Lasso at its best alpha.
-  const lasso = D.patch.models.lasso;
+  function mulberry32(a) {
+    return function () {
+      a |= 0;
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
 
-  // 5. The reveal. Two models that predict alike and explain differently.
-  const R = D.reveal;
+  const rand = mulberry32(JITTER_SEED);
+  const JITTER = T.models.map(() => {
+    const n = Math.max(T.nSplits, T.k);
+    return Array.from({ length: n }, () => rand() * 2 - 1);
+  });
 
-  // 6. The trust. OLS, one split against a hundred.
-  const olsTrust = D.trust.models[0];
+  /* ======================================================== the row records */
+
+  function describe(values, tags, single) {
+    const sorted = values.slice().sort((a, b) => a - b);
+    return {
+      values, tags, single,
+      n: values.length,
+      min: sorted[0],
+      max: sorted[sorted.length - 1],
+      q25: Stats.quantile(sorted, 0.25),
+      median: Stats.quantile(sorted, 0.5),
+      q75: Stats.quantile(sorted, 0.75),
+      nNeg: values.filter(v => v < 0).length,
+      nOff: values.filter(v => v < CLAMP_LO).length,
+    };
+  }
+
+  const ROWS = {
+    splits: T.models.map(m => Object.assign(
+      { name: m.name },
+      describe(m.testR2, T.seeds.map(s => "split seed " + s), m.single))),
+    kfold: T.models.map(m => Object.assign(
+      { name: m.name },
+      describe(m.kfold, m.kfold.map((v, i) => "fold " + (i + 1) + " of " + T.k), m.single))),
+  };
+
+  const totalOff = { splits: 0, kfold: 0 };
+  Object.keys(ROWS).forEach(k => {
+    ROWS[k].forEach(r => { totalOff[k] += r.nOff; });
+  });
+  const totalPoints = { splits: 0, kfold: 0 };
+  Object.keys(ROWS).forEach(k => {
+    ROWS[k].forEach(r => { totalPoints[k] += r.n; });
+  });
+
+  const state = { mode: "splits" };
+  const tm = UI.testMode();
+  if (tm === "kfold" || tm === "splits") state.mode = tm;
 
   /* ================================================================== head */
 
   root.appendChild(UI.head(
-    "The close",
-    "Takeaways.",
-    "Six lines. Every number on them appeared earlier in this viz."));
+    "Chapter five, the trust",
+    "One split, then a hundred.",
+    "Every score in this story came from one random split of the "
+    + D.meta.nCountries + " countries, seed " + T.singleSeed + "."));
 
-  const layout = UI.el("div.scene-layout.s9-grid");
-  const list = UI.el("div.s9-list");
-  const rail = UI.el("div.s9-rail");
-  layout.appendChild(list);
-  layout.appendChild(rail);
+  const layout = UI.el("div.scene-layout");
+  const left = UI.el("div.s9-col");
+  const right = UI.el("div.text-col");
+  layout.appendChild(left);
+  layout.appendChild(right);
   root.appendChild(layout);
 
-  /* ================================================================= lines */
+  /* ============================================================== controls */
 
-  function fig(v) { return UI.el("span.s9-fig", String(v)); }
+  const readout = UI.el("span.readout.s9-readout", "Hover a point for its exact score.");
 
-  function item(n, lead, parts) {
-    const body = UI.el("div.s9-body", UI.el("span.s9-lead", lead), " ");
-    parts.forEach(p => {
-      body.appendChild(p instanceof Node ? p : document.createTextNode(String(p)));
-    });
-    return UI.el("div.s9-item", UI.el("div.s9-num", String(n)), body);
+  const toggle = UI.toggleGroup([
+    { value: "splits", label: T.nSplits + " resampled splits" },
+    { value: "kfold", label: T.k + " fold cross validation" },
+  ], {
+    value: state.mode,
+    onChange: v => {
+      state.mode = v;
+      resetReadout();
+      chart.redraw();
+      paintProse();
+    },
+  });
+
+  const controls = UI.el("div.controls-row", toggle, readout);
+  left.appendChild(controls);
+
+  function resetReadout() {
+    readout.textContent = "Hover a point for its exact score.";
   }
 
-  list.appendChild(item(1, "Correlation ranks symptoms above causes.", [
-    "Of the ", fig(TOP_N), " strongest correlations with GDP, ",
-    fig(nIncidental), " are incidental and ", fig(nCausalTop), " are causal.",
-  ]));
+  /* ================================================================= chart */
 
-  list.appendChild(item(2, "A feature with no mechanism can still correlate.", [
-    "The strongest spurious column reaches ", UI.itex("|r|"), " of ",
-    fig(Stats.corr(Math.abs(strongestSpurious.r))),
-    ", and it beats ", fig(causalBeaten), " of the ", fig(nCausal), " causal ones.",
-  ]));
+  const host = UI.el("div.viz-wrap");
+  left.appendChild(host);
 
-  list.appendChild(item(3, "More features stop helping and start hurting.", [
-    "At ", UI.itex("p = n = " + C.nTrain), " the training score is ",
-    fig(Stats.r2(trainAtN)), " and the test score is ", fig(Stats.r2(testAtN)), ".",
-  ]));
+  const DOT = d3.symbol().type(d3.symbolCircle).size(30)();
+  const OFF = d3.symbol().type(d3.symbolTriangle).size(38)();
+  const SEED_MARK = d3.symbol().type(d3.symbolDiamond).size(118)();
 
-  list.appendChild(item(4, "Regularisation rescues the prediction.", [
-    "Lasso reaches test ", UI.itex("R^2"), " of ", fig(Stats.r2(lasso.bestTestR2)),
-    " while keeping ", fig(lasso.bestNonzero), " of the ", fig(D.patch.nFeatures),
-    " coefficients.",
-  ]));
+  /* d3's default tick format prints a Unicode minus. Keep the axis ASCII, so
+   * it matches Stats.r2 everywhere else in the viz. */
+  function fmtTick(v) {
+    const s = (Math.round(v * 100) / 100).toFixed(2);
+    return s.replace(/0+$/, "").replace(/\.$/, "");
+  }
 
-  list.appendChild(item(5, "A rescued prediction buys you no explanation.", [
-    "Lasso and the random forest score ", fig(Stats.r2(R.lasso.testR2)), " and ",
-    fig(Stats.r2(R.rf.testR2)), " on the same test set, and they share ",
-    fig(R.overlap.length), " of their top ", fig(R.lasso.top20.length), " features.",
-  ]));
+  function render(g, iw, ih) {
+    const rows = ROWS[state.mode];
 
-  list.appendChild(item(6, "One split is not evidence.", [
-    "Seed ", fig(D.trust.singleSeed), " handed OLS ",
-    fig("+" + Stats.r2(olsTrust.single)), ". Its median over ",
-    fig(D.trust.nSplits), " splits is ", fig(Stats.r2(olsTrust.summary.median)), ".",
-  ]));
+    const x = d3.scaleLinear().domain([CLAMP_LO, CLAMP_HI]).range([0, iw]).clamp(true);
+    const y = d3.scaleBand().domain(rows.map(r => r.name)).range([0, ih])
+      .paddingInner(0.3).paddingOuter(0.14);
 
-  /* ========================================================= the recall */
+    const band = y.bandwidth();
+    const half = Math.min(24, band * 0.44);
+    const boxH = Math.min(32, band * 0.6);
 
-  /* The hockey stick, small and without a y axis. The test score runs from
-   * +0.57 to -240.8, so a linear axis wide enough for the fall flattens
-   * everything else, and a clipped one cuts the curve into fragments: around
-   * p = n the score swings between -8 and -240 from one column to the next,
-   * which is the instability itself. A symlog axis keeps the whole curve
-   * continuous and honest, with the squeeze declared in the caption. */
-  const pts = C.ps.map((p, i) => ({ p, train: C.trainR2[i], test: C.testR2[i] }));
-  const lo = Math.min(C.testR2[worst], d3.min(C.trainR2));
-  const hi = Math.max(d3.max(C.trainR2), d3.max(C.testR2));
+    const ticks = x.ticks(7);
 
-  const sparkHost = UI.el("div.viz-wrap.s9-spark");
-  rail.appendChild(sparkHost);
+    g.append("g").attr("class", "grid")
+      .selectAll("line").data(ticks).join("line")
+      .attr("y1", 0).attr("y2", ih).attr("x1", d => x(d)).attr("x2", d => x(d));
 
-  Plot.mount(sparkHost, function (g, iw, ih) {
-    const x = d3.scaleLinear().domain([C.ps[0], C.pMax]).range([0, iw]);
-    const y = d3.scaleSymlog().constant(1).domain([lo, hi]).range([ih, 0]);
+    g.append("line").attr("class", "s9-zero")
+      .attr("x1", x(0)).attr("x2", x(0)).attr("y1", -4).attr("y2", ih + 4);
 
-    g.append("line").attr("class", "ref-line")
-      .attr("x1", 0).attr("x2", iw).attr("y1", y(0)).attr("y2", y(0));
-    g.append("text").attr("class", "s9-mark-label")
-      .attr("x", 1).attr("y", y(0) - 5).text("0");
+    g.append("line").attr("class", "s9-wall")
+      .attr("x1", 0).attr("x2", 0).attr("y1", 0).attr("y2", ih);
 
-    g.append("line").attr("class", "ref-line")
-      .attr("x1", x(C.nTrain)).attr("x2", x(C.nTrain)).attr("y1", 0).attr("y2", ih);
-    g.append("text").attr("class", "s9-mark-label")
-      .attr("x", x(C.nTrain)).attr("y", -5).attr("text-anchor", "middle")
-      .text("p = n");
+    g.append("g").attr("class", "axis")
+      .attr("transform", "translate(0," + ih + ")")
+      .call(d3.axisBottom(x).tickValues(ticks).tickFormat(fmtTick).tickSizeOuter(0));
 
-    Plot.fitLine(g, pts, "train", {
-      x: d => x(d.p), y: d => y(d.train),
-      labelDx: 6, labelDy: -2,
+    g.append("text").attr("class", "axis-label")
+      .attr("x", iw / 2).attr("y", ih + 37).attr("text-anchor", "middle")
+      .text("Test R squared. 0 is the score of always guessing the average.");
+
+    const off = totalOff[state.mode];
+    g.append("text").attr("class", "s9-clamp-note")
+      .attr("x", 0).attr("y", -11)
+      .text(off > 0
+        ? ("Axis clamped to [" + CLAMP_LO + ", " + CLAMP_HI + "]. " + off + " of the "
+           + totalPoints[state.mode] + " scores fall below it and are drawn at the wall.")
+        : ("Axis clamped to [" + CLAMP_LO + ", " + CLAMP_HI + "]. Every one of the "
+           + totalPoints[state.mode] + " scores sits inside it."));
+
+    rows.forEach((r, ri) => {
+      const cy = y(r.name) + band / 2;
+      const rowG = g.append("g").attr("class", "s9-row");
+
+      rowG.append("text").attr("class", "s9-row-label")
+        .attr("x", -12).attr("y", cy + 5).attr("text-anchor", "end")
+        .text(r.name);
+
+      rowG.append("line").attr("class", "s9-whisker")
+        .attr("x1", x(r.min)).attr("x2", x(r.max)).attr("y1", cy).attr("y2", cy);
+
+      const jit = JITTER[ri];
+
+      const inside = [];
+      const outside = [];
+      r.values.forEach((v, i) => {
+        (v < CLAMP_LO ? outside : inside).push({ v, i });
+      });
+
+      const dots = rowG.selectAll("path.s9-dot").data(inside).join("path")
+        .attr("class", "mark s9-dot")
+        .attr("d", DOT)
+        .attr("transform", d => "translate(" + x(d.v) + "," + (cy + jit[d.i] * half) + ")");
+      dots.append("title").text(d => r.name + ", " + r.tags[d.i] + ": " + Stats.r2(d.v));
+      dots
+        .on("pointerenter", function (ev, d) {
+          d3.select(this).classed("hot", true);
+          readout.textContent = r.name + ", " + r.tags[d.i] + ": R squared " + Stats.r2(d.v);
+        })
+        .on("pointerleave", function () {
+          d3.select(this).classed("hot", false);
+          resetReadout();
+        });
+
+      const offs = rowG.selectAll("path.s9-off").data(outside).join("path")
+        .attr("class", "mark s9-off")
+        .attr("d", OFF)
+        .attr("transform", d => "translate(" + (x(CLAMP_LO) + 4) + ","
+          + (cy + jit[d.i] * half) + ") rotate(-90)");
+      offs.append("title").text(d => r.name + ", " + r.tags[d.i] + ": " + Stats.r2(d.v));
+      offs
+        .on("pointerenter", function (ev, d) {
+          d3.select(this).classed("hot", true);
+          readout.textContent = r.name + ", " + r.tags[d.i] + ": R squared " + Stats.r2(d.v)
+            + ", off the chart";
+        })
+        .on("pointerleave", function () {
+          d3.select(this).classed("hot", false);
+          resetReadout();
+        });
+
+      if (r.nOff > 0) {
+        rowG.append("text").attr("class", "s9-off-label")
+          .attr("x", 14).attr("y", cy - half - 3)
+          .text(r.nOff + " off chart, down to " + Stats.r2(r.min));
+      }
+
+      rowG.append("rect").attr("class", "s9-box")
+        .attr("x", x(r.q25)).attr("y", cy - boxH / 2)
+        .attr("width", Math.max(1, x(r.q75) - x(r.q25))).attr("height", boxH);
+
+      rowG.append("line").attr("class", "s9-median")
+        .attr("x1", x(r.median)).attr("x2", x(r.median))
+        .attr("y1", cy - boxH / 2 - 3).attr("y2", cy + boxH / 2 + 3);
+
+      rowG.append("line").attr("class", "s9-stem")
+        .attr("x1", x(r.single)).attr("x2", x(r.single))
+        .attr("y1", cy - half - 4).attr("y2", cy + half + 4);
+
+      const seed = rowG.append("path").attr("class", "mark s9-seed")
+        .attr("d", SEED_MARK)
+        .attr("transform", "translate(" + x(r.single) + "," + cy + ")");
+      seed.append("title").text(r.name + ", seed " + T.singleSeed + ": " + Stats.r2(r.single));
+      seed
+        .on("pointerenter", function () {
+          d3.select(this).classed("hot", true);
+          readout.textContent = r.name + ", seed " + T.singleSeed
+            + ", the split this story used: R squared " + Stats.r2(r.single);
+        })
+        .on("pointerleave", function () {
+          d3.select(this).classed("hot", false);
+          resetReadout();
+        });
+
+      rowG.append("text").attr("class", "s9-row-stat")
+        .attr("x", iw + 10).attr("y", cy + 4)
+        .text("median " + Stats.r2(r.median));
     });
+  }
 
-    Plot.fitLine(g, pts, "test", {
-      x: d => x(d.p), y: d => y(d.test),
-      labelDx: 6, labelDy: 15,
-    });
+  const chart = Plot.mount(host, render, {
+    margin: { top: 30, right: 108, bottom: 54, left: 126 },
+  });
 
-    g.append("text").attr("class", "s9-mark-label")
-      .attr("x", x(C.ps[worst]) + 7).attr("y", y(C.testR2[worst]) + 4)
-      .text(Stats.r2(C.testR2[worst]));
-  }, { margin: { top: 18, right: 44, bottom: 14, left: 14 } });
+  /* ================================================================== key */
 
-  rail.appendChild(UI.el("p.s9-cap",
-    "Chapter two, the crash. Columns added from " + C.ps[0] + " to " + C.pMax
-    + ", left to right. The vertical scale is squeezed so the whole fall fits on "
-    + "one card."));
+  function keyMark(pathD, cls, rotate) {
+    const wrap = UI.el("span");
+    const svg = d3.select(wrap).append("svg")
+      .attr("width", 18).attr("height", 16).attr("viewBox", "-9 -8 18 16");
+    svg.append("path").attr("class", cls).attr("d", pathD)
+      .attr("transform", rotate ? "rotate(" + rotate + ")" : null);
+    return wrap;
+  }
 
-  /* No gated content, so &run and test= have nothing to reach: this card
-   * paints its whole state on entry. */
+  function keyBox() {
+    const wrap = UI.el("span");
+    const svg = d3.select(wrap).append("svg")
+      .attr("width", 30).attr("height", 16).attr("viewBox", "0 0 30 16");
+    svg.append("rect").attr("class", "s9-box")
+      .attr("x", 1).attr("y", 3).attr("width", 28).attr("height", 10);
+    svg.append("line").attr("class", "s9-median")
+      .attr("x1", 17).attr("x2", 17).attr("y1", 1).attr("y2", 15);
+    return wrap;
+  }
 
-  return {};
+  const keyRow = UI.el("div.s9-key");
+  const keyPoint = UI.el("span", "");
+  const keyOffItem = UI.el("span.s9-key-item",
+    keyMark(OFF, "mark s9-off", -90), "off the chart");
+  keyRow.appendChild(UI.el("span.s9-key-item", keyMark(DOT, "mark s9-dot"), keyPoint));
+  keyRow.appendChild(keyOffItem);
+  keyRow.appendChild(UI.el("span.s9-key-item",
+    keyMark(SEED_MARK, "mark s9-seed"),
+    "seed " + T.singleSeed + ", the split this story used"));
+  keyRow.appendChild(UI.el("span.s9-key-item", keyBox(), "middle half and median"));
+  left.appendChild(keyRow);
+
+  /* ================================================================= prose */
+
+  const prose = UI.el("div.s9-prose");
+
+  right.appendChild(UI.sentence(
+    "A split deals the " + D.meta.nCountries + " countries into two piles: ",
+    UI.itex("n_{\\text{train}} = " + D.crash.nTrain), " countries the model fits on, and ",
+    UI.itex("n_{\\text{test}} = " + D.crash.nTest),
+    " it never sees until the score. Change the deal and you change the score."));
+
+  const formula = UI.el("div.formula-block");
+  formula.appendChild(UI.tex(
+    "R^2 \\;=\\; 1 \\;-\\; \\frac{\\sum_i (y_i - \\hat{y}_i)^2}{\\sum_i (y_i - \\bar{y})^2}"));
+  right.appendChild(formula);
+
+  right.appendChild(UI.el("p.muted.small.s9-gloss",
+    "1 is a perfect fit on the held back countries. 0 is the score of always "
+    + "guessing the average. Below 0 is worse than guessing the average."));
+
+  right.appendChild(prose);
+
+  /* Where the split this story used falls among the hundred, read off the
+   * scores rather than asserted, so a rebuilt payload cannot leave the scene
+   * calling a split lucky that is not. */
+  function luck(r) {
+    const better = r.values.filter(v => v > r.single).length;
+    if (better <= r.n / 4) {
+      return "Only " + better + " of the " + r.n + " splits did better than the one "
+        + "this story used, so it was one of the luckier ones.";
+    }
+    if (better >= (3 * r.n) / 4) {
+      return better + " of the " + r.n + " splits did better than the one this story "
+        + "used, so it was one of the unluckier ones.";
+    }
+    return better + " of the " + r.n + " splits did better than the one this story used.";
+  }
+
+  function paintProse() {
+    prose.innerHTML = "";
+    const r = ROWS[state.mode][0];
+    if (state.mode === "splits") {
+      prose.appendChild(UI.callout("The one number and the cloud",
+        UI.el("p.small",
+          "Seed " + T.singleSeed + " handed OLS " + (r.single >= 0 ? "+" : "")
+          + Stats.r2(r.single) + ". Over " + r.n + " splits its median is "
+          + Stats.r2(r.median) + ", its middle half runs from " + Stats.r2(r.q25)
+          + " to " + Stats.r2(r.q75) + ", and its worst is " + Stats.r2(r.min)
+          + ". " + r.nNeg + " of the " + r.n + " land below zero. " + luck(r))));
+    } else {
+      prose.appendChild(UI.callout("The one number and the folds",
+        UI.el("p.small",
+          "Cross validation cuts the " + D.meta.nCountries + " countries into "
+          + T.k + " parts and scores each one against a model fitted on the other "
+          + (T.k - 1) + ". OLS runs from " + Stats.r2(r.min) + " to "
+          + Stats.r2(r.max) + ", and " + r.nNeg + " of the " + r.n
+          + " folds land below zero. Five numbers, and they disagree.")));
+    }
+    keyPoint.textContent = state.mode === "splits" ? "one resampled split" : "one fold";
+    // No mark on screen means no key for it: in the fold view nothing is clamped.
+    keyOffItem.classList.toggle("is-empty", totalOff[state.mode] === 0);
+  }
+
+  paintProse();
+
+  /* &run has no gated button to trip here: the chart paints its full state on
+   * entry. test=kfold and test=splits pick the mode for a headless capture. */
+  toggle.select(state.mode);
+
+  return {
+    onEnter() { chart.redraw(); },
+  };
 };

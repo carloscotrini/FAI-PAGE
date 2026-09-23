@@ -16,7 +16,7 @@ window.scenes.scene0 = function (root) {
   const wrap = UI.el("div.title-wrap");
 
   wrap.appendChild(UI.el("div.eyebrow",
-    "CAS BMAI HS26 " + "·" + " weekend 1 " + "·" + " the UN games"));
+    "Foundations of AI " + "·" + " the UN games"));
 
   wrap.appendChild(UI.el("h1.title-line",
     "The bait, the crash, the patch, the reveal, the trust."));
@@ -35,7 +35,7 @@ window.scenes.scene0 = function (root) {
   wrap.appendChild(UI.el("p.muted.small.title-foot",
     "Each role carries a shape as well as a colour, so the chart still reads if "
     + "you cannot separate the two hues, or if the hall projector cannot. "
-    + "Five chapters, ten scenes. Arrow keys to step, t for the theme."));
+    + "Five chapters, eleven scenes. Arrow keys to step, t for the theme."));
 
   layout.appendChild(wrap);
   root.appendChild(layout);

@@ -1,316 +1,219 @@
-/* Scene 6. Regularisation, the patch.
+/* Scene 6. The Scrabble model.
  *
- * The crater of scene 4 is a fitting problem, and one extra knob fixes it.
- * Three penalty families get one panel each: SMALL MULTIPLES rather than three
- * curves on a shared axis. That is a colour decision before it is a layout
- * decision. A three way categorical split cannot be kept safe under
- * protanopia, deuteranopia and tritanopia at once, so no third fit hue exists;
- * each panel instead reuses the same two, train and test, and the panel title
- * carries the family. See the note at the foot of precompute/palette.py.
+ * Chapter two, the crash, part three. Scenes 4 and 5 fed least squares every
+ * column. This one feeds it nonsense only: every column the codebook tags
+ * spurious, which is the hand made jokes (the Scrabble score of the name, the
+ * colours in the flag, the length of the anthem), columns of random numbers,
+ * and sines, products and ratios of the jokes. The fit still climbs to a
+ * perfect score on the countries it saw, and the countries held back show what
+ * that score is worth.
  *
- * Interaction: SINGLE STATE, direct. One alpha slider drives a marker in all
- * three panels and the readout under each of them. One toggle swaps what the
- * panels plot, the score or the number of coefficients still standing. No step
- * engine: the lesson is a relationship the student probes by dragging.
+ * One panel, drawn with the card, rules and clip of the top panel of scene 4,
+ * so the two read as one argument. The verdict in the right column follows the
+ * slider: the two scores, and the lowest prediction the fit makes for a held
+ * back country, in dollars.
  *
- * Every number on the screen is read out of DATA.patch, or derived here from
- * DATA.columns. Nothing is typed in by hand.
+ * Interaction: single state, direct. One slider over the number of nonsense
+ * columns, opening on the first stop where the training score is perfect.
+ * Every score and every prediction comes from DATA.scrabble, and the
+ * column counts in the note are counted off DATA.bait.features.
  *
  * Globals used: d3, Plot, UI, Stats, DATA. */
 
 window.scenes.scene6 = function (root) {
   const D = window.DATA;
-  const PATCH = D.patch;
-  const ALPHAS = PATCH.alphas;
-  const N = ALPHAS.length;
-  const NFEAT = PATCH.nFeatures;
-  const OLS = PATCH.olsBaseline;
+  const S = D.scrabble;
 
-  const FAMILIES = [
-    { key: "ridge", name: "Ridge" },
-    { key: "lasso", name: "Lasso" },
-    { key: "elasticnet", name: "Elastic net" },
-  ];
+  const ps = S.ps;
+  const last = ps.length - 1;
+  const nTrain = S.nTrain;
+  const nTest = S.nTest;
 
-  /* The y window, clamped on purpose. Lasso's test score falls to about minus
-   * four at the left of its sweep, and a panel scaled to hold that would push
-   * the whole story, the climb from 0.33 to 0.60, into its top eighth. The
-   * panels therefore stop at Y_FLOOR, the curves are clipped there, and the
-   * foot of the scene says so in words with the real depth of the dip. */
-  const Y_FLOOR = -0.5;
-  const Y_TOP = 1.05;
-  const KEPT_TOP = 520;
+  /* ===================================================== landmarks, derived */
 
-  /* Derived facts, all of them read off the payload rather than typed in. */
-
-  // The deepest point of the lasso sweep, quoted in the clamp note.
-  const lassoTest = PATCH.models.lasso.testR2;
-  let dipAt = 0;
-  for (let i = 0; i < N; i++) if (lassoTest[i] < lassoTest[dipAt]) dipAt = i;
-
-  // A column holding one value for every country carries no information, so no
-  // penalty can give it a coefficient. This is why ridge tops out below 493.
-  const nConstant = Object.keys(D.columns).filter(k => {
-    const v = D.columns[k];
-    for (let i = 1; i < v.length; i++) if (v[i] !== v[0]) return false;
-    return true;
-  }).length;
-
-  // The alpha whose three test scores are jointly highest. Used only by the
-  // headless flags, so a capture can reach the rescued state without dragging.
-  let jointBest = 0, jointScore = -Infinity;
-  for (let i = 0; i < N; i++) {
-    let s = 0;
-    FAMILIES.forEach(f => { s += PATCH.models[f.key].testR2[i]; });
-    if (s > jointScore) { jointScore = s; jointBest = i; }
+  // The stop that sits on p = n, one nonsense column per training country.
+  let cliff = 0;
+  for (let i = 1; i < ps.length; i++) {
+    if (Math.abs(ps[i] - nTrain) < Math.abs(ps[cliff] - nTrain)) cliff = i;
   }
+  // The deepest test score of the sweep.
+  let worst = 0;
+  for (let i = 1; i < ps.length; i++) {
+    if (S.testR2[i] < S.testR2[worst]) worst = i;
+  }
+  // The first stop where nonsense fits the training countries perfectly, to
+  // the three decimals the scene prints. The scene opens here, on the verdict,
+  // so a participant clicking through alone meets the joke without dragging.
+  let perfect = S.trainR2.findIndex(v => v >= 0.9995);
+  if (perfect < 0) perfect = ps.length - 1;
+  // Where the two curves are well apart and both on the panel: their labels.
+  let labelIdx = S.trainR2.findIndex((v, i) => v - S.testR2[i] > 0.3 && S.testR2[i] > -0.9);
+  if (labelIdx < 0) labelIdx = Math.min(2, ps.length - 1);
 
-  /* State. Two numbers, and both of them come from a control. */
-  let idx = 0;
-  let mode = "r2";
+  // What the nonsense is made of, counted off the codebook's roles and sources.
+  const spur = D.bait.features.filter(f => f.role === "spurious");
+  const nNoise = spur.filter(f => f.src === "Synthetic (random)").length;
+  const nDerived = spur.filter(f => f.src === "Derived (computed)").length;
+  const nJokes = spur.length - nNoise - nDerived;
 
-  const test = UI.testMode();
-  if (test === "kept") mode = "kept";
-  if (UI.flag("run") || test === "best" || test === "kept") idx = jointBest;
+  const series = ps.map((p, i) => ({ p: p, train: S.trainR2[i], test: S.testR2[i] }));
 
-  /* ================================================================== chrome */
+  // The window of the top panel of scene 4, for the same reason: below -1 the
+  // score is a catastrophe, and the stat strip carries its exact value.
+  const FLOOR = -1;
+  const TOP = 1.08;
+
+  /* =========================================================== initial state */
+
+  let idx = perfect;
+
+  // Dev affordances for headless capture. The slider stays canonical.
+  const mode = UI.testMode();
+  if (mode === "cliff") idx = cliff;
+  else if (mode === "worst") idx = worst;
+  else if (mode === "full") idx = last;
+  else if (mode === "start") idx = 0;
+
+  /* ================================================================== layout */
 
   root.appendChild(UI.head(
-    "Chapter three, the patch",
-    "Regularisation",
-    "One extra knob drags the test score out of the crater."));
+    "chapter two " + "·" + " the crash",
+    "The Scrabble model",
+    "Least squares again, fed nothing but nonsense: the Scrabble score of each "
+    + "name, the colours in each flag, the length of each anthem."));
 
-  const alphaSlider = UI.slider("alpha", {
-    min: 0, max: N - 1, step: 1, value: idx, width: 300,
-    format: v => Stats.alpha(ALPHAS[v]),
-    onInput: v => { idx = v; refresh(); },
+  const layout = UI.el("div.scene-layout");
+  const left = UI.el("div.s6-col");
+  const host = UI.el("div.viz-wrap.s6-panel");
+  left.appendChild(host);
+
+  const controls = UI.el("div.controls-row");
+  const slider = UI.slider("Nonsense columns", {
+    min: 0, max: last, step: 1, value: idx, width: 260,
+    format: i => String(ps[i]),
+    onInput: i => { idx = i; refresh(); },
   });
+  controls.appendChild(slider);
+  left.appendChild(controls);
 
-  const modeToggle = UI.toggleGroup(
-    [{ label: "R squared", value: "r2" }, { label: "Coefficients kept", value: "kept" }],
-    { value: mode, onChange: v => { mode = v; refresh(); } });
+  const right = UI.el("div.text-col.s6-text");
+  const scores = UI.el("div.stat-strip.s6-scores");
+  const verdict = UI.el("p.s6-verdict");
+  right.appendChild(scores);
+  right.appendChild(verdict);
+  right.appendChild(UI.note("The nonsense",
+    UI.el("span", spur.length + " columns: " + nJokes + " jokes like these, "
+      + nNoise + " columns of random numbers, and " + nDerived
+      + " sines, products and ratios of the jokes.")));
 
-  root.appendChild(UI.el("div.controls-row",
-    alphaSlider,
-    UI.el("div.control", UI.el("label", "Panels show"), modeToggle)));
-
-  const layout = UI.el("div.scene-layout.s6-layout");
-  const left = UI.el("div.s6-left");
-  const grid = UI.el("div.s6-grid");
-  left.appendChild(grid);
-
-  const spread = "The three best alphas sit at "
-    + FAMILIES.map(f => Stats.alpha(PATCH.models[f.key].bestAlpha)).join(", ")
-    + ", so one slider position cannot suit all three.";
-
-  const FOOT = {
-    r2: "Panels stop at R squared " + Y_FLOOR.toFixed(1) + ". Lasso's test score dips to "
-      + Stats.r2(lassoTest[dipAt]) + " at alpha " + Stats.alpha(ALPHAS[dipAt])
-      + " and leaves the frame. " + spread,
-    kept: "Ridge holds every column that varies, at every alpha on the sweep. Lasso "
-      + "falls from " + PATCH.models.lasso.nonzero[0] + " to "
-      + Math.min.apply(null, PATCH.models.lasso.nonzero) + " across it, and elastic net "
-      + "follows late. " + spread,
-  };
-
-  const foot = UI.el("div.s6-foot.small.muted", FOOT.r2);
-  left.appendChild(foot);
   layout.appendChild(left);
-
-  const textCol = UI.el("div.text-col.s6-text");
-  layout.appendChild(textCol);
+  layout.appendChild(right);
   root.appendChild(layout);
 
-  /* ================================================================== panels */
+  /* =================================================================== chart */
 
-  function readoutCell(label, cls) {
-    const value = UI.el("span.s6-v.tabular", "");
-    const node = UI.el("div.s6-cell", UI.el("span.s6-k." + cls, label), value);
-    return { node, value };
-  }
+  function render(g, w, h) {
+    const x = d3.scaleLinear().domain([ps[0], ps[last]]).range([0, w]);
+    const y = d3.scaleLinear().domain([FLOOR, TOP]).range([h, 0]);
 
-  const panels = FAMILIES.map(f => {
-    const m = PATCH.models[f.key];
-    const card = UI.el("div.s6-panel");
+    Plot.axes(g, x, y, w, h, {
+      xTicks: 7, yTicks: 5,
+      xLabel: "nonsense columns in the fit",
+      title: "Train and test R squared, clipped at " + FLOOR,
+    });
+    // Labelled at the right, where the zero line runs clear of both curves.
+    Plot.refLine(g, y(0), w, "R squared = 0, the training mean");
 
-    card.appendChild(UI.el("div.s6-panel-head",
-      UI.el("span.s6-family", f.name),
-      UI.el("span.s6-best",
-        "best test " + Stats.r2(m.bestTestR2) + " at alpha " + Stats.alpha(m.bestAlpha)
-        + ", keeps " + m.bestNonzero)));
+    // p = n, and wherever the slider currently sits.
+    const xn = x(nTrain);
+    g.append("line").attr("class", "ref-line")
+      .attr("x1", xn).attr("x2", xn).attr("y1", 0).attr("y2", h);
+    // Top left of its line: the markers and the falling test curve own the
+    // bottom of the panel, and the training curve is still low on this side.
+    g.append("text").attr("class", "axis-label s6-vlabel")
+      .attr("x", xn - 7).attr("y", 12).attr("text-anchor", "end")
+      .text("p = n = " + nTrain);
+    const xs = x(ps[idx]);
+    g.append("line").attr("class", "s6-sel")
+      .attr("x1", xs).attr("x2", xs).attr("y1", 0).attr("y2", h);
 
-    const chart = UI.el("div.s6-chart");
-    card.appendChild(chart);
+    /* The test curve leaves through the floor and stays out: a clip lets it
+     * run off the edge, which reads correctly, where a break in the line
+     * would read as missing data. */
+    g.append("clipPath").attr("id", "s6-clip").append("rect")
+      .attr("x", 0).attr("y", 0).attr("width", w).attr("height", h);
+    const inner = g.append("g").attr("clip-path", "url(#s6-clip)");
 
-    const cells = {
-      train: readoutCell("train", "k-train"),
-      test: readoutCell("test", "k-test"),
-      kept: readoutCell("kept", "k-kept"),
-    };
-    card.appendChild(UI.el("div.s6-readout",
-      cells.train.node, cells.test.node, cells.kept.node));
-
-    grid.appendChild(card);
-
-    const mount = Plot.mount(chart, (g, iw, ih) => drawPanel(f, m, g, iw, ih),
-      { margin: { top: 18, right: 14, bottom: 48, left: 48 } });
-
-    return { f, m, mount, cells };
-  });
-
-  /* One panel. Both modes share the x scale, the best alpha rule and the
-   * scrubber, so the two readings of the same sweep stay comparable. */
-  function drawPanel(f, m, g, iw, ih) {
-    const x = d3.scaleLog().domain([ALPHAS[0], ALPHAS[N - 1]]).range([0, iw]);
-    const y = d3.scaleLinear()
-      .domain(mode === "r2" ? [Y_FLOOR, Y_TOP] : [0, KEPT_TOP])
-      .range([ih, 0]);
-
-    const clipId = "s6-clip-" + f.key;
-    g.append("defs").append("clipPath").attr("id", clipId)
-      .append("rect").attr("x", -3).attr("y", -8)
-      .attr("width", iw + 6).attr("height", ih + 8);
-
-    Plot.axes(g, x, y, iw, ih, {
-      xTicks: 4,
-      xFormat: a => Stats.alpha(a),
-      yTicks: 5,
-      yFormat: mode === "r2" ? d3.format(".1f") : d3.format("d"),
-      xLabel: "alpha",
-      yLabel: f.key === "ridge"
-        ? (mode === "r2" ? "R squared" : "coefficients kept")
-        : null,
+    // Both labels sit where the two curves are well apart and on the panel:
+    // train above its line, test below its own.
+    const at = series[labelIdx];
+    Plot.fitLine(inner, series, "train", {
+      x: d => x(d.p), y: d => y(d.train),
+      labelAt: at, labelDx: 0, labelDy: -10, labelAnchor: "middle",
+    });
+    Plot.fitLine(inner, series, "test", {
+      x: d => x(d.p), y: d => y(d.test),
+      labelAt: at, labelDx: 0, labelDy: 20, labelAnchor: "middle",
     });
 
-    /* Small multiples annotate once: the reference runs across all three
-     * panels and only the leftmost one carries its name. The label is drawn
-     * here rather than by Plot.refLine, which anchors it at the right edge
-     * where every one of these panels has a curve passing through. */
-    const refY = y(mode === "r2" ? OLS.testR2 : NFEAT);
-    Plot.refLine(g, refY, iw, null);
-    if (f.key === FAMILIES[0].key) {
-      g.append("text").attr("class", "axis-label")
-        .attr("x", 2).attr("y", refY - 9).attr("text-anchor", "start")
-        .text(mode === "r2" ? "least squares" : NFEAT + " features");
-    }
-
-    const plot = g.append("g").attr("clip-path", "url(#" + clipId + ")");
-    const pts = d3.range(N);
-    const px = i => x(ALPHAS[i]);
-
-    if (mode === "r2") {
-      Plot.fitLine(plot, pts, "train",
-        { x: px, y: i => y(m.trainR2[i]), labelAt: 2, labelDy: 16 });
-      Plot.fitLine(plot, pts, "test",
-        { x: px, y: i => y(m.testR2[i]), labelAt: 2, labelDy: 16 });
-    } else {
-      plot.append("path").attr("class", "s6-count")
-        .attr("d", d3.line().x(px).y(i => y(m.nonzero[i]))(pts));
-      plot.append("text").attr("class", "s6-count-label")
-        .attr("x", px(2) + 6).attr("y", y(m.nonzero[2]) + 17)
-        .text("kept");
-    }
-
-    // The family's own best alpha, dashed and vertical, against the flat
-    // dashed reference which is horizontal. Orientation separates them.
-    const bx = x(m.bestAlpha);
-    g.append("line").attr("class", "s6-bestline")
-      .attr("x1", bx).attr("x2", bx).attr("y1", 0).attr("y2", ih);
-    g.append("text").attr("class", "s6-bestlabel")
-      .attr("x", bx).attr("y", -5).attr("text-anchor", "middle").text("best");
-
-    // The scrubber: where the shared slider currently stands.
-    const cx = x(ALPHAS[idx]);
-    g.append("line").attr("class", "s6-scrub")
-      .attr("x1", cx).attr("x2", cx).attr("y1", 0).attr("y2", ih);
-
-    if (mode === "r2") {
-      marker(g, cx, m.trainR2[idx], y, "fill-fit-train");
-      marker(g, cx, m.testR2[idx], y, "fill-fit-test");
-    } else {
-      marker(g, cx, m.nonzero[idx], y, "s6-count-dot");
-    }
+    marker(g, xs, S.trainR2[idx], y, "train");
+    marker(g, xs, S.testR2[idx], y, "test");
   }
 
-  /* A value inside the window gets a dot. A value the clamp cut off gets a
-   * caret pinned to the edge it left through, so the eye is told the number
-   * exists and is off the picture rather than missing. */
-  function marker(g, cx, v, y, cls) {
+  /* A value inside the window gets a dot. A value the clip cut off gets a
+   * caret pinned to the floor, so the eye is told the number exists and is
+   * below the picture rather than missing. */
+  function marker(g, cx, v, y, kind) {
     const dom = y.domain();
     if (v >= dom[0] && v <= dom[1]) {
-      g.append("circle").attr("class", "s6-dot " + cls)
-        .attr("cx", cx).attr("cy", y(v)).attr("r", 4.4);
+      g.append("circle").attr("class", "mark s6-dot fill-fit-" + kind)
+        .attr("cx", cx).attr("cy", y(v)).attr("r", 4.6);
       return;
     }
     const below = v < dom[0];
-    const edge = below ? y(dom[0]) - 7 : y(dom[1]) + 7;
-    g.append("path").attr("class", "s6-dot " + cls)
-      .attr("d", d3.symbol().type(d3.symbolTriangle).size(56)())
-      .attr("transform", "translate(" + cx + "," + edge + ") rotate("
-        + (below ? 180 : 0) + ")");
+    g.append("path").attr("class", "mark s6-dot fill-fit-" + kind)
+      .attr("d", d3.symbol().type(d3.symbolTriangle).size(60)())
+      .attr("transform", "translate(" + cx + "," + (below ? y(dom[0]) - 8 : y(dom[1]) + 8)
+        + ") rotate(" + (below ? 180 : 0) + ")");
   }
 
-  /* ============================================================ the text side */
+  const mount = Plot.mount(host, render,
+    { margin: { top: 26, right: 30, bottom: 44, left: 48 } });
 
-  textCol.appendChild(UI.tex(
-    "\\sum_i \\bigl(y_i - \\hat{y}_i\\bigr)^2 \\;+\\; \\alpha \\cdot \\mathrm{size}(w)"));
+  /* ================================================================ verdict */
 
-  textCol.appendChild(UI.el("p",
-    "The fit minimises that. ", UI.itex("\\alpha"),
-    " is the price of a big coefficient. ", UI.itex("\\mathrm{size}(w)"),
-    " is ", UI.itex("\\textstyle\\sum_j w_j^2"), " for ridge and ",
-    UI.itex("\\textstyle\\sum_j |w_j|"), " for lasso, and elastic net charges both."));
+  const whole = d3.format(",.0f");
+  function dollars(v) {
+    return (v < 0 ? "minus $" : "$") + whole(Math.abs(v));
+  }
 
-  textCol.appendChild(UI.el("p",
-    "Squaring shrinks coefficients and keeps them all. Absolute values push many "
-    + "to exactly zero, so lasso alone drops features."));
+  function paintVerdict() {
+    const tr = S.trainR2[idx];
+    const te = S.testR2[idx];
+    scores.replaceChildren(
+      UI.stat(Stats.r2(tr), "train, the " + nTrain + " countries it saw"),
+      UI.stat(Stats.r2(te), "test, the " + nTest + " it never saw"));
 
-  /* Short on purpose. The right column has to hold the formula, these two
-   * paragraphs, this note and BOTH legend rows inside the stage at 1280x800,
-   * and .text-col scrolls when it cannot: the scrollbar then narrows the
-   * column, rewraps every paragraph wider and pushes the last legend row off
-   * the bottom. The per family counts that used to sit here are already
-   * printed in all three panel heads, so they went rather than the legend. */
-  textCol.appendChild(UI.note("Least squares on everything",
-    "Least squares on all " + NFEAT + " features scores train " + Stats.r2(OLS.trainR2)
-    + " and test " + Stats.r2(OLS.testR2) + ". Every panel draws that test score flat, "
-    + "so the climb above it is the rescue. Ridge tops out at " + (NFEAT - nConstant)
-    + " because " + nConstant + " of the columns never vary."));
-
-  const legendHost = UI.el("div.s6-legend");
-  Plot.fitLegend(legendHost, {
-    gloss: {
-      train: D.crash.nTrain + " fitted",
-      test: D.crash.nTest + " held out",
-    },
-  });
-  textCol.appendChild(legendHost);
-
-  /* ================================================================= refresh */
+    const lo = S.lowest[idx];
+    const opener = tr >= 0.9995
+      ? "A perfect score on the countries it saw, from nonsense alone. "
+      : "";
+    verdict.replaceChildren(
+      document.createTextNode(opener + "Its lowest guess for a country it never saw: "),
+      UI.el("strong", S.testIso[lo[0]]),
+      document.createTextNode(", " + dollars(lo[1]) + " per person. The real figure is "
+        + dollars(S.testTrue[lo[0]]) + "."));
+  }
 
   function refresh() {
-    legendHost.style.display = mode === "r2" ? "" : "none";
-    foot.textContent = FOOT[mode];
-    panels.forEach(p => {
-      p.mount.redraw();
-      p.cells.train.value.textContent = Stats.r2(p.m.trainR2[idx]);
-      p.cells.test.value.textContent = Stats.r2(p.m.testR2[idx]);
-      p.cells.kept.value.textContent = String(p.m.nonzero[idx]);
-    });
+    paintVerdict();
+    mount.redraw();
   }
 
-  refresh();
+  slider.setValue(idx);
+  paintVerdict();
 
-  /* A headless capture cannot drag, so test=slide drives the real input and
-   * fires the real event, which puts the whole slider path under the
-   * screenshot rather than only the function behind it. Dev affordance.
-   * The target is ridge's own best alpha, read off the payload. */
-  if (test === "slide") {
-    const input = alphaSlider.input;
-    input.value = String(PATCH.models.ridge.bestIndex);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-  }
-
-  // Nothing to tear down: the mounts survive a revisit.
+  // No onEnter, onLeave or key handler: the scene runs no animation and holds
+  // no arrow key, so the driver keeps them.
   return {};
 };

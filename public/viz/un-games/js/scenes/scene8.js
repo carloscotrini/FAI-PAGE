@@ -1,383 +1,281 @@
-/* Scene 8. One split, then a hundred.
+/* Scene 8. What the models kept.
  *
- * Chapter five, the trust. Every number this story has quoted came out of one
- * random train and test split of the 254 countries, seed 42. Deal the cards
- * again ninety nine more times and the single number becomes a wide cloud.
- * The width of that cloud is the lesson.
+ * The twin of scene 7 and the answer to it. Scene 7 fixes prediction, this one
+ * asks what the fixed model believes, and the relief stops. Two ranked lists,
+ * lasso by absolute coefficient and the random forest by Gini importance, each
+ * bar in its feature's role colour and carrying its role's marker shape. The
+ * two value scales are different units, so each list gets its own x scale and
+ * says on its own head what it measures.
  *
- * Interaction: single state and direct. One toggle, 100 resampled splits
- * against 5 fold cross validation, and a hover readout that prints the exact
- * score under the pointer. No step engine: the comparison the student has to
- * make is between two marks on the same row, and it is available in one frame.
+ * The six features both models rank in their top twenty are marked with an ink
+ * tick at the left edge of the row. That signal is deliberately not a hue: the
+ * hues are spoken for by the three roles, and a fourth would collide with one
+ * of them under at least one dichromacy.
  *
- * Encoding. No feature roles appear here, so the role palette stays out of it.
- * The cloud is drawn in the train grey and the seed 42 score in the darker test
- * ink, and on top of that tonal difference the seed marker is a DIAMOND with a
- * dashed stem while every resampled score is a small circle. Shape and weight
- * carry it, so the row reads in greyscale.
+ * Interaction: SINGLE STATE, direct. Hover a row for the full name, the value
+ * and the role. One toggle reorders the rows by role. No step engine.
  *
- * Every number comes from DATA.trust. The quartiles, the medians, the off
- * chart counts and the count of negative splits are recomputed here from the
- * raw score arrays rather than read out of the stored summary, so nothing on
- * the slide can drift from the payload.
+ * Every number comes out of DATA.reveal. Nothing is typed in by hand.
  *
  * Globals used: d3, Plot, UI, Stats, DATA. */
 
 window.scenes.scene8 = function (root) {
   const D = window.DATA;
-  const T = D.trust;
+  const R = D.reveal;
+  const NFEAT = R.nFeatures;
+  const OVERLAP = R.overlap;
+  const SHARED = {};
+  OVERLAP.forEach(k => { SHARED[k] = true; });
 
-  /* ===================================================== the clamped x axis */
+  const ROLE_ORDER = { causal: 0, spurious: 1, incidental: 2 };
 
-  /* OLS reaches -9.49 on its worst split while every other model lives inside
-   * roughly [-2.15, 0.92]. On a shared axis wide enough for the worst case,
-   * four of the five rows collapse into a smear. So the axis is clamped and
-   * the points outside it are drawn at the wall and counted out loud. The
-   * clamp is the same in both modes on purpose, so the toggle compares like
-   * with like. */
-  const CLAMP_LO = -2;
-  const CLAMP_HI = 1;
+  const LISTS = [
+    {
+      key: "lasso",
+      name: "Lasso",
+      rows: R.lasso.top20,
+      score: "test R squared " + Stats.r2(R.lasso.testR2)
+        + ", " + R.lasso.nonzero + " of " + NFEAT + " kept",
+      unit: "coefficient size, US dollars per standard deviation",
+      value: d3.format(",.0f"),
+      tick: d3.format(",.0f"),
+    },
+    {
+      key: "rf",
+      name: "Random forest",
+      rows: R.rf.top20,
+      score: "test R squared " + Stats.r2(R.rf.testR2),
+      unit: "Gini importance, share of the total",
+      value: d3.format(".3f"),
+      tick: d3.format(".2f"),
+    },
+  ];
 
-  /* ============================================================ the jitter */
+  /* State. One sort order, one hovered row. */
+  let sortBy = "value";
+  let hover = null;
 
-  /* Mulberry32, seeded once with a pinned constant. The offsets are generated
-   * at build time and reused on every redraw, so a resize or a theme flip
-   * never reshuffles the cloud, and two runs of the viz draw the same picture.
-   * The constant below is a date and has nothing to do with the split seed. */
-  const JITTER_SEED = 20260902;
+  const test = UI.testMode();
+  if (test === "role") sortBy = "role";
 
-  function mulberry32(a) {
-    return function () {
-      a |= 0;
-      a = (a + 0x6D2B79F5) | 0;
-      let t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  const rand = mulberry32(JITTER_SEED);
-  const JITTER = T.models.map(() => {
-    const n = Math.max(T.nSplits, T.k);
-    return Array.from({ length: n }, () => rand() * 2 - 1);
-  });
-
-  /* ======================================================== the row records */
-
-  function describe(values, tags, single) {
-    const sorted = values.slice().sort((a, b) => a - b);
-    return {
-      values, tags, single,
-      n: values.length,
-      min: sorted[0],
-      max: sorted[sorted.length - 1],
-      q25: Stats.quantile(sorted, 0.25),
-      median: Stats.quantile(sorted, 0.5),
-      q75: Stats.quantile(sorted, 0.75),
-      nNeg: values.filter(v => v < 0).length,
-      nOff: values.filter(v => v < CLAMP_LO).length,
-    };
-  }
-
-  const ROWS = {
-    splits: T.models.map(m => Object.assign(
-      { name: m.name },
-      describe(m.testR2, T.seeds.map(s => "split seed " + s), m.single))),
-    kfold: T.models.map(m => Object.assign(
-      { name: m.name },
-      describe(m.kfold, m.kfold.map((v, i) => "fold " + (i + 1) + " of " + T.k), m.single))),
-  };
-
-  const totalOff = { splits: 0, kfold: 0 };
-  Object.keys(ROWS).forEach(k => {
-    ROWS[k].forEach(r => { totalOff[k] += r.nOff; });
-  });
-  const totalPoints = { splits: 0, kfold: 0 };
-  Object.keys(ROWS).forEach(k => {
-    ROWS[k].forEach(r => { totalPoints[k] += r.n; });
-  });
-
-  const state = { mode: "splits" };
-  const tm = UI.testMode();
-  if (tm === "kfold" || tm === "splits") state.mode = tm;
-
-  /* ================================================================== head */
+  /* ================================================================== chrome */
 
   root.appendChild(UI.head(
-    "Chapter five, the trust",
-    "One split, then a hundred.",
-    "Every score in this story came from one random split of the "
-    + D.meta.nCountries + " countries, seed " + T.singleSeed + "."));
+    "Chapter four, the reveal",
+    "What the models kept",
+    "Both models predict well. They disagree about which features matter, and "
+    + "nothing in the data settles it."));
 
-  const layout = UI.el("div.scene-layout");
-  const left = UI.el("div.s8-col");
-  const right = UI.el("div.text-col");
-  layout.appendChild(left);
-  layout.appendChild(right);
-  root.appendChild(layout);
+  const sortToggle = UI.toggleGroup(
+    [{ label: "Value", value: "value" }, { label: "Role", value: "role" }],
+    { value: sortBy, onChange: v => { sortBy = v; redrawAll(); } });
 
-  /* ============================================================== controls */
+  const roleKey = UI.el("div.s8-rolekey");
+  Plot.roleLegend(roleKey, {});
 
-  const readout = UI.el("span.readout.s8-readout", "Hover a point for its exact score.");
+  /* Both models rank one column of pure synthetic noise inside their top
+   * twenty, and it is one of the few things they agree on. Read off the roles
+   * rather than named here, so a rebuilt payload cannot leave this line
+   * asserting something that stopped being true. */
+  const rowOf = {};
+  LISTS.forEach(L => L.rows.forEach(d => { if (!rowOf[d.key]) rowOf[d.key] = d; }));
+  const sharedSpurious = OVERLAP.filter(k => rowOf[k] && rowOf[k].role === "spurious");
 
-  const toggle = UI.toggleGroup([
-    { value: "splits", label: T.nSplits + " resampled splits" },
-    { value: "kfold", label: T.k + " fold cross validation" },
-  ], {
-    value: state.mode,
-    onChange: v => {
-      state.mode = v;
-      resetReadout();
-      chart.redraw();
-      paintProse();
-    },
+  let sharedText = OVERLAP.length + " features appear in both lists";
+  if (sharedSpurious.length === 1) {
+    sharedText += ", and one is " + rowOf[sharedSpurious[0]].desc.toLowerCase();
+  } else if (sharedSpurious.length > 1) {
+    sharedText += ", " + sharedSpurious.length + " of them spurious";
+  }
+
+  const sharedKey = UI.el("div.s8-sharedkey");
+  d3.select(sharedKey).append("svg")
+    .attr("width", 8).attr("height", 15).attr("viewBox", "0 0 8 15")
+    .append("rect").attr("class", "s8-tick")
+    .attr("x", 1).attr("y", 0).attr("width", 3).attr("height", 15);
+  sharedKey.appendChild(UI.el("span", sharedText));
+
+  root.appendChild(UI.el("div.controls-row",
+    UI.el("div.control", UI.el("label", "Order rows by"), sortToggle),
+    roleKey, sharedKey));
+
+  const grid = UI.el("div.s8-grid");
+  root.appendChild(grid);
+
+  const detail = UI.el("div.s8-detail");
+  root.appendChild(detail);
+
+  /* =================================================================== lists */
+
+  LISTS.forEach(L => {
+    const card = UI.el("div.s8-col");
+    card.appendChild(UI.el("div.s8-col-head",
+      UI.el("span.s8-model", L.name),
+      UI.el("span.s8-score", L.score),
+      UI.el("span.s8-unit", L.unit)));
+
+    const chart = UI.el("div.s8-chart");
+    card.appendChild(chart);
+    grid.appendChild(card);
+
+    L.mount = Plot.mount(chart, (g, iw, ih) => drawList(L, g, iw, ih),
+      { margin: { top: 30, right: 6, bottom: 28, left: 4 } });
   });
 
-  const controls = UI.el("div.controls-row", toggle, readout);
-  left.appendChild(controls);
-
-  function resetReadout() {
-    readout.textContent = "Hover a point for its exact score.";
+  function ordered(L) {
+    if (sortBy === "value") return L.rows;
+    return L.rows.slice().sort((a, b) =>
+      (ROLE_ORDER[a.role] - ROLE_ORDER[b.role]) || (b.value - a.value));
   }
 
-  /* ================================================================= chart */
-
-  const host = UI.el("div.viz-wrap");
-  left.appendChild(host);
-
-  const DOT = d3.symbol().type(d3.symbolCircle).size(30)();
-  const OFF = d3.symbol().type(d3.symbolTriangle).size(38)();
-  const SEED_MARK = d3.symbol().type(d3.symbolDiamond).size(118)();
-
-  /* d3's default tick format prints a Unicode minus. Keep the axis ASCII, so
-   * it matches Stats.r2 everywhere else in the viz. */
-  function fmtTick(v) {
-    const s = (Math.round(v * 100) / 100).toFixed(2);
-    return s.replace(/0+$/, "").replace(/\.$/, "");
+  /* Shorten a label to a pixel budget and keep the full name for the hover
+   * line and the native tooltip. Binary search rather than a character at a
+   * time: this runs for forty labels on every resize. */
+  function fitText(node, full, maxW) {
+    node.textContent = full;
+    if (node.getComputedTextLength() <= maxW) return;
+    let lo = 1, hi = full.length;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1;
+      node.textContent = full.slice(0, mid) + "...";
+      if (node.getComputedTextLength() <= maxW) lo = mid; else hi = mid - 1;
+    }
+    node.textContent = full.slice(0, lo).replace(/[\s,]+$/, "") + "...";
   }
 
-  function render(g, iw, ih) {
-    const rows = ROWS[state.mode];
+  function drawList(L, g, iw, ih) {
+    const rows = ordered(L);
+    const barX = Math.max(140, Math.round(iw * 0.40));
+    const valW = 46;
+    const x = d3.scaleLinear()
+      .domain([0, d3.max(rows, d => d.value)])
+      .range([barX, Math.max(barX + 20, iw - valW)]);
+    const y = d3.scaleBand()
+      .domain(d3.range(rows.length)).range([0, ih]).paddingInner(0.26);
+    const bh = y.bandwidth();
+    const step = y.step();
 
-    const x = d3.scaleLinear().domain([CLAMP_LO, CLAMP_HI]).range([0, iw]).clamp(true);
-    const y = d3.scaleBand().domain(rows.map(r => r.name)).range([0, ih])
-      .paddingInner(0.3).paddingOuter(0.14);
-
-    const band = y.bandwidth();
-    const half = Math.min(24, band * 0.44);
-    const boxH = Math.min(32, band * 0.6);
-
-    const ticks = x.ticks(7);
-
-    g.append("g").attr("class", "grid")
-      .selectAll("line").data(ticks).join("line")
-      .attr("y1", 0).attr("y2", ih).attr("x1", d => x(d)).attr("x2", d => x(d));
-
-    g.append("line").attr("class", "s8-zero")
-      .attr("x1", x(0)).attr("x2", x(0)).attr("y1", -4).attr("y2", ih + 4);
-
-    g.append("line").attr("class", "s8-wall")
-      .attr("x1", 0).attr("x2", 0).attr("y1", 0).attr("y2", ih);
+    // The role mix, drawn in the top margin: one marker per feature in the
+    // list, grouped by role, with the count in front of each group.
+    let mx = 0;
+    ["causal", "spurious", "incidental"].forEach(role => {
+      const n = rows.filter(d => d.role === role).length;
+      if (!n) return;
+      g.append("text").attr("class", "s8-mixn tabular")
+        .attr("x", mx).attr("y", -14).attr("dy", "0.34em").text(n);
+      mx += 8 + String(n).length * 7;
+      for (let i = 0; i < n; i++) {
+        g.append("path").attr("class", "mark " + Plot.roleClass(role))
+          .attr("d", Plot.rolePath(role, 40))
+          .attr("transform", "translate(" + mx + ",-14)");
+        mx += 12.5;
+      }
+      mx += 12;
+    });
 
     g.append("g").attr("class", "axis")
       .attr("transform", "translate(0," + ih + ")")
-      .call(d3.axisBottom(x).tickValues(ticks).tickFormat(fmtTick).tickSizeOuter(0));
+      .call(d3.axisBottom(x).ticks(4).tickFormat(L.tick).tickSizeOuter(0));
 
-    g.append("text").attr("class", "axis-label")
-      .attr("x", iw / 2).attr("y", ih + 37).attr("text-anchor", "middle")
-      .text("Test R squared. 0 is the score of always guessing the average.");
+    const rowSel = g.selectAll("g.s8-row").data(rows).join("g")
+      .attr("class", "s8-row")
+      .attr("transform", (d, i) => "translate(0," + y(i) + ")");
 
-    const off = totalOff[state.mode];
-    g.append("text").attr("class", "s8-clamp-note")
-      .attr("x", 0).attr("y", -11)
-      .text(off > 0
-        ? ("Axis clamped to [" + CLAMP_LO + ", " + CLAMP_HI + "]. " + off + " of the "
-           + totalPoints[state.mode] + " scores fall below it and are drawn at the wall.")
-        : ("Axis clamped to [" + CLAMP_LO + ", " + CLAMP_HI + "]. Every one of the "
-           + totalPoints[state.mode] + " scores sits inside it."));
+    rowSel.each(function (d) {
+      const r = d3.select(this);
 
-    rows.forEach((r, ri) => {
-      const cy = y(r.name) + band / 2;
-      const rowG = g.append("g").attr("class", "s8-row");
-
-      rowG.append("text").attr("class", "s8-row-label")
-        .attr("x", -12).attr("y", cy + 5).attr("text-anchor", "end")
-        .text(r.name);
-
-      rowG.append("line").attr("class", "s8-whisker")
-        .attr("x1", x(r.min)).attr("x2", x(r.max)).attr("y1", cy).attr("y2", cy);
-
-      const jit = JITTER[ri];
-
-      const inside = [];
-      const outside = [];
-      r.values.forEach((v, i) => {
-        (v < CLAMP_LO ? outside : inside).push({ v, i });
-      });
-
-      const dots = rowG.selectAll("path.s8-dot").data(inside).join("path")
-        .attr("class", "mark s8-dot")
-        .attr("d", DOT)
-        .attr("transform", d => "translate(" + x(d.v) + "," + (cy + jit[d.i] * half) + ")");
-      dots.append("title").text(d => r.name + ", " + r.tags[d.i] + ": " + Stats.r2(d.v));
-      dots
-        .on("pointerenter", function (ev, d) {
-          d3.select(this).classed("hot", true);
-          readout.textContent = r.name + ", " + r.tags[d.i] + ": R squared " + Stats.r2(d.v);
-        })
-        .on("pointerleave", function () {
-          d3.select(this).classed("hot", false);
-          resetReadout();
-        });
-
-      const offs = rowG.selectAll("path.s8-off").data(outside).join("path")
-        .attr("class", "mark s8-off")
-        .attr("d", OFF)
-        .attr("transform", d => "translate(" + (x(CLAMP_LO) + 4) + ","
-          + (cy + jit[d.i] * half) + ") rotate(-90)");
-      offs.append("title").text(d => r.name + ", " + r.tags[d.i] + ": " + Stats.r2(d.v));
-      offs
-        .on("pointerenter", function (ev, d) {
-          d3.select(this).classed("hot", true);
-          readout.textContent = r.name + ", " + r.tags[d.i] + ": R squared " + Stats.r2(d.v)
-            + ", off the chart";
-        })
-        .on("pointerleave", function () {
-          d3.select(this).classed("hot", false);
-          resetReadout();
-        });
-
-      if (r.nOff > 0) {
-        rowG.append("text").attr("class", "s8-off-label")
-          .attr("x", 14).attr("y", cy - half - 3)
-          .text(r.nOff + " off chart, down to " + Stats.r2(r.min));
+      if (SHARED[d.key]) {
+        r.append("rect").attr("class", "s8-tick")
+          .attr("x", 0).attr("y", 0).attr("width", 3.5).attr("height", bh);
       }
 
-      rowG.append("rect").attr("class", "s8-box")
-        .attr("x", x(r.q25)).attr("y", cy - boxH / 2)
-        .attr("width", Math.max(1, x(r.q75) - x(r.q25))).attr("height", boxH);
+      r.append("path").attr("class", "mark " + Plot.roleClass(d.role))
+        .attr("d", Plot.rolePath(d.role, 40))
+        .attr("transform", "translate(15," + (bh / 2) + ")");
 
-      rowG.append("line").attr("class", "s8-median")
-        .attr("x1", x(r.median)).attr("x2", x(r.median))
-        .attr("y1", cy - boxH / 2 - 3).attr("y2", cy + boxH / 2 + 3);
+      const label = r.append("text").attr("class", "s8-label")
+        .attr("x", 25).attr("y", bh / 2).attr("dy", "0.34em");
+      fitText(label.node(), d.desc, barX - 33);
 
-      rowG.append("line").attr("class", "s8-stem")
-        .attr("x1", x(r.single)).attr("x2", x(r.single))
-        .attr("y1", cy - half - 4).attr("y2", cy + half + 4);
+      r.append("rect").attr("class", "s8-bar " + Plot.roleClass(d.role))
+        .attr("x", barX).attr("y", 0)
+        .attr("width", Math.max(1.5, x(d.value) - barX)).attr("height", bh);
 
-      const seed = rowG.append("path").attr("class", "mark s8-seed")
-        .attr("d", SEED_MARK)
-        .attr("transform", "translate(" + x(r.single) + "," + cy + ")");
-      seed.append("title").text(r.name + ", seed " + T.singleSeed + ": " + Stats.r2(r.single));
-      seed
-        .on("pointerenter", function () {
-          d3.select(this).classed("hot", true);
-          readout.textContent = r.name + ", seed " + T.singleSeed
-            + ", the split this story used: R squared " + Stats.r2(r.single);
-        })
-        .on("pointerleave", function () {
-          d3.select(this).classed("hot", false);
-          resetReadout();
-        });
+      r.append("text").attr("class", "s8-value tabular")
+        .attr("x", iw).attr("y", bh / 2).attr("dy", "0.34em")
+        .attr("text-anchor", "end").text(L.value(d.value));
 
-      rowG.append("text").attr("class", "s8-row-stat")
-        .attr("x", iw + 10).attr("y", cy + 4)
-        .text("median " + Stats.r2(r.median));
+      r.append("title").text(d.desc + ", " + L.value(d.value) + ", " + d.role
+        + (SHARED[d.key] ? ", in both lists" : ""));
+
+      r.append("rect").attr("class", "s8-hit")
+        .attr("x", 0).attr("y", -(step - bh) / 2)
+        .attr("width", iw).attr("height", step);
+    });
+
+    /* mouseover rather than mouseenter: it bubbles, so the hit rect that
+     * covers each row carries it up to the row group, and a synthetic one
+     * exercises the same path a real pointer does. */
+    rowSel.on("mouseover", (ev, d) => setHover(L, d));
+
+    L.rowSel = rowSel;
+    paintHover();
+  }
+
+  /* ================================================================== hover */
+
+  function setHover(L, d) {
+    hover = { list: L.key, key: d.key };
+    setDetail(L, d);
+    paintHover();
+  }
+
+  function paintHover() {
+    LISTS.forEach(L => {
+      if (!L.rowSel) return;
+      L.rowSel.classed("hot", d => !!hover && hover.list === L.key && hover.key === d.key);
     });
   }
 
-  const chart = Plot.mount(host, render, {
-    margin: { top: 30, right: 108, bottom: 54, left: 126 },
-  });
+  function setDetail(L, d) {
+    detail.textContent = "";
+    detail.appendChild(UI.el("span.s8-d-model", L.name));
 
-  /* ================================================================== key */
+    const shape = UI.el("span.s8-d-shape");
+    d3.select(shape).append("svg")
+      .attr("width", 15).attr("height", 15).attr("viewBox", "-7.5 -7.5 15 15")
+      .append("path").attr("class", "mark " + Plot.roleClass(d.role))
+      .attr("d", Plot.rolePath(d.role, 62));
+    detail.appendChild(shape);
 
-  function keyMark(pathD, cls, rotate) {
-    const wrap = UI.el("span");
-    const svg = d3.select(wrap).append("svg")
-      .attr("width", 18).attr("height", 16).attr("viewBox", "-9 -8 18 16");
-    svg.append("path").attr("class", cls).attr("d", pathD)
-      .attr("transform", rotate ? "rotate(" + rotate + ")" : null);
-    return wrap;
+    detail.appendChild(UI.el("span.s8-d-role." + Plot.roleClass(d.role), d.role));
+    detail.appendChild(UI.el("span.s8-d-name", d.desc));
+    detail.appendChild(UI.el("span.s8-d-val.tabular", L.value(d.value)));
+    detail.appendChild(UI.el("span.s8-d-unit", L.unit));
+    if (SHARED[d.key]) detail.appendChild(UI.el("span.s8-d-shared", "in both lists"));
   }
 
-  function keyBox() {
-    const wrap = UI.el("span");
-    const svg = d3.select(wrap).append("svg")
-      .attr("width", 30).attr("height", 16).attr("viewBox", "0 0 30 16");
-    svg.append("rect").attr("class", "s8-box")
-      .attr("x", 1).attr("y", 3).attr("width", 28).attr("height", 10);
-    svg.append("line").attr("class", "s8-median")
-      .attr("x1", 17).attr("x2", 17).attr("y1", 1).attr("y2", 15);
-    return wrap;
+  function redrawAll() {
+    LISTS.forEach(L => L.mount.redraw());
   }
 
-  const keyRow = UI.el("div.s8-key");
-  const keyPoint = UI.el("span", "");
-  const keyOffItem = UI.el("span.s8-key-item",
-    keyMark(OFF, "mark s8-off", -90), "off the chart");
-  keyRow.appendChild(UI.el("span.s8-key-item", keyMark(DOT, "mark s8-dot"), keyPoint));
-  keyRow.appendChild(keyOffItem);
-  keyRow.appendChild(UI.el("span.s8-key-item",
-    keyMark(SEED_MARK, "mark s8-seed"),
-    "seed " + T.singleSeed + ", the split this story used"));
-  keyRow.appendChild(UI.el("span.s8-key-item", keyBox(), "middle half and median"));
-  left.appendChild(keyRow);
+  /* Open on the top row of the first list, so the detail line carries a real
+   * reading rather than an instruction. Under &run, open on the highest ranked
+   * feature both models kept, which is the row the scene is about. */
+  const opening = (UI.flag("run") || test === "shared")
+    ? (LISTS[0].rows.filter(d => SHARED[d.key])[0] || LISTS[0].rows[0])
+    : LISTS[0].rows[0];
+  setHover(LISTS[0], opening);
 
-  /* ================================================================= prose */
-
-  const prose = UI.el("div.s8-prose");
-
-  right.appendChild(UI.sentence(
-    "A split deals the " + D.meta.nCountries + " countries into two piles: ",
-    UI.itex("n_{\\text{train}} = " + D.crash.nTrain), " countries the model fits on, and ",
-    UI.itex("n_{\\text{test}} = " + D.crash.nTest),
-    " it never sees until the score. Change the deal and you change the score."));
-
-  const formula = UI.el("div.formula-block");
-  formula.appendChild(UI.tex(
-    "R^2 \\;=\\; 1 \\;-\\; \\frac{\\sum_i (y_i - \\hat{y}_i)^2}{\\sum_i (y_i - \\bar{y})^2}"));
-  right.appendChild(formula);
-
-  right.appendChild(UI.el("p.muted.small.s8-gloss",
-    "1 is a perfect fit on the held back countries. 0 is the score of always "
-    + "guessing the average. Below 0 is worse than guessing the average."));
-
-  right.appendChild(prose);
-
-  function paintProse() {
-    prose.innerHTML = "";
-    const r = ROWS[state.mode][0];
-    if (state.mode === "splits") {
-      prose.appendChild(UI.callout("The one number and the cloud",
-        UI.el("p.small",
-          "Seed " + T.singleSeed + " handed OLS " + (r.single >= 0 ? "+" : "")
-          + Stats.r2(r.single) + ". Over " + r.n + " splits its median is "
-          + Stats.r2(r.median) + ", its middle half runs from " + Stats.r2(r.q25)
-          + " to " + Stats.r2(r.q75) + ", and its worst is " + Stats.r2(r.min)
-          + ". " + r.nNeg + " of the " + r.n + " land below zero. The split this "
-          + "story used was one of its luckier ones.")));
-    } else {
-      prose.appendChild(UI.callout("The one number and the folds",
-        UI.el("p.small",
-          "Cross validation cuts the " + D.meta.nCountries + " countries into "
-          + T.k + " parts and scores each one against a model fitted on the other "
-          + (T.k - 1) + ". OLS runs from " + Stats.r2(r.min) + " to "
-          + Stats.r2(r.max) + ", and " + r.nNeg + " of the " + r.n
-          + " folds land below zero. Five numbers, and they disagree.")));
-    }
-    keyPoint.textContent = state.mode === "splits" ? "one resampled split" : "one fold";
-    // No mark on screen means no key for it: in the fold view nothing is clamped.
-    keyOffItem.classList.toggle("is-empty", totalOff[state.mode] === 0);
+  /* A headless capture has no pointer, so test=hover fires a real event at a
+   * real row and the screenshot then proves the whole hover path rather than
+   * just the function behind it. Dev affordance, never a user feature. */
+  if (test === "hover") {
+    const node = LISTS[1].rowSel.nodes()[8];
+    const hit = node && node.querySelector(".s8-hit");
+    if (hit) hit.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
   }
 
-  paintProse();
-
-  /* &run has no gated button to trip here: the chart paints its full state on
-   * entry. test=kfold and test=splits pick the mode for a headless capture. */
-  toggle.select(state.mode);
-
-  return {
-    onEnter() { chart.redraw(); },
-  };
+  // Nothing to tear down: the mounts survive a revisit.
+  return {};
 };

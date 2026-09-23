@@ -1,38 +1,37 @@
-/* Scene 7. What the models kept. Two ranked lists, twenty rows each.
+/* Scene 7. Regularisation. Three small multiples, one shared slider.
  *
- * Sibling of scene 6 and deliberately built in the same language: the same
- * card, the same hairline rule, the same muted head. No colour literal lives
- * here. Every rule reaches for a token already declared in css/style.css. */
+ * No colour literal lives here. Every rule below reaches for a token already
+ * declared in css/style.css, so the theme toggle costs this scene nothing. */
 
-/* The standfirst carries the lesson, so let it run the width of the stage
-   rather than wrap into the space the lists need. */
-#stage .scene[data-scene="7"] .scene-head p { max-width: 96ch; }
-
-.s7-rolekey .role-legend,
-.s7-sharedkey { margin: 0; }
-.s7-rolekey .role-key { font-size: 12.5px; }
-
-.s7-sharedkey {
-  display: flex;
-  gap: 7px;
-  align-items: center;
-  font-size: 12.5px;
-  color: var(--ink-soft);
+.s7-layout {
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 26px;
 }
-.s7-sharedkey svg { display: block; overflow: visible; }
-.s7-sharedkey .s7-tick { fill: var(--ink); }
 
-/* ================================================================= the grid */
+.s7-left {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
 
 .s7-grid {
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.s7-col {
+.s7-foot {
+  flex: 0 0 auto;
+  margin-top: 8px;
+  line-height: 1.45;
+  max-width: 100%;
+}
+
+/* ============================================================== one panel */
+
+.s7-panel {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -42,30 +41,24 @@
   padding: 8px 10px 6px;
 }
 
-.s7-col-head {
+.s7-panel-head {
   flex: 0 0 auto;
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1px;
   margin-bottom: 2px;
 }
-.s7-col-head .s7-model {
+.s7-panel-head .s7-family {
   font-family: "Iowan Old Style", "Palatino", Georgia, serif;
   font-size: 15px;
   color: var(--ink);
+  line-height: 1.2;
 }
-.s7-col-head .s7-score {
-  font-size: 11.5px;
+.s7-panel-head .s7-best {
+  font-size: 11px;
   color: var(--muted);
+  line-height: 1.3;
   font-variant-numeric: tabular-nums;
-}
-.s7-col-head .s7-unit {
-  margin-left: auto;
-  font-family: "Iowan Old Style", "Palatino", Georgia, serif;
-  font-style: italic;
-  font-size: 11.5px;
-  color: var(--muted);
 }
 
 .s7-chart {
@@ -75,78 +68,110 @@
 }
 .s7-chart svg { display: block; width: 100%; height: 100%; }
 
-/* ================================================================ the rows */
+/* The three numbers under each panel, at the slider's current alpha. */
 
-#stage .s7-chart svg .mark { stroke: var(--panel); stroke-width: 0.7; }
-
-#stage .s7-chart svg .s7-label {
-  fill: var(--ink-soft);
-  font-size: 11.5px;
+.s7-readout {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  border-top: 1px solid var(--rule);
+  padding-top: 5px;
+  margin-top: 2px;
 }
-#stage .s7-chart svg .s7-value {
-  fill: var(--ink);
+.s7-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+.s7-cell .s7-k {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+.s7-cell .s7-k.k-train { color: var(--fit-train); }
+.s7-cell .s7-k.k-test { color: var(--fit-test); }
+.s7-cell .s7-k.k-kept { color: var(--muted); }
+.s7-cell .s7-v {
   font-family: "SF Mono", "Menlo", "JetBrains Mono", monospace;
-  font-size: 11.5px;
-}
-#stage .s7-chart svg .s7-mixn {
-  fill: var(--ink);
-  font-size: 11.5px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  line-height: 1.25;
+  color: var(--ink);
 }
 
-/* The shared marker. Ink, and a shape rather than a hue, because all three
-   hues are spoken for by the roles. */
-#stage .s7-chart svg .s7-tick { fill: var(--ink); }
+/* ============================================================== the chart */
 
-#stage .s7-chart svg .s7-hit { fill: none; pointer-events: all; cursor: pointer; }
-
-#stage .s7-chart svg .s7-row.hot .s7-bar {
+/* The scrubber, where the shared slider stands. Solid and vertical, against
+   the dashed horizontal reference and the dashed vertical best rule. */
+#stage .s7-chart svg .s7-scrub {
   stroke: var(--ink);
   stroke-width: 1.6;
+  opacity: 0.45;
 }
-#stage .s7-chart svg .s7-row.hot .s7-label { fill: var(--ink); font-weight: 600; }
 
-/* =============================================================== the detail */
-
-.s7-detail {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 9px;
-  padding-top: 8px;
-  border-top: 1px solid var(--rule);
-  font-size: 13px;
-  color: var(--ink-soft);
-  white-space: nowrap;
-  overflow: hidden;
+#stage .s7-chart svg .s7-bestline {
+  stroke: var(--muted);
+  stroke-width: 1.3;
+  stroke-dasharray: 2 3;
+  fill: none;
 }
-.s7-detail .s7-d-model {
+#stage .s7-chart svg .s7-bestlabel {
+  fill: var(--muted);
+  font-size: 10.5px;
   font-family: "Iowan Old Style", "Palatino", Georgia, serif;
-  color: var(--ink);
-}
-.s7-detail .s7-d-shape { display: flex; margin-right: -6px; }
-.s7-detail .s7-d-shape svg { display: block; overflow: visible; }
-.s7-detail .s7-d-role { font-weight: 600; }
-.s7-detail .s7-d-name {
-  color: var(--ink);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.s7-detail .s7-d-val {
-  font-family: "SF Mono", "Menlo", "JetBrains Mono", monospace;
-  color: var(--ink);
-}
-.s7-detail .s7-d-unit,
-.s7-detail .s7-d-shared { color: var(--muted); font-size: 12px; }
-.s7-detail .s7-d-shared {
-  border-left: 1px solid var(--rule);
-  padding-left: 12px;
+  font-style: italic;
 }
 
-/* A shorter hall. Buy the twenty rows their height back from the chrome. */
+#stage .s7-chart svg .s7-dot { stroke: var(--panel); stroke-width: 1.4; }
+
+/* Chart labels sit on top of curves. A halo in the panel colour keeps them
+   readable without a fill behind them and without a new hue. */
+#stage .s7-chart svg .axis-label,
+#stage .s7-chart svg .series-label,
+#stage .s7-chart svg .s7-bestlabel,
+#stage .s7-chart svg .s7-count-label {
+  paint-order: stroke fill;
+  stroke: var(--panel);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* The surviving coefficient count. Ink rather than a fourth hue: it is one
+   series with no partner to be told apart from, and it carries its own end of
+   line label the way the fit series do. */
+#stage .s7-chart svg .s7-count {
+  stroke: var(--ink);
+  stroke-width: 2.4;
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+#stage .s7-chart svg .s7-count-dot { fill: var(--ink); }
+#stage .s7-chart svg .s7-count-label {
+  fill: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+/* =============================================================== the text */
+
+/* Anchored at the top rather than centred: a column that centres its content
+   and then overflows loses the first lines off the top edge, which reads as a
+   sentence starting mid word. */
+.s7-text { max-width: none; justify-content: flex-start; }
+.s7-text p { max-width: none; font-size: 14px; margin-bottom: 10px; }
+.s7-text .katex { font-size: 0.98em; }
+.s7-text .katex-display { margin: 0 0 4px; }
+.s7-text .sidebar-note { font-size: 13px; }
+.s7-legend { margin-top: 4px; }
+.s7-legend .role-legend { margin: 0; gap: 14px; }
+.s7-legend .role-key { font-size: 12px; }
+
+/* A shorter hall. Give the panels the height back by trimming the chrome. */
 @media (max-height: 780px) {
-  .s7-col-head .s7-model { font-size: 14px; }
-  .s7-detail { font-size: 12.5px; margin-top: 7px; padding-top: 6px; }
+  .s7-panel-head .s7-family { font-size: 14px; }
+  .s7-cell .s7-v { font-size: 13px; }
+  .s7-text p { font-size: 13.5px; }
 }
