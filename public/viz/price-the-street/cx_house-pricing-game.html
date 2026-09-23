@@ -216,7 +216,7 @@
   .hint-box ul{margin:4px 0 0 0}
 
   /* ===== The games ===== */
-  .game-stage{display:grid;grid-template-columns:340px 1fr;gap:32px;align-items:start;margin-top:12px;position:relative}
+  .game-stage{display:grid;grid-template-columns:440px 1fr;gap:28px;align-items:start;margin-top:12px;position:relative}
   @media (max-width:1100px){.game-stage{grid-template-columns:1fr}.hp-board{order:-1}}
   .game-left{display:flex;flex-direction:column;gap:12px;min-width:0}
   .control-panel{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:18px 20px;display:flex;flex-direction:column;gap:16px}
@@ -241,6 +241,24 @@
   .game-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 18px;border-radius:6px;border:1px solid var(--ink);cursor:pointer;font-family:var(--data);font-size:13px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--paper);background:var(--ink);transition:opacity .15s}
   .game-btn:hover{opacity:0.88}
   .game-btn:disabled{opacity:0.45}
+  .nudge-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .nudge{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 0 4px;border-radius:5px;background:var(--paper);border:1px solid var(--line-firm);border-bottom-width:3px;cursor:pointer;font-family:var(--data);font-size:14px;font-weight:700;line-height:1.15;color:var(--ink)}
+  .nudge .k{font-size:10px;font-weight:400;letter-spacing:0.06em;color:var(--ink-dim)}
+  .nudge.w{border-color:var(--w);color:var(--w-ink)}
+  .nudge.b{border-color:var(--b);color:var(--b-ink)}
+  .nudge:active{transform:translateY(1px);border-bottom-width:2px}
+  .play-table{font-family:var(--data);font-size:12.5px;color:var(--ink);height:200px;overflow-y:auto;background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:0 10px 4px}
+  .play-table .row{display:grid;gap:6px;padding:3px 0;border-bottom:1px dashed var(--line-soft);align-items:baseline;white-space:nowrap}
+  .play-table.one .row{grid-template-columns:22px 46px 84px 86px 1fr}
+  .play-table.street .row{grid-template-columns:20px 36px 58px 72px 30px 1fr}
+  .play-table .row.head{position:sticky;top:0;z-index:1;background:var(--paper-2);color:var(--ink-dim);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-top:6px}
+  .play-table .n{text-align:right}
+  .play-table .row.last{background:var(--ink-wash);font-weight:700}
+  .play-table .low{color:var(--under-ink)}
+  .play-table .high{color:var(--over-ink)}
+  .play-table .okr{color:var(--ok)}
+  .play-table .todo{font-family:var(--body);font-size:12.5px;padding-left:6px}
+  .play-table.street .todo{font-size:12px;padding-left:4px}
   .game-log{font-size:12.5px;color:var(--ink-dim);text-align:center;margin-top:2px;min-height:18px}
 
   .hp-board{display:flex;flex-direction:column;gap:10px;width:100%;max-width:640px;justify-self:center;background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
@@ -436,7 +454,7 @@
     <div class="segment" id="keys">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Keys to press.</h2>
-        <p class="segment-lead reveal d2">Nudge your two numbers with the arrows, then press <strong>Enter</strong> to appraise.</p>
+        <p class="segment-lead reveal d2">Nudge your two numbers with the arrows or the buttons. Every nudge is appraised at once.</p>
         <div class="panel reveal d3" style="width:fit-content;margin-top:6px">
           <h3>Controls</h3>
           <div style="display:flex;align-items:flex-start;justify-content:center;gap:36px;flex-wrap:wrap;padding:10px 8px 4px">
@@ -456,9 +474,9 @@
             </div>
             <div>
               <div class="keyboard" style="grid-template-columns:repeat(3,52px);grid-template-rows:52px">
-                <div class="key wide" style="font-size:13px">ENTER</div>
+                <div class="key wide" style="font-size:13px">SHIFT</div>
               </div>
-              <div class="key-cap">appraise</div>
+              <div class="key-cap">&times; 10</div>
             </div>
           </div>
         </div>
@@ -471,34 +489,26 @@
     <div class="segment game-seg" id="level1">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Level 1 <span class="dim">&middot;</span> One house.</h2>
-        <p class="segment-lead reveal d2" style="margin-bottom:8px">Rosenweg 12 just sold. Your rule: <code>price = <span class="c-w">w</span> &times; area</code>.<br> <strong>&uarr; &darr;</strong> nudge <span class="c-w">w</span>, <strong>Enter</strong> appraises. The owner is picky: land within <strong>CHF 500</strong>.</p>
+        <p class="segment-lead reveal d2" style="margin-bottom:8px">Rosenweg 12 just sold. Your rule: <code>price = <span class="c-w">w</span> &times; area</code>.<br> Every nudge of <span class="c-w">w</span> is appraised at once. The owner is picky: land within <strong>CHF 500</strong>.</p>
 
         <div class="game-stage reveal d3">
           <div class="game-left">
             <div class="control-panel">
               <div class="knob">
                 <div class="knob-label"><span class="lc">w</span> &middot; price per m&sup2;</div>
-                <div class="knob-value" id="h1_w">900</div>
+                <div class="knob-value" id="h1_w">400</div>
               </div>
-              <div class="panel-divider"></div>
-              <div class="stats-row">
-                <div class="stat-block">
-                  <div class="stat-label">Your price <span class="lc">ŷ</span></div>
-                  <div class="stat-value" id="h1_yhat">&middot;</div>
-                  <div class="stat-unit">= w &times; 234</div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">Miss <span class="lc">l = y &minus; ŷ</span></div>
-                  <div class="stat-value" id="h1_loss">&middot;</div>
-                  <div class="stat-unit" id="h1_lossNote">the market's shout</div>
-                </div>
+              <div class="nudge-row" aria-label="nudge w">
+                <button class="nudge w" data-l1="-100"><span>&minus;100</span><span class="k">shift &darr;</span></button>
+                <button class="nudge w" data-l1="-10"><span>&minus;10</span><span class="k">&darr;</span></button>
+                <button class="nudge w" data-l1="10"><span>+10</span><span class="k">&uarr;</span></button>
+                <button class="nudge w" data-l1="100"><span>+100</span><span class="k">shift &uarr;</span></button>
               </div>
             </div>
-            <button class="game-btn" id="h1_appraise">Appraise</button>
+            <div class="play-table one" id="h1_table" aria-live="polite"></div>
             <div class="btnrow" style="margin-top:0">
               <button class="secondary" id="h1_reset" style="flex:1">Reset</button>
             </div>
-            <div class="game-log" id="h1_log"></div>
           </div>
 
           <div class="hp-board">
@@ -560,7 +570,7 @@
           <path class="ld-arrow" d="M120 240 L120 272" marker-end="url(#ah)"/>
           <path class="ld-loop" d="M220 303 C 300 303, 300 123, 224 123" marker-end="url(#ahl)"/>
           <text class="small loop" x="262" y="352" text-anchor="middle">repeat</text>
-          <text class="small loop" x="262" y="368" text-anchor="middle">until |l| &lt; ε</text>
+          <text class="small loop" x="262" y="368" text-anchor="middle">max_rounds times</text>
         </svg>
       </div>
     </div>
@@ -585,12 +595,12 @@
         <h2 class="segment-heading reveal d1">The fixed-step algorithm.</h2>
         <p class="segment-lead reveal d2">Here is the whole thing, written as a program.</p>
         <div class="concept-card eq reveal d3" style="max-width:780px">
-          <p class="eqn">given&nbsp;&nbsp; x, y<br>guess&nbsp;&nbsp; <span class="w">ŵ</span><br>do<br>&nbsp;&nbsp;&nbsp;&nbsp;ŷ = <span class="w">ŵ</span> &middot; x<br>&nbsp;&nbsp;&nbsp;&nbsp;l = y &minus; ŷ<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="w">ŵ</span> &larr; <span class="w">ŵ</span> + α &middot; l<br>until&nbsp;&nbsp; |l| &lt; ε</p>
+          <p class="eqn">given&nbsp;&nbsp; x, y<br>guess&nbsp;&nbsp; <span class="w">ŵ</span><br>repeat max_rounds times<br>&nbsp;&nbsp;&nbsp;&nbsp;ŷ = <span class="w">ŵ</span> &middot; x<br>&nbsp;&nbsp;&nbsp;&nbsp;l = y &minus; ŷ<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="w">ŵ</span> &larr; <span class="w">ŵ</span> + α &middot; l</p>
           <ul style="margin-top:14px">
             <li><code class="c-w">ŵ</code>: your guess for the price per m&sup2;.</li>
             <li><code>l</code>: the signed miss. Positive means raise the price.</li>
             <li><code>α</code>: the step size. You choose it.</li>
-            <li><code>ε</code>: the tolerance. Stop once the owner is convinced.</li>
+            <li><code>max_rounds</code>: how many times the loop runs.</li>
           </ul>
         </div>
         <p class="segment-lead reveal d4" style="margin-top:24px">Your turn to write it.</p>
@@ -607,23 +617,20 @@
         <h3>Your task</h3>
         <ul>
           <li><strong>Given:</strong> the loop over rounds.</li>
-          <li><strong>To do:</strong> fill in the four blanks: the <strong>prediction</strong>, the <strong>miss</strong>, the <strong>stopping test</strong> and the <strong>update</strong>.</li>
+          <li><strong>To do:</strong> fill in the three blanks: the <strong>prediction</strong>, the <strong>miss</strong> and the <strong>update</strong>.</li>
         </ul>
       </div>
 
-      <pre class="template"><span class="kw">def</span> <span class="fn">fit_one_house</span>(x, y, w, alpha, eps, max_rounds):
+      <pre class="template"><span class="kw">def</span> <span class="fn">fit_one_house</span>(x, y, w, alpha, max_rounds):
     <span class="kw">for</span> t <span class="kw">in</span> <span class="fn">range</span>(max_rounds):
         <span class="com"># 1) predict</span>
         y_hat = <input class="inline" data-e1="pred" placeholder="w * ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
         <span class="com"># 2) compare</span>
         loss = <input class="inline" data-e1="loss" placeholder="y - ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
-        <span class="com"># 3) stop?</span>
-        <span class="kw">if</span> <input class="inline" data-e1="stop" placeholder="abs(...) ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>:
-            <span class="kw">break</span>
-        <span class="com"># 4) update</span>
+        <span class="com"># 3) update</span>
         w = <input class="inline" data-e1="update" placeholder="w + ..." autocomplete="off" spellcheck="false" /><span class="mark" aria-hidden="true"></span>
     <span class="kw">return</span> w</pre>
-      <p class="runs">Runs on Rosenweg 12: x = 234, y = 198789, w = 900, alpha = 0.002, eps = 500, max_rounds = 100.</p>
+      <p class="runs">Runs on Rosenweg 12: x = 234, y = 198789, w = 900, alpha = 0.002, max_rounds = 20.</p>
 
       <div class="btnrow">
         <button class="primary" id="e1check">Submit answers</button>
@@ -634,7 +641,6 @@
         <ul>
           <li><strong>y_hat:</strong> price per m&sup2; times area.</li>
           <li><strong>loss:</strong> what it sold for minus what you said. Positive must mean "too low".</li>
-          <li><strong>stop:</strong> the size of the miss, <code>abs(loss)</code>, is below <code>eps</code>.</li>
           <li><strong>w:</strong> the old <code>w</code> plus the miss scaled by <code>alpha</code>.</li>
         </ul>
       </div>
@@ -646,7 +652,7 @@
     <div class="segment game-seg" id="level2">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Level 2 <span class="dim">&middot;</span> The whole street.</h2>
-        <p class="segment-lead reveal d2" style="margin-bottom:8px">Eight houses, one rule: <code>price = <span class="c-w">w</span> &times; area + <span class="c-b">b</span></code>. The market shouts the <strong>average</strong> miss.<br> <strong>&uarr; &darr;</strong> nudge <span class="c-w">w</span>, <strong>&larr; &rarr;</strong> nudge <span class="c-b">b</span>. Convince all eight owners, each within <strong>CHF 10,000</strong>.</p>
+        <p class="segment-lead reveal d2" style="margin-bottom:8px">Eight houses, one rule: <code>price = <span class="c-w">w</span> &times; area + <span class="c-b">b</span></code>. After every nudge the market shouts the <strong>average</strong> miss.<br> Convince all eight owners, each within <strong>CHF 10,000</strong>.</p>
 
         <div class="game-stage reveal d3">
           <div class="game-left">
@@ -654,32 +660,30 @@
               <div class="stats-row">
                 <div class="knob">
                   <div class="knob-label"><span class="lc">w</span> &middot; per m&sup2;</div>
-                  <div class="knob-value" id="h2_w">850</div>
+                  <div class="knob-value" id="h2_w">400</div>
                 </div>
                 <div class="knob">
                   <div class="knob-label b"><span class="lc">b</span> &middot; base price</div>
                   <div class="knob-value b" id="h2_b">0</div>
                 </div>
               </div>
-              <div class="panel-divider"></div>
-              <div class="stats-row">
-                <div class="stat-block">
-                  <div class="stat-label">Average miss <span class="lc">l</span></div>
-                  <div class="stat-value" id="h2_loss">&middot;</div>
-                  <div class="stat-unit" id="h2_lossNote">mean of y &minus; ŷ over 8 houses</div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">Owners convinced</div>
-                  <div class="stat-value" id="h2_conv">&middot;</div>
-                  <div class="stat-unit">within &plusmn; 10,000</div>
-                </div>
+              <div class="nudge-row" aria-label="nudge w">
+                <button class="nudge w" data-l2w="-100"><span>&minus;100</span><span class="k">shift &darr;</span></button>
+                <button class="nudge w" data-l2w="-10"><span>&minus;10</span><span class="k">&darr;</span></button>
+                <button class="nudge w" data-l2w="10"><span>+10</span><span class="k">&uarr;</span></button>
+                <button class="nudge w" data-l2w="100"><span>+100</span><span class="k">shift &uarr;</span></button>
+              </div>
+              <div class="nudge-row" aria-label="nudge b">
+                <button class="nudge b" data-l2b="-50000"><span>&minus;50k</span><span class="k">shift &larr;</span></button>
+                <button class="nudge b" data-l2b="-5000"><span>&minus;5k</span><span class="k">&larr;</span></button>
+                <button class="nudge b" data-l2b="5000"><span>+5k</span><span class="k">&rarr;</span></button>
+                <button class="nudge b" data-l2b="50000"><span>+50k</span><span class="k">shift &rarr;</span></button>
               </div>
             </div>
-            <button class="game-btn" id="h2_appraise">Appraise the street</button>
+            <div class="play-table street" id="h2_table" aria-live="polite"></div>
             <div class="btnrow" style="margin-top:0">
               <button class="secondary" id="h2_reset" style="flex:1">Reset</button>
             </div>
-            <div class="game-log" id="h2_log"></div>
           </div>
 
           <div class="hp-board">
@@ -818,7 +822,7 @@
     <div class="segment sim-seg top" id="learn-one">
       <div class="segment-inner">
         <h2 class="segment-heading reveal d1">Watch it learn <span class="dim">&middot;</span> one house.</h2>
-        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_one_house</code> on Rosenweg 12, from <code>w = 900</code>. Pick a step size <code>α</code> and run it.</p>
+        <p class="segment-lead reveal d2" style="margin-bottom:8px">Your <code>fit_one_house</code> on Rosenweg 12, from <code>w = 900</code>, for 20 rounds. Pick a step size <code>α</code> and run it.</p>
         <div class="sim-grid reveal d3">
           <div class="sim-controls">
             <div class="control-panel">
@@ -902,7 +906,7 @@
             <label><input type="radio" name="q2" value="A"> <span>A) It converges faster, since bigger steps are always better.</span></label>
             <label><input type="radio" name="q2" value="B"> <span>B) The miss flips sign every round and grows: each correction overshoots by more than the last.</span></label>
             <label><input type="radio" name="q2" value="C"> <span>C) Nothing changes, since <code>α</code> only matters for <code>b</code>.</span></label>
-            <label><input type="radio" name="q2" value="D"> <span>D) The loop stops after one round because <code>|l| &lt; ε</code>.</span></label>
+            <label><input type="radio" name="q2" value="D"> <span>D) The miss shrinks a little every round, only more slowly.</span></label>
           </div>
           <div class="btnrow"><button class="primary q-submit">Submit answer</button></div>
           <div class="quiz-explain"><div class="verdict"></div>
@@ -1016,8 +1020,8 @@
   }
   const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
   const fmtN = v => Math.round(Math.abs(v)).toLocaleString('en-US');
-  const fmtM = v => (v < 0 ? MINUS : '') + fmtN(v);                 // plain number, proper minus sign
-  const fmtS = v => (v < 0 ? MINUS : '+') + fmtN(v);                // always signed
+  const fmtM = v => (Math.round(v) < 0 ? MINUS : '') + fmtN(v);                 // plain number, proper minus sign
+  const fmtS = v => (Math.round(v) === 0 ? '' : (v < 0 ? MINUS : '+')) + fmtN(v);                // always signed
   function pageInView(el){
     const sec = el.closest('.page'); if (!sec) return true;
     const r = sec.getBoundingClientRect(); const mid = window.innerHeight / 2;
@@ -1208,129 +1212,134 @@
   })();
 
   // ===== Level 1: one house =====
+  // Every nudge of w is an appraisal: the table gains a row with w, the price
+  // it gives, the miss, and what to do next. The game starts far from the
+  // answer (w = 400 against about 850) so it takes a real walk to win.
   const L1 = {};
   (function(){
     const chartHost = document.getElementById('h1_chart'); if (!chartHost) return;
     const stage = chartHost.closest('.game-stage');
-    const wEl = document.getElementById('h1_w');
-    const els = { yhat: document.getElementById('h1_yhat'), loss: document.getElementById('h1_loss'), note: document.getElementById('h1_lossNote'),
-                  log: document.getElementById('h1_log'), end: document.getElementById('h1_end'), endSub: document.getElementById('h1_endSub') };
+    const wEl = document.getElementById('h1_w'), tbl = document.getElementById('h1_table');
+    const els = { end: document.getElementById('h1_end'), endSub: document.getElementById('h1_endSub') };
     const chart = makeScatter(chartHost, { h: 330 });
+    const W_START = 400, BIG = 100 * HOUSE1.x;   // a miss this big is worth a nudge of 100
     let st;
-    function reset(){
-      st = { w: 900, round: 0, hist: [], won: false, pending: true };
-      wEl.textContent = '900'; els.log.textContent = ''; els.end.hidden = true; stage.classList.remove('done');
-      render();
+    function advice(l){
+      if (Math.abs(l) < EPS1) return { cls: 'okr', txt: CHECK + ' sold!' };
+      const step = Math.abs(l) >= BIG ? 100 : 10;
+      return l > 0 ? { cls: 'low', txt: UP + ' raise w: +' + step } : { cls: 'high', txt: DOWN + ' lower w: ' + MINUS + step };
     }
-    function lossClass(l){ return Math.abs(l) < EPS1 ? 'okr' : (l > 0 ? 'low' : 'high'); }
     function render(){
-      const last = st.hist[st.hist.length - 1];
-      if (last){
-        els.yhat.textContent = fmtN(last.yhat);
-        els.loss.textContent = fmtS(last.loss);
-        els.loss.className = 'stat-value ' + ({ okr: 'okv', low: 'low', high: 'high' })[lossClass(last.loss)];
-        els.note.textContent = Math.abs(last.loss) < EPS1 ? CHECK + ' sold, within CHF 500' : (last.loss > 0 ? UP + ' too low, raise w' : DOWN + ' too high, lower w');
-      } else {
-        els.yhat.textContent = EMPTY; els.loss.textContent = EMPTY; els.loss.className = 'stat-value'; els.note.textContent = 'the market\'s shout';
-      }
-      chart.render({ points: [HOUSE1], w: st.w, b: 0, tol: EPS1, showResid: !st.pending, labels: true });
-    }
-    function setW(v){
-      if (st.won) return;
-      if (!isFinite(v)) return;
-      st.w = clamp(Math.round(v), 0, 5000); wEl.textContent = fmtN(st.w); st.pending = true; render();
+      let html = '<div class="row head"><span>#</span><span class="n">w</span><span class="n">ŷ = w · 234</span><span class="n">miss l</span><span class="todo">what to do</span></div>';
+      st.hist.forEach((r, i) => {
+        const a = advice(r.loss), last = i === st.hist.length - 1 ? ' last' : '';
+        html += `<div class="row${last}"><span>${i}</span><span class="n">${fmtN(r.w)}</span><span class="n">${fmtN(r.yhat)}</span><span class="n ${a.cls}">${fmtS(r.loss)}</span><span class="todo ${a.cls}">${a.txt}</span></div>`;
+      });
+      tbl.innerHTML = html; tbl.scrollTop = tbl.scrollHeight;
+      chart.render({ points: [HOUSE1], w: st.w, b: 0, tol: EPS1, showResid: true, labels: true });
     }
     function appraise(){
-      if (st.won) return;
-      st.round++;
       const yhat = st.w * HOUSE1.x, loss = HOUSE1.y - yhat;
-      st.hist.push({ round: st.round, w: st.w, yhat, loss });
-      st.pending = false;
+      st.hist.push({ w: st.w, yhat, loss });
       if (Math.abs(loss) < EPS1){
-        st.won = true; window._hp = window._hp || {}; window._hp.w1 = st.w;
-        els.endSub.innerHTML = `<code>w = ${fmtN(st.w)}</code> CHF/m² prices Rosenweg 12 at <strong>${fmtN(yhat)}</strong>, a miss of <strong>${fmtS(loss)}</strong>, within the owner's CHF 500. <br> It took you <strong>${st.round}</strong> round${st.round === 1 ? '' : 's'}.`;
+        st.won = true;
+        const n = st.hist.length - 1;
+        els.endSub.innerHTML = `<code>w = ${fmtN(st.w)}</code> CHF/m² prices Rosenweg 12 at <strong>${fmtN(yhat)}</strong>, a miss of <strong>${fmtS(loss)}</strong>, within the owner's CHF 500. <br> It took you <strong>${n}</strong> nudge${n === 1 ? '' : 's'}.`;
         els.end.hidden = false; stage.classList.add('done');
       }
       render();
     }
-    L1.play = list => list.forEach(v => { setW(v); appraise(); });
-    document.getElementById('h1_appraise').addEventListener('click', appraise);
+    function setW(v){
+      if (st.won || !isFinite(v)) return;
+      st.w = clamp(Math.round(v), 0, 5000); wEl.textContent = fmtN(st.w);
+      appraise();
+    }
+    function reset(){
+      st = { w: W_START, hist: [], won: false };
+      wEl.textContent = fmtN(W_START); els.end.hidden = true; stage.classList.remove('done');
+      appraise();
+    }
+    L1.play = list => list.forEach(v => setW(v));
+    stage.querySelectorAll('[data-l1]').forEach(bt => bt.addEventListener('click', () => setW(st.w + parseFloat(bt.dataset.l1))));
     document.getElementById('h1_reset').addEventListener('click', reset);
     document.getElementById('h1_again').addEventListener('click', reset);
     document.getElementById('h1_continue').addEventListener('click', () => { if (window._slideNav) window._slideNav.advance(); });
     window.addEventListener('keydown', ev => {
       if (typing(ev) || !pageInView(chartHost)) return;
-      const k = ev.key.toLowerCase();
-      if (k === 'arrowup'){ ev.preventDefault(); setW(st.w + 10); }
-      else if (k === 'arrowdown'){ ev.preventDefault(); setW(st.w - 10); }
-      else if (k === 'enter'){ ev.preventDefault(); appraise(); }
+      const k = ev.key.toLowerCase(), step = ev.shiftKey ? 100 : 10;
+      if (k === 'arrowup'){ ev.preventDefault(); setW(st.w + step); }
+      else if (k === 'arrowdown'){ ev.preventDefault(); setW(st.w - step); }
     });
     reset();
   })();
 
   // ===== Level 2: the street =====
+  // Same idea with two knobs: every nudge of w or b appraises the whole street.
+  // When the average miss is already small but owners are left unconvinced,
+  // the line is right on average and wrong in its tilt, and the advice says
+  // which way to tilt it: towards the side of the street that is under-priced.
   const L2 = {};
   (function(){
     const chartHost = document.getElementById('h2_chart'); if (!chartHost) return;
     const stage = chartHost.closest('.game-stage');
-    const wEl = document.getElementById('h2_w'), bEl = document.getElementById('h2_b');
-    const els = { loss: document.getElementById('h2_loss'), note: document.getElementById('h2_lossNote'), conv: document.getElementById('h2_conv'),
-                  log: document.getElementById('h2_log'), end: document.getElementById('h2_end'), endSub: document.getElementById('h2_endSub') };
+    const wEl = document.getElementById('h2_w'), bEl = document.getElementById('h2_b'), tbl = document.getElementById('h2_table');
+    const els = { end: document.getElementById('h2_end'), endSub: document.getElementById('h2_endSub') };
     const chart = makeScatter(chartHost, { h: 330 });
+    const W_START = 400, B_START = 0;
+    const XBAR = STREET.reduce((a, h) => a + h.x, 0) / N;
     let st;
-    function reset(){
-      const w0 = (window._hp && window._hp.w1) ? window._hp.w1 : 850;
-      st = { w: w0, b: 0, round: 0, hist: [], won: false, pending: true };
-      wEl.textContent = fmtN(st.w); bEl.textContent = '0'; els.log.textContent = ''; els.end.hidden = true; stage.classList.remove('done');
-      render();
+    function advice(r){
+      if (r.conv === N) return { cls: 'okr', txt: CHECK + ' all ' + N + ' sold!' };
+      if (Math.abs(r.loss) >= TOL2) return r.loss > 0 ? { cls: 'low', txt: UP + ' raise the line' } : { cls: 'high', txt: DOWN + ' lower the line' };
+      let c = 0; for (const h of STREET) c += (h.x - XBAR) * (h.y - (r.w * h.x + r.b));
+      return c > 0 ? { cls: 'low', txt: '↗ steeper: w up, b down' } : { cls: 'high', txt: '↘ flatter: w down, b up' };
     }
     function render(){
-      const last = st.hist[st.hist.length - 1];
-      if (last){
-        els.loss.textContent = fmtS(last.loss);
-        els.loss.className = 'stat-value ' + (last.conv === N ? 'okv' : (last.loss > 0 ? 'low' : 'high'));
-        els.note.textContent = last.conv === N ? CHECK + ' the whole street nods' : (last.loss > 0 ? UP + ' on average too low' : DOWN + ' on average too high');
-        els.conv.textContent = last.conv + '/' + N;
-      } else {
-        els.loss.textContent = EMPTY; els.loss.className = 'stat-value'; els.note.textContent = 'mean of y ' + MINUS + ' ŷ over 8 houses'; els.conv.textContent = EMPTY;
-      }
-      chart.render({ points: STREET, w: st.w, b: st.b, tol: TOL2, band: true, showResid: !st.pending, houseNo: false });
+      let html = '<div class="row head"><span>#</span><span class="n">w</span><span class="n">b</span><span class="n">avg miss</span><span class="n">ok</span><span class="todo">what to do</span></div>';
+      st.hist.forEach((r, i) => {
+        const a = advice(r), last = i === st.hist.length - 1 ? ' last' : '';
+        const lc = r.conv === N ? 'okr' : (r.loss > 0 ? 'low' : 'high');
+        html += `<div class="row${last}"><span>${i}</span><span class="n">${fmtN(r.w)}</span><span class="n">${fmtM(r.b)}</span><span class="n ${lc}">${fmtS(r.loss)}</span><span class="n">${r.conv}/${N}</span><span class="todo ${a.cls}">${a.txt}</span></div>`;
+      });
+      tbl.innerHTML = html; tbl.scrollTop = tbl.scrollHeight;
+      chart.render({ points: STREET, w: st.w, b: st.b, tol: TOL2, band: true, showResid: true, houseNo: false });
     }
-    function setW(v){ if (st.won || !isFinite(v)) return; st.w = clamp(Math.round(v), 0, 5000); wEl.textContent = fmtN(st.w); st.pending = true; render(); }
-    function setB(v){ if (st.won || !isFinite(v)) return; st.b = clamp(Math.round(v), -200000, 300000); bEl.textContent = fmtM(st.b); st.pending = true; render(); }
     function appraise(){
-      if (st.won) return;
-      st.round++;
       const loss = streetLoss(st.w, st.b), conv = convinced(st.w, st.b);
-      st.hist.push({ round: st.round, w: st.w, b: st.b, loss, conv });
-      st.pending = false;
+      st.hist.push({ w: st.w, b: st.b, loss, conv });
       if (conv === N){
         st.won = true;
-        els.endSub.innerHTML = `Your rule <code>price = ${fmtN(st.w)} · area ${st.b < 0 ? MINUS : '+'} ${fmtN(st.b)}</code> convinced all ${N} owners in <strong>${st.round}</strong> round${st.round === 1 ? '' : 's'}. <br> Average miss: <strong>${fmtS(loss)}</strong>.`;
+        const n = st.hist.length - 1;
+        els.endSub.innerHTML = `Your rule <code>price = ${fmtN(st.w)} · area ${st.b < 0 ? MINUS : '+'} ${fmtN(st.b)}</code> convinced all ${N} owners in <strong>${n}</strong> nudge${n === 1 ? '' : 's'}. <br> Average miss: <strong>${fmtS(loss)}</strong>.`;
         els.end.hidden = false; stage.classList.add('done');
       }
       render();
     }
-    L2.play = list => list.forEach(([w, b]) => { setW(w); setB(b); appraise(); });
-    document.getElementById('h2_appraise').addEventListener('click', appraise);
+    function setWB(w, b){
+      if (st.won || !isFinite(w) || !isFinite(b)) return;
+      st.w = clamp(Math.round(w), 0, 5000); st.b = clamp(Math.round(b), -200000, 300000);
+      wEl.textContent = fmtN(st.w); bEl.textContent = fmtM(st.b);
+      appraise();
+    }
+    function reset(){
+      st = { w: W_START, b: B_START, hist: [], won: false };
+      wEl.textContent = fmtN(W_START); bEl.textContent = fmtM(B_START); els.end.hidden = true; stage.classList.remove('done');
+      appraise();
+    }
+    L2.play = list => list.forEach(([w, b]) => setWB(w, b));
+    stage.querySelectorAll('[data-l2w]').forEach(bt => bt.addEventListener('click', () => setWB(st.w + parseFloat(bt.dataset.l2w), st.b)));
+    stage.querySelectorAll('[data-l2b]').forEach(bt => bt.addEventListener('click', () => setWB(st.w, st.b + parseFloat(bt.dataset.l2b))));
     document.getElementById('h2_reset').addEventListener('click', reset);
     document.getElementById('h2_again').addEventListener('click', reset);
     document.getElementById('h2_continue').addEventListener('click', () => { if (window._slideNav) window._slideNav.advance(); });
     window.addEventListener('keydown', ev => {
       if (typing(ev) || !pageInView(chartHost)) return;
-      const k = ev.key.toLowerCase();
-      if (k === 'arrowup'){ ev.preventDefault(); setW(st.w + 10); }
-      else if (k === 'arrowdown'){ ev.preventDefault(); setW(st.w - 10); }
-      else if (k === 'arrowright'){ ev.preventDefault(); setB(st.b + 5000); }
-      else if (k === 'arrowleft'){ ev.preventDefault(); setB(st.b - 5000); }
-      else if (k === 'enter'){ ev.preventDefault(); appraise(); }
+      const k = ev.key.toLowerCase(), big = ev.shiftKey ? 10 : 1;
+      if (k === 'arrowup'){ ev.preventDefault(); setWB(st.w + 10 * big, st.b); }
+      else if (k === 'arrowdown'){ ev.preventDefault(); setWB(st.w - 10 * big, st.b); }
+      else if (k === 'arrowright'){ ev.preventDefault(); setWB(st.w, st.b + 5000 * big); }
+      else if (k === 'arrowleft'){ ev.preventDefault(); setWB(st.w, st.b - 5000 * big); }
     });
-    // When Level 1 has been won, carry its w over the first time the street comes into view
-    let carried = false;
-    const carryIO = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting && !carried && window._hp && window._hp.w1 && st.hist.length === 0){ carried = true; st.w = window._hp.w1; wEl.textContent = fmtN(st.w); render(); } });
-    }, { threshold: 0.3 });
-    carryIO.observe(chartHost);
     reset();
   })();
 
@@ -1338,7 +1347,6 @@
   const e1Expected = {
     pred:   ['w*x'],
     loss:   ['y-y_hat'],
-    stop:   ['abs(loss)<eps', 'abs(loss)<=eps', 'abs(y-y_hat)<eps', 'abs(y-y_hat)<=eps', '-eps<loss<eps'],
     update: ['w+alpha*loss', 'w+alpha*(y-y_hat)']
   };
   document.getElementById('e1check').addEventListener('click', () => {
@@ -1353,10 +1361,10 @@
     const fb = document.getElementById('e1fb');
     if (correct === total) {
       fb.className = 'feedback ok';
-      fb.textContent = CHECK + ' All four correct.';
+      fb.textContent = CHECK + ' All three correct.';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = CROSS + ` ${correct}/${total} correct. Predict, compare, stop, update: one line each.`;
+      fb.textContent = CROSS + ` ${correct}/${total} correct. Predict, compare, update: one line each.`;
     }
   });
   bindHint('e1hint','e1hintbox');
@@ -1434,7 +1442,7 @@
     const chart = makeLineChart(chartHost, { h: 210 });
     const aIn = document.getElementById('d1_alpha'), aOut = document.getElementById('d1_aOut');
     const wEl = document.getElementById('d1_w'), lEl = document.getElementById('d1_l'), tbl = document.getElementById('d1_table'), verdict = document.getElementById('d1_verdict'), runBtn = document.getElementById('d1_run');
-    const TARGET = HOUSE1.y / HOUSE1.x, MAXR = 30;
+    const TARGET = HOUSE1.y / HOUSE1.x, MAXR = 20;
     let timer = null;
     aIn.addEventListener('input', () => { aOut.textContent = parseFloat(aIn.value).toFixed(4); });
     function draw(rows){
@@ -1455,15 +1463,15 @@
       runBtn.disabled = false; aIn.disabled = false;
       const last = rows[rows.length - 1];
       const ax = alpha * HOUSE1.x;
-      if (Math.abs(last.loss) < EPS1){
-        verdict.className = 'verdict show good';
-        verdict.textContent = `${CHECK} Sold after ${rows.length - 1} update${rows.length - 1 === 1 ? '' : 's'}.`;
-      } else if (ax > 2){
+      if (ax > 2){
         verdict.className = 'verdict show bad';
         verdict.textContent = CROSS + ' Diverged.';
+      } else if (Math.abs(last.loss) < EPS1){
+        verdict.className = 'verdict show good';
+        verdict.textContent = `${CHECK} Sold: after ${MAXR} rounds the miss is ${fmtS(last.loss)}.`;
       } else {
         verdict.className = 'verdict show';
-        verdict.textContent = `Still not sold after ${MAXR} rounds.`;
+        verdict.textContent = `Not sold yet: after ${MAXR} rounds the miss is ${fmtS(last.loss)}.`;
       }
     }
     function run(instant){
@@ -1473,7 +1481,6 @@
       for (let t = 0; t < MAXR; t++){
         const yhat = w * HOUSE1.x, loss = HOUSE1.y - yhat;
         rows.push({ t, w, yhat, loss });
-        if (Math.abs(loss) < EPS1) break;
         w = w + alpha * loss;
       }
       verdict.className = 'verdict';
@@ -1623,8 +1630,7 @@
     if (F.fill || F.wrong) {
       type('input[data-e1="pred"]', 'w * x');
       type('input[data-e1="loss"]', 'y - y_hat');
-      type('input[data-e1="stop"]', F.wrong ? 'loss < eps' : 'abs(loss) < eps');
-      type('input[data-e1="update"]', 'w + alpha * loss');
+      type('input[data-e1="update"]', F.wrong ? 'w + loss' : 'w + alpha * loss');
       type('input[data-e2="pred"]', 'w * area + b');
       type('input[data-e2="loss"]', F.wrong ? 'y_hat - price' : 'price - y_hat');
       type('input[data-e2="upw"]', 'w + alpha_w * loss');
