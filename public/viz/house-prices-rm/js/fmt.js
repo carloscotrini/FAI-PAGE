@@ -57,9 +57,12 @@ window.Fmt = (function () {
     return rate(from) + " " + step.charAt(0) + " " + step.slice(1) + " = " + rate(to);
   }
 
-  /* Prices on an axis: 1 M, 2 M, and so on. */
+  /* Francs on an axis: 1 M, 2 M, and so on for the prices of the scatter,
+     and 0.5 M, 1 M, 1.5 M for the l_bar chart. One decimal, and only for a
+     tick that is not a whole million: toFixed(0) wrote 500 000 as "1 M". */
   function millions(v) {
-    return (v / 1e6).toFixed(0) + " M";
+    var m = v / 1e6;
+    return (Math.round(m) === m ? m.toFixed(0) : m.toFixed(1)) + " M";
   }
 
   return {

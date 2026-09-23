@@ -1,7 +1,9 @@
 /* ===========================================================================
-   plot.js : the one picture both scenes are built from.
+   plot.js : the pictures the two scenes are built from.
 
      Plot.scatter(host, opts)    ten houses, and a line w * x on top
+     Plot.lbarChart(host, opts)  scene 2: l_bar against the round, one point
+                                 per round of the run the scene draws
      Plot.tween(a, b, ms, onFrame, onDone)   one eased move, cancellable
 
    Rules this file obeys, from the house viz method:
@@ -284,5 +286,125 @@ window.Plot = (function () {
     return { render: render, x: x, y: y, svg: svg };
   }
 
-  return { scatter: scatter, tween: tween, ease: ease };
+  /* ============================================== l_bar, round by round ==== */
+  /* opts: { width, height, tol }
+
+     run(rows)       fixes both axes for one run. rows are the scene's own
+                     Algo.rmRun rows, rows[k].lBar the verdict after round k,
+                     so the chart draws the run the scatter draws and never
+                     computes a verdict of its own
+     render(state)   state = { upTo, met }: rounds 0 to upTo are drawn and the
+                     point of round upTo is ringed; met makes the ring heavy,
+                     once the loop has stopped on that point
+
+     A LINEAR axis that holds the start, 1.6 million francs at w = 10 000, so
+     the fall reads. The band abs(l_bar) <= tol is drawn TO SCALE: 3 000 francs
+     is about 0.2 px either side of zero there, so the band lies inside the
+     zero line. Drawn thicker, it would hold the points of rounds 41 and 42 of
+     the default run (24 116 and 9 394 francs) while the loop runs on. Every
+     dot carries its round and its exact l_bar as data-round and data-lbar,
+     which verify.sh reads back and compares with precompute/reference.py. */
+  function lbarChart(host, opts) {
+    var W = opts.width, H = opts.height, TOL = opts.tol;
+    var ml = 70, mr = 20, mt = 30, mb = 26;
+    var x = d3.scaleLinear().range([ml, W - mr]);
+    var y = d3.scaleLinear().range([H - mb, mt]);
+    var uid = "lb" + Math.floor(Math.random() * 1e9);
+    var values = [];
+    var drawn = null;          /* the state on screen, so a tween frame is free */
+
+    var svg = svgIn(host, W, H, "The average miss l_bar, round by round");
+    svg.attr("class", "lbar-chart");
+
+    svg.append("clipPath").attr("id", uid + "-clip").append("rect")
+      .attr("x", ml).attr("y", mt).attr("width", W - ml - mr).attr("height", H - mt - mb);
+
+    var gAxis = svg.append("g");
+    var gPlot = svg.append("g").attr("clip-path", "url(#" + uid + "-clip)");
+    var line = gPlot.append("path").attr("class", "lbar-line");
+    var gDots = svg.append("g");
+    var gInk = svg.append("g");
+
+    /* The title names the curve; l_bar is set in the code's own face, as the
+       readout above the code sets it. */
+    var title = svg.append("text").attr("class", "chart-title").attr("x", 4).attr("y", 17);
+    title.append("tspan").text("Average miss ");
+    title.append("tspan").attr("class", "code-ink").text("l_bar");
+    title.append("tspan").text(", round by round");
+
+    function drawAxes() {
+      gAxis.selectAll("*").remove();
+      var x0 = ml, x1 = W - mr;
+      y.ticks(4).forEach(function (v) {
+        if (v !== 0) {
+          gAxis.append("line").attr("class", "grid-line")
+            .attr("x1", x0).attr("x2", x1).attr("y1", y(v)).attr("y2", y(v));
+        }
+        gAxis.append("text").attr("class", "tick-ink")
+          .attr("x", ml - 10).attr("y", y(v) + 5).attr("text-anchor", "end")
+          .text(v === 0 ? "0" : Fmt.millions(v));
+      });
+      x.ticks(6).forEach(function (v) {
+        gAxis.append("text").attr("class", "tick-ink")
+          .attr("x", x(v)).attr("y", H - 6).attr("text-anchor", "middle").text(v);
+      });
+      gAxis.append("line").attr("class", "axis-line")
+        .attr("x1", ml).attr("x2", ml).attr("y1", H - mb).attr("y2", mt);
+      /* the stopping band, to scale, and the zero line over it */
+      gAxis.append("rect").attr("class", "tol-band")
+        .attr("x", x0).attr("width", x1 - x0)
+        .attr("y", y(TOL)).attr("height", y(-TOL) - y(TOL))
+        .attr("data-tol", TOL);
+      gAxis.append("line").attr("class", "zero-line")
+        .attr("x1", x0).attr("x2", x1).attr("y1", y(0)).attr("y2", y(0));
+      gAxis.append("text").attr("class", "axis-title")
+        .attr("transform", "translate(16," + ((H - mb + mt) / 2) + ") rotate(-90)")
+        .attr("text-anchor", "middle")
+        .text("CHF");
+    }
+
+    function run(rows) {
+      values = rows.map(function (r) { return r.lBar; });
+      var last = values.length - 1;
+      var hi = d3.max(values), lo = Math.min(0, d3.min(values));
+      var pad = 0.05 * hi;
+      /* Whole tens of rounds, with room after the last point for its ring. */
+      x.domain([0, Math.max(10, Math.ceil((last + 1) / 10) * 10)]);
+      y.domain([lo - pad, hi + 1.5 * pad]);
+      drawAxes();
+      drawn = null;
+    }
+
+    function render(state) {
+      var upTo = Math.max(0, Math.min(state.upTo, values.length - 1));
+      var met = !!state.met;
+      if (drawn && drawn.upTo === upTo && drawn.met === met) return;
+      drawn = { upTo: upTo, met: met };
+
+      var pts = values.slice(0, upTo + 1).map(function (v, k) { return { k: k, v: v }; });
+      line.attr("d", d3.line()
+        .x(function (d) { return x(d.k); })
+        .y(function (d) { return y(d.v); })(pts));
+
+      var dot = gDots.selectAll("circle.lbar-dot").data(pts);
+      dot.enter().append("circle").attr("r", 3).merge(dot)
+        .attr("class", function (d) { return "lbar-dot" + (d.k === upTo ? " is-now" : ""); })
+        .attr("cx", function (d) { return x(d.k); })
+        .attr("cy", function (d) { return y(d.v); })
+        .attr("data-round", function (d) { return d.k; })
+        .attr("data-lbar", function (d) { return d.v; });
+      dot.exit().remove();
+
+      var ring = gInk.selectAll("circle.lbar-now").data([pts[pts.length - 1]]);
+      ring.enter().append("circle").attr("r", 8).merge(ring)
+        .attr("class", "lbar-now" + (met ? " is-met" : ""))
+        .attr("cx", function (d) { return x(d.k); })
+        .attr("cy", function (d) { return y(d.v); });
+      ring.exit().remove();
+    }
+
+    return { run: run, render: render, x: x, y: y, svg: svg };
+  }
+
+  return { scatter: scatter, lbarChart: lbarChart, tween: tween, ease: ease };
 })();

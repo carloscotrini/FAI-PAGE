@@ -6,11 +6,14 @@
    Colour identities, fixed once:
 
      grey        the ten houses, and the data in general
-     vermillion  the walk: its line w * x, the house it is visiting, that miss
+     vermillion  the walk: its line w * x, the house it is visiting, that miss,
+                 and the latest point of the l_bar chart
+     ink         the l_bar curve of scene 2, round by round
 
    One accent and no second hue, so nothing on the page can pair red with
    green. Colour is never the only channel: the line is dashed, the house
-   visited is ringed and named, and the miss is labelled l.
+   visited is ringed and named, the miss is labelled l, and the latest l_bar
+   point is ringed.
 
    Light, the lecture default, carries Okabe-Ito vermillion #D55E00. Dark is a
    study variant and carries Okabe-Ito orange #E69F00, the lighter warm partner
@@ -349,6 +352,22 @@ input[type="range"] { width: 120px; accent-color: var(--ink); }
 .var-ink       { font-family: "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
                  font-size: 15px; font-weight: 700; }
 .var-ink.rm    { fill: var(--rm); }
+
+/* ============================================= l_bar, round by round ==== */
+/* The curve is ink, one dot per round. The latest round is the accent, filled
+   and ringed, as the house visited is on the scatter; once the loop stops on
+   it the ring turns heavy, as the rule on the l_bar readout does. The band
+   abs(l_bar) <= TOL is drawn to scale, a neutral tint that at TOL = 3 000
+   lies inside the zero line. */
+.chart-title   { fill: var(--ink); font-size: 15px; }
+.code-ink      { font-family: "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+.zero-line     { stroke: var(--muted); stroke-width: 1.3; }
+.tol-band      { fill: var(--panel-3); }
+.lbar-line     { fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linejoin: round; }
+.lbar-dot      { fill: var(--ink); }
+.lbar-dot.is-now { fill: var(--rm); }
+.lbar-now      { fill: none; stroke: var(--rm); stroke-width: 2.2; }
+.lbar-now.is-met { stroke-width: 4; }
 
 /* ==================================================== the update line ==== */
 .formula {

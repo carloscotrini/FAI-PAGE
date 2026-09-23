@@ -1,5 +1,17 @@
-/* Scene 2: the scatter on the left; on the right the readouts, the update line,
-   the code and the controls, in that order. */
+/* Scene 2: on the left the scatter over the l_bar chart; on the right the
+   readouts, the update line, the code and the controls, in that order. */
+
+.left-col {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Block, so the line box of an inline svg adds no strut under it. Inline,
+   each of the two stacked panels grew by 6 px, and the column, 582 px, ran
+   past the 577 px the stage leaves under the lead line. */
+.scene[data-scene="2"] .panel-body > svg { display: block; }
 
 .side-col {
   flex: 1 1 auto;

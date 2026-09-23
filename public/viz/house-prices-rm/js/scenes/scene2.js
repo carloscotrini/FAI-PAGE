@@ -11,11 +11,15 @@
    The grey line is where the line stood before the step. The loop stops by
    itself once abs(l_bar) is under TOL, and "return w" is lit.
 
+   Under the scatter, l_bar against the round: one point more each time a
+   round lands, the latest one ringed, the ring heavy once the loop stops.
+
    The whole run is computed by Algo.rmRun when the scene starts, and the page
    then shows it round by round, so what is drawn is exactly the run that
-   precompute/reference.py prints and checks. Reset draws a fresh random
-   sequence of houses: seed + 1, then + 2, and so on. Entering the scene again
-   goes back to the default sequence.
+   precompute/reference.py prints and checks. The scatter and the l_bar chart
+   read the same rows. Reset draws a fresh random sequence of houses: seed + 1,
+   then + 2, and so on. Entering the scene again goes back to the default
+   sequence.
 
    Allowed globals: d3, Plot, UI, Fmt, Algo, HOUSE_DATA, Flags.
    =========================================================================== */
@@ -73,10 +77,17 @@ window.scenes.scene2 = function (root) {
 
   var row1 = UI.row(root);
 
-  var leftPanel = UI.panel(row1, null, 624);
+  /* The scatter over the l_bar chart. The two heights and the panels around
+     them add up to the height of the column on the right; verify.sh measures
+     the fit with &fit. */
+  var leftCol = UI.el("div", "left-col");
+  row1.appendChild(leftCol);
+  var leftPanel = UI.panel(leftCol, null, 624);
   var sc = Plot.scatter(leftPanel.body, {
-    width: 598, height: 548, houses: houses, plot: DATA.plot, showIds: false
+    width: 598, height: 336, houses: houses, plot: DATA.plot, showIds: false
   });
+  var chartPanel = UI.panel(leftCol, null, 624);
+  var chart = Plot.lbarChart(chartPanel.body, { width: 598, height: 184, tol: TOL });
 
   var side = UI.el("div", "side-col");
   row1.appendChild(side);
@@ -142,6 +153,9 @@ window.scenes.scene2 = function (root) {
 
     var end = landed && n === last;
     reads.mark("lBar", end && run.stopped);
+    /* A round's l_bar joins the chart when it lands, with the readout: until
+       then the chart ends on the round before, as the readout does. */
+    chart.render({ upTo: landed ? n : n - 1, met: end && run.stopped });
     codeBlock.highlight(
       n === 0 ? LINE.start
       : phase === "pick" ? LINE.pick
@@ -234,6 +248,7 @@ window.scenes.scene2 = function (root) {
     seed = s;
     run = Algo.rmRun(houses, W0, ALPHA, TOL, seed, CAP);
     last = run.rows.length - 1;
+    chart.run(run.rows);
     n = 0;
     phase = "land";
     shown = W0;
