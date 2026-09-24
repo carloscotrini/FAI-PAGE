@@ -69,7 +69,7 @@ Its editable source is `grasshopper/src/` in the private repository, and
 `python3 build.py` there rebuilds the single file; `src/` itself is never
 copied here.
 
-Two things on the page are links rather than copies, on purpose: the marble jar
-guessing page, served by https://github.com/carloscotrini/fai-hs26 because the
-ensembles slide (block 4) prints its address in a QR code, and the spy game,
+One thing on the page is a link rather than a copy, on purpose: the spy game,
 served by the BMAI course site, where the agentic AI slide (block 3) points.
+The marble jar guessing page was the second until 24.09.2026, when block 4
+became embeddings and RAG.

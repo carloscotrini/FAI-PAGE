@@ -132,7 +132,7 @@ export function HomePage() {
           </div>
           <ul className="before-list">
             <li>Bring a laptop or a phone. Everything runs in the browser, and one laptop per pair is enough.</li>
-            <li>The marble jar round in block 4 is played on phones, so have yours with you in the afternoon.</li>
+            <li>Have your phone with you in the afternoon: the spy game in block 3 and the yogurt cup game in block 4 are played on phones.</li>
             <li>Nothing to install and no account to create.</li>
           </ul>
         </div>

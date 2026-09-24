@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>The yogurt cup game</title>
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>The yogurt cup game</h1>
+    <div class="sub"><a href="review.html">the printed catalogues and cards</a></div>
+  </header>
+
+  <!-- ===== 1. setup ===== -->
+  <section id="setup" class="stage">
+    <div class="banner">
+      <strong>Two people, two laptops.</strong>
+      One of you will see five pictures. The other has to find them, in order, in a catalogue of a
+      hundred or more. You may send words, and nothing else.
+      <span class="nb">Your score is the time it takes. That is the only score.</span>
+    </div>
+
+    <div class="setrow">
+      <div>
+        <div class="label">1. Both pick the same set of pictures</div>
+        <select id="famPick"></select>
+        <div class="hint" id="famInfo"></div>
+      </div>
+      <div>
+        <div class="label">2. Both pick the same round</div>
+        <select id="roundPick"></select>
+      </div>
+    </div>
+
+    <div class="label" style="margin-top:20px">3. Decide who does what</div>
+    <div class="roles">
+      <button class="role" id="beSender" type="button">
+        <span class="big">I am the sender</span>
+        <span class="small">You will see the five pictures and describe them.</span>
+      </button>
+      <button class="role" id="beReceiver" type="button">
+        <span class="big">I am the receiver</span>
+        <span class="small">You will find them, and your clock is the score.</span>
+      </button>
+    </div>
+
+    <p class="note">
+      Nothing travels between the two laptops by itself: there is no server, and nothing needs one.
+      You both choose the same set and the same round, out loud, and the pages agree from there.
+    </p>
+  </section>
+
+  <!-- ===== 2. study, both roles, no clock ===== -->
+  <section id="study" class="stage" hidden>
+    <div class="banner">
+      <strong>Look at all of them, and agree how you will describe any one.</strong>
+      Take as long as you like. Nothing is timed yet, and there is nothing written under the
+      pictures on purpose: whatever you use to name them, the two of you have to invent.
+    </div>
+    <div class="bar2">
+      <span class="roundtag" id="studyRole">sender</span>
+      <span class="hint" id="studyWhat"></span>
+      <button id="agreed" type="button" class="primary">We have agreed. Start.</button>
+      <button class="ghost back" type="button">start over</button>
+    </div>
+    <div id="studyCat" class="catwrap"></div>
+  </section>
+
+  <!-- ===== 3a. the sender plays ===== -->
+  <section id="send" class="stage" hidden>
+    <div class="bar2">
+      <span class="roundtag">sender</span>
+      <span class="hint">Your partner's clock is running. Work down the five in order.</span>
+      <button class="ghost back" type="button">start over</button>
+    </div>
+    <div class="banner">
+      <strong>Get these five across, in this order.</strong>
+      No speaking of positions, no pointing, no showing your screen.
+    </div>
+    <div id="sendList" class="sendlist"></div>
+  </section>
+
+  <!-- ===== 3b. the receiver plays ===== -->
+  <section id="recv" class="stage" hidden>
+    <div class="bar2">
+      <span class="roundtag">receiver</span>
+      <span class="progress" id="progress">picture 1 of 5</span>
+      <span class="clock" id="clock">0.0 s</span>
+      <button class="ghost back" type="button">start over</button>
+    </div>
+    <div class="hint" id="feedback">Click the picture your partner is describing.</div>
+    <div id="recvCat" class="catwrap"></div>
+  </section>
+
+  <!-- ===== 4. the result ===== -->
+  <section id="done" class="stage" hidden>
+    <div class="result">
+      <div class="label">Time to communicate five pictures</div>
+      <div class="score" id="total"></div>
+      <div class="hint" id="perSymbol"></div>
+      <div id="doneStrip" class="sendlist small"></div>
+      <p class="note" id="doneNote"></p>
+      <button id="again" type="button" class="primary">Swap roles and play the next round</button>
+      <button class="ghost back" type="button">start over</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="images.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var FAMS = window.YOGURT_FAMILIES || [];
+  var SVG = window.YOGURT_SVG || {};
+
+  // ==========================================================================
+  // WHAT THIS GAME MEASURES, and the two rules that follow from it.
+  //
+  // The score is TIME. Not points, not accuracy: the seconds it takes to get
+  // five pictures across a channel made of words. That is compression pressure
+  // felt directly, and it is why a pair who invent "row then column" beat a pair
+  // who say "the greenish one with the blue bottom" every single time.
+  //
+  // 1. NOTHING IS WRITTEN UNDER A PICTURE. No cell names, no numbers, no axes,
+  //    anywhere, in either role. A catalogue with coordinates on it hands the
+  //    pair a code and there is nothing left to invent, which is the whole game.
+  // 2. The receiver must be RIGHT. A wrong pick costs time and nothing else, so
+  //    the clock is the only currency and guessing is its own punishment.
+  // ==========================================================================
+
+  var famIdx = 0, roundIdx = 0, role = null;
+  var seq = [], step = 0, t0 = null, tick = null, marks = [];
+
+  function fam() { return FAMS[famIdx]; }
+
+  // ==== drawing =============================================================
+  // Tiles come from images.js, emitted by generate.py from the SAME draw() calls
+  // the printed catalogues and cards come from. Nothing is redrawn here.
+
+  function pad(f, n) {
+    var s = String(n);
+    while (s.length < f.pad) { s = "0" + s; }
+    return s;
+  }
+
+  function tileEl(f, coord1, cls) {
+    var el = document.createElement("div");
+    el.className = "tile " + (cls || "");
+    var k = f.id + "_" + coord1.map(function (v) { return pad(f, v); }).join("-");
+    el.innerHTML = '<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">'
+                 + (SVG[k] || "") + "</svg>";
+    return el;
+  }
+
+  function allCells(f) {
+    var out = [], a = f.axes;
+    if (a.length === 1) {
+      for (var i = 1; i <= a[0].n; i++) { out.push([i]); }
+    } else if (a.length === 2) {
+      // A pairs family is the upper triangle: its cell is an unordered pair, so [3,7] and [7,3]
+      // would be the same flag and only one of them exists.
+      var tri = (f.layout === "pairs");
+      for (var r = 1; r <= a[0].n; r++) {
+        for (var c = tri ? r + 1 : 1; c <= a[1].n; c++) { out.push([r, c]); }
+      }
+    } else {
+      for (var b = 1; b <= a[0].n; b++) {
+        for (var q = 1; q <= a[1].n; q++) {
+          for (var z = 1; z <= a[2].n; z++) { out.push([b, q, z]); }
+        }
+      }
+    }
+    return out;
+  }
+
+  function same(a, b) {
+    for (var i = 0; i < a.length; i++) { if (a[i] !== b[i]) { return false; } }
+    return true;
+  }
+
+  // A bare wall of pictures. No labels of any kind: see rule 1 above.
+  function wall(f, onPick) {
+    var host = document.createElement("div");
+    host.className = "wall";
+    var per = f.axes.length === 1 ? 12 : (f.axes.length === 2 ? f.axes[1].n : 10);
+    host.style.gridTemplateColumns = "repeat(" + per + ", 1fr)";
+    allCells(f).forEach(function (coord) {
+      var w = document.createElement("div");
+      w.className = "wcell";
+      w.appendChild(tileEl(f, coord));
+      if (onPick) {
+        w.classList.add("clickable");
+        w.addEventListener("click", function () { onPick(coord, w); });
+      }
+      host.appendChild(w);
+    });
+    return host;
+  }
+
+  // ==== setup ===============================================================
+
+  var famPick = document.getElementById("famPick");
+  var famInfo = document.getElementById("famInfo");
+  var roundPick = document.getElementById("roundPick");
+
+  FAMS.forEach(function (f, i) {
+    var o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = f.order + ".  " + f.name;
+    famPick.appendChild(o);
+  });
+
+  function allCellsCount(f) {
+    return f.axes.reduce(function (a, x) { return a * x.n; }, 1);
+  }
+
+  function showFamInfo() {
+    var f = fam();
+    famInfo.innerHTML = allCellsCount(f) + " pictures, <b>"
+      + f.axes.length + (f.axes.length === 1 ? " thing varies" : " things vary") + "</b>";
+  }
+
+  function fillRounds() {
+    roundPick.textContent = "";
+    var n = (fam().rounds || []).length;
+    for (var i = 0; i < n; i++) {
+      var o = document.createElement("option");
+      o.value = String(i);
+      o.textContent = "round " + (i + 1);
+      roundPick.appendChild(o);
+    }
+  }
+
+  famPick.addEventListener("change", function () {
+    famIdx = parseInt(famPick.value, 10);
+    showFamInfo();
+    fillRounds();
+  });
+  roundPick.addEventListener("change", function () {
+    roundIdx = parseInt(roundPick.value, 10);
+  });
+
+  function show(id) {
+    ["setup", "study", "send", "recv", "done"].forEach(function (s) {
+      document.getElementById(s).hidden = (s !== id);
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".back"), function (b) {
+    b.addEventListener("click", function () { stopClock(); show("setup"); });
+  });
+
+  function begin(r) {
+    role = r;
+    famIdx = parseInt(famPick.value, 10);
+    roundIdx = parseInt(roundPick.value, 10);
+    seq = fam().rounds[roundIdx];
+    step = 0; marks = [];
+    document.getElementById("studyRole").textContent = role;
+    document.getElementById("studyWhat").textContent =
+      fam().name + ", round " + (roundIdx + 1) + ", " + allCellsCount(fam()) + " pictures";
+    var sc = document.getElementById("studyCat");
+    sc.textContent = "";
+    sc.appendChild(wall(fam(), null));
+    show("study");
+  }
+
+  document.getElementById("beSender").addEventListener("click", function () { begin("sender"); });
+  document.getElementById("beReceiver").addEventListener("click", function () { begin("receiver"); });
+
+  // ==== the round ===========================================================
+
+  document.getElementById("agreed").addEventListener("click", function () {
+    if (role === "sender") {
+      var list = document.getElementById("sendList");
+      list.textContent = "";
+      seq.forEach(function (coord, i) {
+        var item = document.createElement("div");
+        item.className = "senditem";
+        var n = document.createElement("div");
+        n.className = "sendnum";
+        n.textContent = i + 1;
+        item.appendChild(n);
+        item.appendChild(tileEl(fam(), coord, "mid"));
+        list.appendChild(item);
+      });
+      show("send");
+    } else {
+      var cat = document.getElementById("recvCat");
+      cat.textContent = "";
+      cat.appendChild(wall(fam(), pick));
+      document.getElementById("progress").textContent = "picture 1 of " + seq.length;
+      document.getElementById("feedback").textContent =
+        "Click the picture your partner is describing.";
+      document.getElementById("feedback").className = "hint";
+      show("recv");
+      startClock();
+    }
+  });
+
+  function startClock() {
+    t0 = Date.now();
+    if (tick) { clearInterval(tick); }
+    tick = setInterval(renderClock, 100);
+    renderClock();
+  }
+
+  function stopClock() {
+    if (tick) { clearInterval(tick); tick = null; }
+  }
+
+  function renderClock() {
+    var s = t0 === null ? 0 : (Date.now() - t0) / 1000;
+    document.getElementById("clock").textContent = s.toFixed(1) + " s";
+  }
+
+  function pick(coord, el) {
+    if (step >= seq.length) { return; }
+    var fb = document.getElementById("feedback");
+    if (!same(coord, seq[step])) {
+      // A wrong pick costs time and nothing else. That is the whole penalty.
+      fb.textContent = "Not that one. The clock is still running.";
+      fb.className = "hint wrong";
+      el.classList.add("nope");
+      setTimeout(function () { el.classList.remove("nope"); }, 400);
+      return;
+    }
+    marks.push((Date.now() - t0) / 1000);
+    step += 1;
+    el.classList.add("got");
+    if (step >= seq.length) { finish(); return; }
+    document.getElementById("progress").textContent =
+      "picture " + (step + 1) + " of " + seq.length;
+    fb.textContent = "Yes. Next one.";
+    fb.className = "hint right";
+  }
+
+  function finish() {
+    stopClock();
+    var total = (Date.now() - t0) / 1000;
+    document.getElementById("total").textContent = total.toFixed(1) + " s";
+    var per = [];
+    for (var i = 0; i < marks.length; i++) {
+      per.push((marks[i] - (i ? marks[i - 1] : 0)).toFixed(1) + " s");
+    }
+    document.getElementById("perSymbol").textContent =
+      "one by one: " + per.join(",  ") + ".  Five pictures, "
+      + fam().name.toLowerCase() + ", round " + (roundIdx + 1) + ".";
+    var strip = document.getElementById("doneStrip");
+    strip.textContent = "";
+    seq.forEach(function (coord, i) {
+      var item = document.createElement("div");
+      item.className = "senditem";
+      var n = document.createElement("div");
+      n.className = "sendnum";
+      n.textContent = i + 1;
+      item.appendChild(n);
+      item.appendChild(tileEl(fam(), coord, "mid"));
+      strip.appendChild(item);
+    });
+    document.getElementById("doneNote").textContent = total > 90
+      ? "Now agree on a better way of naming them, swap roles, and play the next round. "
+        + "The pairs who get fast are the ones who stop describing and start counting."
+      : "Swap roles and play the next round. See whether the code you invented survives "
+        + "five pictures you have not seen yet.";
+    show("done");
+  }
+
+  document.getElementById("again").addEventListener("click", function () {
+    var n = (fam().rounds || []).length;
+    roundIdx = (roundIdx + 1) % n;
+    roundPick.value = String(roundIdx);
+    role = (role === "sender") ? "receiver" : "sender";
+    begin(role);
+  });
+
+  showFamInfo();
+  fillRounds();
+  show("setup");
+}());
+</script>
+</body>
+</html>

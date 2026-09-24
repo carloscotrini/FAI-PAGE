@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>The yogurt cup game: review</title>
+<style>
+/* Review page only. The game itself is played on paper and a projector: PLAN.md section 1 says
+   no web version in stage 2, and this is not one. It exists so the material can be reviewed in a
+   browser before anything is printed. */
+:root{--ink:#1a1a1a;--muted:#6b6b6b;--line:#d4d4d4;--bg:#f7f7f5;--brand:#215caf;--amber:#b45309}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+     font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-size:16px}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 18px 60px}
+header.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  border-bottom:2px solid var(--brand);padding-bottom:8px;margin-bottom:16px;flex-wrap:wrap}
+h1{font-size:1.2rem;margin:0;font-weight:600}
+h2{font-size:1.02rem;margin:30px 0 4px;font-weight:600}
+h2 .n{color:var(--brand)}
+.sub{color:var(--muted);font-size:.87rem}
+.lesson{color:var(--amber);font-size:.87rem;margin:2px 0 10px}
+.banner{background:#EEF3FB;border-left:4px solid var(--brand);border-radius:3px;
+  padding:10px 14px;margin-bottom:18px;font-size:.92rem}
+.banner strong{color:var(--brand)}
+figure{margin:0 0 8px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px}
+figure img{width:100%;display:block}
+figcaption{color:var(--muted);font-size:.8rem;padding:6px 2px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:10px 0 4px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:.8rem}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.85em;background:#EDEDEA;
+  padding:1px 5px;border-radius:3px}
+.note{color:var(--muted);font-size:.85rem;margin:8px 0 0}
+@media(max-width:760px){.two,.cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>The yogurt cup game</h1>
+  <div class="sub">Weekend 5, Friday 08:00. Review copy.</div>
+</header>
+
+<div class="banner">
+  <strong>This page is for review, not for the room.</strong>
+  The game is played on paper and a projector: pairs get an envelope of target cards and a slip pad,
+  and the catalogue below is what goes on the screen. Everything here is generated from
+  <code>generate.py</code> and <code>sheets.py</code>; nothing was drawn by hand.
+</div>
+
+<h2><span class="n">1.</span> What round 1 looks like, and why it is scrambled</h2>
+<p class="sub">Round 1 is played on the <strong>unsorted</strong> strip: tile letters only, no ruler,
+no numbers, no angles. With a sorted strip the room reads an index off the sheet and never has to
+invent a description, so the discovery never happens. After round 1 the sorted strip replaces it,
+and that swap is the "fix your code" beat.</p>
+<figure>
+  <img src="catalogues/f1-lines_catalogue-scrambled.svg" alt="Scrambled line angle strip">
+  <figcaption>Round 1. The room must agree on names for these.</figcaption>
+</figure>
+<figure>
+  <img src="catalogues/f1-lines_catalogue.svg" alt="Sorted line angle strip">
+  <figcaption>Round 2 onward. Now one number names any of them.</figcaption>
+</figure>
+
+<h2><span class="n">2.</span> The other five catalogues</h2>
+<p class="sub">One shared catalogue per family, projected. Cell names are read off the <em>axes</em>,
+never off a label under a tile, so the catalogue cannot be used as a lookup table.</p>
+
+<div class="two">
+  <figure><img src="catalogues/f2-sunset_catalogue.svg" alt="Sunset strip">
+    <figcaption>F2 Sunset, 20 images, one parameter. Shown from the front, not played: the room is
+    asked how many numbers this picture needs, and answers one.</figcaption></figure>
+  <figure><img src="catalogues/f3-flag_catalogue.svg" alt="Flag grid">
+    <figcaption>F3 Two colour flag, 100 images, two parameters. Ten cells, about six colour words a
+    room will agree on under time pressure. That gap is the design.</figcaption></figure>
+  <figure><img src="catalogues/f4-face_catalogue.svg" alt="Face grid">
+    <figcaption>F4 Face, 81 images. The one family every human already has an encoder for, so short
+    words work startlingly well here and badly everywhere else.</figcaption></figure>
+  <figure><img src="catalogues/f5-bands_catalogue.svg" alt="Three band blocks">
+    <figcaption>F5 Three band picture, 125 images. The five hues are deliberately awkward to name,
+    so the room stops trying to say them and starts numbering them.</figcaption></figure>
+  <figure style="grid-column:1/-1"><img src="catalogues/f6-tree_catalogue.svg" alt="Tree blocks">
+    <figcaption>F6 Tree, 125 images, the hardest. Three slots holding three different kinds of
+    thing, so a pair must agree on an order for the slots and a scale for each.</figcaption></figure>
+</div>
+
+<h2><span class="n">3.</span> A target card, front and back</h2>
+<p class="sub">A5, folded down the middle and stood as a tent so it faces the sender only. The
+picture on one face; on the other, the score of <em>every</em> cell. The pair turns it over after the
+guess, finds the cell their partner picked, and reads the number off it. The instructor does no
+arithmetic and asks only for hands: who has a 3, a 2, a 1, a 0.</p>
+<div class="cards">
+  <figure><img src="cards/f3-flag_target-a.svg" alt="Flag target card">
+    <figcaption>F3 card A, target <code>5 7</code>. This is the card frame B1 of the deck is built
+    on: <code>green over blue</code> lands one step away and scores 2, <code>5 7</code> scores 3.
+    </figcaption></figure>
+  <figure><img src="cards/f3-flag_target-b.svg" alt="Flag target card B">
+    <figcaption>F3 card B, target <code>2 9</code>. Hue is circular, so the scoring diamond spills
+    to the opposite edges. Wrap is computed and drawn, never explained.</figcaption></figure>
+  <figure><img src="cards/f1-lines_target-a.svg" alt="Line target card">
+    <figcaption>F1 card A, the line at 45 degrees, which is the tile frame 4a rings.</figcaption>
+  </figure>
+  <figure><img src="cards/f6-tree_target-a.svg" alt="Tree target card">
+    <figcaption>F6 card A, target <code>2 4 3</code>. Three parameters, so the diamond spreads
+    across block boundaries.</figcaption></figure>
+</div>
+
+<h2><span class="n">4.</span> The six families</h2>
+<table>
+<thead><tr><th>Order</th><th>Family</th><th>Parameters</th><th>Images</th><th>Cell name</th>
+<th>The lesson it carries</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Line angle</td><td>1</td><td>24</td><td><code>7</code></td>
+    <td>the code is a number</td></tr>
+<tr><td>2</td><td>Sunset</td><td>1</td><td>20</td><td><code>14</code></td>
+    <td>most of the picture never varies, throw it away</td></tr>
+<tr><td>3</td><td>Two colour flag</td><td>2</td><td>100</td><td><code>5 7</code></td>
+    <td>words are a coarse code, numbers are a fine one</td></tr>
+<tr><td>4</td><td>Face</td><td>2</td><td>81</td><td><code>7 2</code></td>
+    <td>a shared prior makes a short code work</td></tr>
+<tr><td>5</td><td>Three band picture</td><td>3</td><td>125</td><td><code>3 1 5</code></td>
+    <td>the picture simply is three numbers</td></tr>
+<tr><td>6</td><td>Tree</td><td>3</td><td>125</td><td><code>2 4 3</code></td>
+    <td>agree on the slots and the scale, or the code means nothing</td></tr>
+</tbody>
+</table>
+<p class="note">475 images in all. Scoring is one rule for every family:
+<code>score = max(0, 3 - d)</code>, where <code>d</code> is the Manhattan distance in catalogue
+steps, wrapping where the parameter is circular.</p>
+
+<h2><span class="n">5.</span> What is still missing</h2>
+<p class="sub">The dry run. Two colleagues, no briefing beyond the rules, F1, two rounds with "fix
+your code" between them. It passes if their score rises <em>and</em> their round 2 slip contains a
+number. If the slip is still a word, the game has failed at its single job, and the fix is a finer
+catalogue rather than more explaining. The build plan rates this above the other eight checks
+together, and it has not been done.</p>
+
+</div>
+</body>
+</html>

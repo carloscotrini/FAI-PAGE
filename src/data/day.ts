@@ -31,21 +31,6 @@ export const deck = (file: string): string => `${import.meta.env.BASE_URL}slides
 export const viz = (name: string, page = 'index.html'): string =>
   `${import.meta.env.BASE_URL}viz/${name}/${page}`;
 
-/**
- * The marble jar guessing page. Hosted on its own, by the public repository
- * carloscotrini/fai-hs26, because the ensembles deck (block 4) prints this
- * address and encodes it in a QR code. Link it; do not copy it here, or the two copies
- * drift apart the day the sheet address is filled in.
- */
-export const GUESSING_PAGE = 'https://carloscotrini.github.io/fai-hs26/marble-jar-guessing/';
-
-/**
- * The marble jar round's shared Google Sheet, through the short address the
- * block 4 slide prints: fai-hs26/sheet/ forwards to the sheet itself. Link the
- * short address, so a change of sheet is one edit in fai-hs26.
- */
-export const SHEET = 'https://carloscotrini.github.io/fai-hs26/sheet/';
-
 /** The spy game, served by the BMAI course site, where part 2's slide points. */
 export const SPY_GAME = 'https://eth-bmai-hs26.github.io/BMAI-PAGE/viz/we2/spy-game/';
 
@@ -68,15 +53,18 @@ export const day: Day = {
   place: 'Stampfenbachstrasse 73/75, Zürich',
   lecturer: 'Carlos Cotrini',
   summary:
-    'One day, four blocks. It starts from the oldest idea in the field, learning by guessing and correcting, and follows it through gradient descent and neural networks to statistical learning theory, language models and agents, then ends with a model that memorises and the two ways to tame it: a tax on its knobs, or a crowd. Every block has a hands-on part that runs in the browser, with nothing to install.',
+    'One day, four blocks. It starts from the oldest idea in the field, learning by guessing and correcting, and follows it through gradient descent and neural networks to statistical learning theory, language models and agents, then ends with embeddings and retrieval: how a text becomes a list of numbers, and how a language model finds a company\'s own documents and answers from them. Every block has a hands-on part that runs in the browser, with nothing to install.',
 
   // Each lecture's "Slides" chip is the MINIMAL, manager-level version of its
   // block, published 23.09.2026 on the lecturer's word: public/slides/, copied
   // unchanged from fai-hs26-private/materials/minimal/block-N-minimal.pdf. That
   // folder is rebuilt only on his command; copy again only when he says so.
-  // Block 4's minimal deck predates that block's storyline of 23.09.2026 (the
-  // full deck was rearranged the same evening), so it keeps the old order until
-  // he asks for a rebuild.
+  // Block 4 was replaced on 24.09.2026: ensembles went (Day 1 teaches them) and
+  // embeddings and RAG came in. Its minimal deck in public/slides/ is still the
+  // ensembles one, so block 4 carries no Slides chip until he asks for the new
+  // slides to go up. (ScheduleTable does not render SOON, so a chip set to SOON
+  // would be a dead link.)
+  // The yogurt cup game is played in the middle of that lecture, as at BMAI.
   sessions: [
     {
       time: '08:30',
@@ -116,14 +104,18 @@ export const day: Day = {
     { time: '14:30', title: 'Coffee break, until 15:00', type: 'break' },
     {
       time: '15:00',
-      title: 'Ensembles: tax the knobs, or ask a crowd',
+      title: 'Embeddings and retrieval augmented generation',
       type: 'lecture',
-      links: [{ label: 'Slides', url: deck('block-4-minimal.pdf') }],
     },
     {
-      time: '16:00',
-      title: 'The UN games, in your hands',
+      time: '15:20',
+      title: 'The yogurt cup game, in pairs',
       type: 'lab',
+    },
+    {
+      time: '15:40',
+      title: 'From embeddings to answers: chunks, clusters and RAG',
+      type: 'lecture',
     },
     { time: '16:20', title: 'Wrap-up, questions and feedback', type: 'lecture' },
   ],
@@ -197,34 +189,10 @@ export const day: Day = {
     },
 
     {
-      group: 'Block 4, ensembles',
-      label: 'The UN games',
-      url: viz('un-games'),
-      note: "You are the UN's new forecaster. Eleven scenes: a model that memorises the countries it saw, one built from nonsense that scores perfectly on them, and two models that predict about equally well and disagree about what mattered.",
-    },
-    {
-      group: 'Block 4, ensembles',
-      label: 'Your row and your code, for the marble jar',
-      url: GUESSING_PAGE,
-      note: 'Nothing to type: it picks four letters for you and tells you which row of the shared sheet to write your guess in.',
-    },
-    {
-      group: 'Block 4, ensembles',
-      label: 'The shared sheet, for your guess',
-      url: SHEET,
-      note: 'The Google Sheet the room\'s guesses go into. Type your code and your guess in the row the page gave you. In a private browser tab you stay anonymous there.',
-    },
-    {
-      group: 'Block 4, ensembles',
-      label: 'The marble jar',
-      url: viz('marble-jar', 'wisdom-of-crowds.html'),
-      note: 'How many marbles are in the jar? The room, averaged, against every single guess.',
-    },
-    {
-      group: 'Block 4, ensembles',
-      label: 'The forest grows',
-      url: viz('random-forest-deepdive'),
-      note: 'A tree cannot draw a spiral. A hundred of them, each grown on a resample and averaged, can.',
+      group: 'Block 4, embeddings and retrieval',
+      label: 'The yogurt cup game',
+      url: viz('yogurt-cups'),
+      note: 'Two players and only words between them. The sender sees five pictures, on a phone if you like; the receiver finds them, in order, on the laptop. Your score is the time.',
     },
 
     {

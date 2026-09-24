@@ -35,6 +35,22 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   the marble jar and the UN games are block 4 now. The private repository's
   `materials/block-3/` and `materials/block-4/` folders and their PDFs swapped
   the same day, so `block-N.pdf` is block N's deck again.
+- **Block 4 was replaced on 24.09.2026**, on the lecturer's word after the
+  client's review: ensembles went, because Day 1 already teaches regularisation
+  and random forests, and **embeddings and retrieval augmented generation**
+  came in. Its one Materials entry is the yogurt cup game,
+  `public/viz/yogurt-cups/`, a copy of the BMAI course site's page (through
+  `fai-hs26-private/materials/viz/yogurt-cups/`), played in pairs in the
+  middle of the lecture, so the schedule shows the lecture in two halves around
+  it (15:00, 15:20, 15:40). The block 4 deck prints that address in a QR code.
+  The UN games, marble jar and forest pages stay in `public/viz/`, unlisted,
+  and nothing on the page links to them: the homework's question 8, which
+  pointed into the UN games, points at the yogurt cup game since the same
+  day. Withdraw them with `git rm` if they should go. The block 4 lecture
+  has **no Slides chip** until the lecturer asks for its slides to be
+  published: `public/slides/block-4-minimal.pdf` is still the ensembles cut,
+  and `ScheduleTable` does not render `SOON`, so a chip set to it would be a
+  dead link.
 - **The slides are the MINIMAL versions, published 23.09.2026 on the
   lecturer's word.** `public/slides/block-N-minimal.pdf` are unchanged copies of
   `fai-hs26-private/materials/minimal/block-N-minimal.pdf`, the manager-level
@@ -68,13 +84,11 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   `house-prices-rm-gd/` was replaced by `house-prices-rm/` (block 1) and
   `two-grasshoppers/` (block 2). The same day `square-root-show/`, the opening
   quiz show, was added; its `tests/` folder is not copied (`--exclude tests`).
-- Three things are LINKED on purpose, never copied here. The marble jar
-  guessing page is served by `carloscotrini/fai-hs26`, because the ensembles
-  slide (block 4) prints that address and its QR code; a copy here would drift.
-  The shared sheet of the same round is linked through its short address,
-  `fai-hs26/sheet/`, which forwards to the Google Sheet and is what the slide
-  prints (`SHEET` in `day.ts`). The spy game is served by the BMAI course site,
-  where the agentic AI slide (block 3) points.
+- The spy game is LINKED on purpose, never copied here: it is served by the
+  BMAI course site, where the agentic AI slide (block 3) points. Until
+  24.09.2026 the marble jar guessing page (`carloscotrini/fai-hs26`) and its
+  shared sheet were linked the same way; they left the page with the ensembles
+  block, and the guessing page is still live in that repository.
 
 ## Deploying
 
