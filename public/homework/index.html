@@ -335,16 +335,12 @@ var QUESTIONS = [
     right: 1,
     why: "They fan out by about 280 pickups at midnight, and some predict a negative number of bicycles. All five fit the measured hours equally well and you could not choose between them on the data you have. Equally good on what you measured says nothing at all about where you have not measured, and that gap is where a pilot beats a rollout." },
 
-  { q: "The UN games, scene 6. This model is built from nonsense alone: the Scrabble score of a country's name, the colours in its flag. It reaches a perfect 1.000 on the countries it trained on. What does it score on the countries it never saw?",
-    go: { label: "Open The UN games at scene 6",
-          url: "https://carloscotrini.github.io/FAI-PAGE/viz/un-games/#scene=6",
-          after: "Read the held back panel on the right." },
-    opts: ["About 1.000, because a perfect fit is a perfect model",
-           "About 0.65",
-           "About 0.5, the same as a coin",
-           "Below zero, which is worse than guessing the average for every country"],
-    right: 3,
-    why: "It scores about &minus;26. Below zero means you would have done better by ignoring the model and quoting the average for every country. A perfect score on the data you fitted is not evidence of anything, and this model has no causes in it at all." },
+  { q: "The yogurt cup game, the one you played in block 4. Open it and pick set 5, Tree, in the first box. How many pictures are in that set? Type the number the page shows.",
+    go: { label: "Open the yogurt cup game",
+          url: "https://carloscotrini.github.io/FAI-PAGE/viz/yogurt-cups/",
+          after: "Pick \"5. Tree\" under \"Both pick the same set of pictures\". Reading that line needs no second player." },
+    num: 125,
+    why: "125 pictures, and the same line says three things vary: the crown colour, the trunk height and the crown radius. So three numbers name any one of those 125 pictures exactly. That is the whole idea of an embedding: throw away everything that never changes, and keep the few numbers that do. Your partner found the picture from your words; a search engine finds the paragraph from those numbers." },
 
   { part: "Monday morning",
     partsub: "Four about the meetings you go back to on Monday.",
@@ -372,13 +368,13 @@ var QUESTIONS = [
     right: 2,
     why: "The model only ever writes text. The harness, the ordinary program around it, is what reads that text and actually sends the mail or moves the money, so every action can be stopped and checked there. That is where you govern an agent, and it is a place you can audit." },
 
-  { q: "Your team produces five forecasts using the same method, the same data and the same assumptions. You average them. What happens to the error?",
-    opts: ["It falls by a factor of five",
-           "It falls by about half",
-           "Almost nothing changes, because the five do not disagree",
-           "It gets worse"],
-    right: 2,
-    why: "Averaging buys you exactly as much as the members disagree. Five copies of one forecast are one forecast. That is why a random forest goes to such trouble to manufacture disagreement, rolling dice on the rows for every tree and on the columns at every split." }
+  { q: "Your firm wants an assistant that answers questions from its own 4,000 page policy manual. A vendor proposes pasting the whole manual into every question you send the model. What does the method from block 4 do instead?",
+    opts: ["Retrain the model on the manual, every night",
+           "Cut the manual into chunks, turn every chunk into a list of numbers, and send only the few chunks closest to your question",
+           "Ask the model to read the manual once and remember it",
+           "Nothing can be done: a model cannot use documents it was not trained on"],
+    right: 1,
+    why: "The manual is cut into chunks, each chunk becomes a list of numbers, and those numbers are clustered so that a question is compared against a few centroids rather than against every chunk in the building. Only the handful of closest chunks ever reach the prompt. That is why the answer can cite a page, why adding one document costs one embedding rather than a retrain, and why the bill does not grow with the manual." }
 ];
 
 (function () {
