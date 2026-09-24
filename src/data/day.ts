@@ -108,12 +108,12 @@ export const day: Day = {
       type: 'lecture',
     },
     {
-      time: '15:20',
+      time: '15:15',
       title: 'The yogurt cup game, in pairs',
       type: 'lab',
     },
     {
-      time: '15:40',
+      time: '15:35',
       title: 'From embeddings to answers: chunks, clusters and RAG',
       type: 'lecture',
     },

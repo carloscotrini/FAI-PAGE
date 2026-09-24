@@ -42,7 +42,7 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   `public/viz/yogurt-cups/`, a copy of the BMAI course site's page (through
   `fai-hs26-private/materials/viz/yogurt-cups/`), played in pairs in the
   middle of the lecture, so the schedule shows the lecture in two halves around
-  it (15:00, 15:20, 15:40). The block 4 deck prints that address in a QR code.
+  it (15:00, 15:15, 15:35: the minute budget of the deck's speaker notes). The block 4 deck prints that address in a QR code.
   The UN games, marble jar and forest pages stay in `public/viz/`, unlisted,
   and nothing on the page links to them: the homework's question 8, which
   pointed into the UN games, points at the yogurt cup game since the same
