@@ -340,7 +340,7 @@ var QUESTIONS = [
           url: "https://carloscotrini.github.io/FAI-PAGE/viz/yogurt-cups/",
           after: "Pick \"5. Tree\" under \"Both pick the same set of pictures\". Reading that line needs no second player." },
     num: 125,
-    why: "125 pictures, and the same line says three things vary: the crown colour, the trunk height and the crown radius. So three numbers name any one of those 125 pictures exactly. That is the whole idea of an embedding: throw away everything that never changes, and keep the few numbers that do. Your partner found the picture from your words; a search engine finds the paragraph from those numbers." },
+    why: "125 pictures, and the same line says three things vary: the crown colour, the trunk height and the crown radius. So three numbers name any one of those 125 pictures exactly. That is the whole idea of an embedding: throw away everything that never changes, and keep the few numbers that do. Block 4 then ran the same game on text, where a chunk goes through an encoder and comes out as 1536 numbers. Your partner found the picture from your words; a search engine finds the chunk from those numbers." },
 
   { part: "Monday morning",
     partsub: "Four about the meetings you go back to on Monday.",
@@ -370,11 +370,11 @@ var QUESTIONS = [
 
   { q: "Your firm wants an assistant that answers questions from its own 4,000 page policy manual. A vendor proposes pasting the whole manual into every question you send the model. What does the method from block 4 do instead?",
     opts: ["Retrain the model on the manual, every night",
-           "Cut the manual into chunks, turn every chunk into a list of numbers, and send only the few chunks closest to your question",
+           "Cut the manual into chunks, give every chunk a key made of numbers, and send only the few chunks closest to your question",
            "Ask the model to read the manual once and remember it",
            "Nothing can be done: a model cannot use documents it was not trained on"],
     right: 1,
-    why: "The manual is cut into chunks, each chunk becomes a list of numbers, and those numbers are clustered so that a question is compared against a few centroids rather than against every chunk in the building. Only the handful of closest chunks ever reach the prompt. That is why the answer can cite a page, why adding one document costs one embedding rather than a retrain, and why the bill does not grow with the manual." }
+    why: "The manual is cut every few paragraphs into chunks, and every chunk gets a key: 1536 numbers, from the same encoder that will later read your question. The keys are sorted into clumps once, before any question is ever asked, so a question is compared against ten centres and then against the five keys inside the nearest clump: fifteen comparisons instead of fifty. The chunks behind the closest keys go into one prompt, together with your question and an instruction that says to answer using only those documents and to say so if they do not contain the answer." }
 ];
 
 (function () {
