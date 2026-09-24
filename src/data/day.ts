@@ -51,6 +51,14 @@ export const SPY_GAME = 'https://eth-bmai-hs26.github.io/BMAI-PAGE/viz/we2/spy-g
 
 export const PLAYGROUND = 'https://playground.tensorflow.org';
 
+/**
+ * The homework round, from `public/homework/`. A copy of
+ * fai-hs26-private/materials/homework/index.html, which is the original; the
+ * Python that reads the completion codes back stays in that private repository,
+ * because it holds the answer key. Copy the page again whenever it changes there.
+ */
+export const HOMEWORK = `${import.meta.env.BASE_URL}homework/`;
+
 export const day: Day = {
   title: 'Foundations of AI',
   theme: 'How machines learn from data, from a first guess to language models and agents',
@@ -217,6 +225,13 @@ export const day: Day = {
       label: 'The forest grows',
       url: viz('random-forest-deepdive'),
       note: 'A tree cannot draw a spiral. A hundred of them, each grown on a resample and averaged, can.',
+    },
+
+    {
+      group: 'After the day',
+      label: 'The homework round',
+      url: HOMEWORK,
+      note: 'Twelve questions, about half an hour. Four of them you answer by opening a page from the day and looking. It marks itself, explains every answer, and hands you a code at the end.',
     },
   ],
 };
