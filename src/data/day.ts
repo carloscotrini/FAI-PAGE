@@ -44,6 +44,17 @@ export const PLAYGROUND = 'https://playground.tensorflow.org';
  */
 export const HOMEWORK = `${import.meta.env.BASE_URL}homework/`;
 
+/**
+ * The homework notebook, opened straight in Google Colab. Colab reads the file
+ * from GitHub, so this address serves whatever is on `main` in THIS repository:
+ * pushing here publishes a change to the notebook, and the Pages deploy has
+ * nothing to do with it. The original is fai-hs26-private/materials/homework/
+ * notebook/, built by build_notebook.py; the solution and the solved HTML are
+ * the answer key and stay in that private repository.
+ */
+export const NOTEBOOK =
+  'https://colab.research.google.com/github/carloscotrini/FAI-PAGE/blob/main/public/homework/first-neural-network.ipynb';
+
 export const day: Day = {
   title: 'Foundations of AI',
   theme: 'How machines learn from data, from a first guess to language models and agents',
@@ -243,11 +254,21 @@ export const day: Day = {
       note: 'A tree cannot draw a spiral. A hundred of them, each grown on a resample and averaged, can.',
     },
 
+    // The notebook is THE homework since 25.09.2026, on the lecturer's word,
+    // and it replaced the twelve question round in that job. The round stays
+    // listed under it as an optional self check, because it is built and costs
+    // nothing; remove these four lines if he would rather it went.
     {
       group: 'After the day',
-      label: 'The homework round',
+      label: 'The homework: your first neural network',
+      url: NOTEBOOK,
+      note: 'About an hour, in Google Colab. You build a small neural network, train it, and test it on flowers it has never seen. Five places need your input and everything else is written for you. No installation, and no experience.',
+    },
+    {
+      group: 'After the day',
+      label: 'A quick self check, if you want one',
       url: HOMEWORK,
-      note: 'Twelve questions, about half an hour. Four of them you answer by opening a page from the day and looking. It marks itself, explains every answer, and hands you a code at the end.',
+      note: 'Twelve questions, about half an hour. Four of them you answer by opening a page from the day and looking. It marks itself and explains every answer. Optional.',
     },
   ],
 };
