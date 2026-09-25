@@ -79,6 +79,20 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   the 10:30 lecture's chip, and `viz('two-grasshoppers')` joined the other
   three games on the 11:30 hands-on. Only the chip placement moved; the
   Materials list and both games' notes are unchanged.
+- **The homework is a Colab notebook since 25.09.2026**, on the lecturer's
+  word: `public/homework/first-neural-network.ipynb`, a copy of
+  `fai-hs26-private/materials/homework/notebook/first-neural-network.ipynb`,
+  which is built there by `build_notebook.py` and must never be edited by hand.
+  Its Materials link is the `NOTEBOOK` constant in `day.ts`, which opens it in
+  Colab through `colab.research.google.com/github/carloscotrini/FAI-PAGE/blob/main/...`.
+  **That address reads the file from this repository's `main` branch**, so a
+  push here publishes a change to the notebook and the Pages deploy has nothing
+  to do with it. The **solution notebook and the solved HTML are the answer key
+  and are NOT here**; they stay in the private repository until the lecturer
+  says otherwise.
+  The twelve question round, `public/homework/index.html`, is still served and
+  still listed, relabelled as an optional self check: the notebook replaced it
+  as the homework. Four lines in `day.ts` remove it if he would rather it went.
 - `public/viz/` holds copies of `fai-hs26-private/materials/viz/`, runtime files
   only. The rsync command in `README.md` refreshes them. Each page is browser
   only with vendored libraries, so it works from this subpath as it does from a
