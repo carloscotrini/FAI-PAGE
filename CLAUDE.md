@@ -58,12 +58,16 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   `materials/minimal/`, which is rebuilt only on his command. Block 4's minimal
   cut was the retired ensembles block and was withdrawn. The procedure is in
   `README.md`. On his word the slides are not listed under Materials.
-- **One link, one place.** Since the evening of 23.09.2026 the schedule
-  carries nothing but those Slides chips, and every game, visualization and
-  outside page is listed once, under Materials, with its note. Until then each
-  game was also a chip on its session, so every link showed twice (the UN games
-  three times), and the lecturer asked for the duplicates to go. Add a new page
-  under Materials only.
+- **Games are chipped twice, on purpose, since 25.09.2026.** From the evening
+  of 23.09.2026 to 25.09.2026 the schedule carried only the Slides chips, and
+  every game was listed once, under Materials, with its note ("one link, one
+  place"). The lecturer reversed that on 25.09.2026 ("I need chips also in
+  the schedule for the games"): every game is now ALSO a chip on the session
+  it belongs to, reusing the exact `{label, url}` pair of its Materials entry
+  (see the comment above `sessions` in `day.ts`) so the two copies cannot
+  drift apart; only the note stays Materials-only. Add a new page in BOTH
+  places: a `links` entry on its session in `sessions`, and an entry in
+  `resources` with its group and note.
 - `public/viz/` holds copies of `fai-hs26-private/materials/viz/`, runtime files
   only. The rsync command in `README.md` refreshes them. Each page is browser
   only with vendored libraries, so it works from this subpath as it does from a

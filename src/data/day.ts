@@ -66,6 +66,16 @@ export const day: Day = {
   // 23.09.2026 (public/slides/block-N-minimal.pdf, from materials/minimal/,
   // rebuilt only on his command). Block 4 was replaced on 24.09.2026 and has no
   // short version. The yogurt cup game is played in the middle of that lecture.
+  //
+  // Since 25.09.2026 every game is ALSO chipped on its own session, on the
+  // lecturer's word ("I need chips also in the schedule for the games"). This
+  // reverses the "One link, one place" decision of 23.09.2026: a game now
+  // shows twice, once here and once under Materials, on purpose. Each chip
+  // below reuses the exact {label, url} pair of its Materials entry, so the
+  // two never drift apart; only the note stays Materials-only. The session
+  // split for blocks 1 to 3 is the lecturer's own original arrangement, from
+  // before the 23.09.2026 dedup (One grasshopper, then two on the 10:30
+  // lecture; the other four hands-on games at 11:30).
   sessions: [
     {
       time: '08:30',
@@ -74,12 +84,18 @@ export const day: Day = {
       links: [
         { label: 'Slides', url: deck('block-1.pdf') },
         { label: 'Short version', url: deck('block-1-minimal.pdf') },
+        { label: 'SQUARE ONE, the opening show', url: viz('square-root-show') },
       ],
     },
     {
       time: '09:30',
       title: 'Guess, check, correct',
       type: 'lab',
+      links: [
+        { label: 'Square roots, by hand', url: viz('square-roots-robbins-monro', 'cx_robbins-monro.html') },
+        { label: 'Price the street', url: viz('price-the-street', 'cx_house-pricing-game.html') },
+        { label: 'House prices, one house at a time', url: viz('house-prices-rm') },
+      ],
     },
     { time: '10:00', title: 'Coffee break, until 10:30', type: 'break' },
     {
@@ -89,12 +105,19 @@ export const day: Day = {
       links: [
         { label: 'Slides', url: deck('block-2.pdf') },
         { label: 'Short version', url: deck('block-2-minimal.pdf') },
+        { label: 'One grasshopper, then two', url: viz('two-grasshoppers') },
       ],
     },
     {
       time: '11:30',
       title: 'The grasshopper, and a network that bends',
       type: 'lab',
+      links: [
+        { label: 'Grasshopper', url: viz('grasshopper', 'cx_grasshopper.html') },
+        { label: 'Ramps, bumps, anything', url: viz('universal-approximation') },
+        { label: 'The curve and the landscape', url: viz('nn-fit-landscape') },
+        { label: 'TensorFlow Playground', url: PLAYGROUND },
+      ],
     },
     { time: '12:00', title: 'Lunch, until 13:00', type: 'break' },
     {
@@ -110,6 +133,7 @@ export const day: Day = {
       time: '14:00',
       title: 'The Hidden Layer: play the spy game',
       type: 'lab',
+      links: [{ label: 'The Hidden Layer, the spy game', url: SPY_GAME }],
     },
     { time: '14:30', title: 'Coffee break, until 15:00', type: 'break' },
     {
@@ -122,19 +146,24 @@ export const day: Day = {
       time: '15:15',
       title: 'The yogurt cup game, in pairs',
       type: 'lab',
+      links: [{ label: 'The yogurt cup game', url: viz('yogurt-cups') }],
     },
     {
       time: '15:35',
       title: 'From embeddings to answers: chunks, clusters and RAG',
       type: 'lecture',
     },
-    { time: '16:20', title: 'Wrap-up, questions and feedback', type: 'lecture' },
+    {
+      time: '16:20',
+      title: 'Wrap-up, questions and feedback',
+      type: 'lecture',
+      links: [{ label: 'Back to Square One, the closing quiz', url: MENTI }],
+    },
   ],
 
-  // The slides are NOT listed here: the lecturer wants them in the schedule,
-  // one "Slides" chip per lecture (23.09.2026). And every game is listed ONLY
-  // here, since the same evening: the schedule carried them too, and he asked
-  // for the duplicate links to go. One link, one place.
+  // Every game is ALSO listed here, under Materials, by block, with its note.
+  // Since 25.09.2026 this duplicates the session chips above on purpose; see
+  // the comment there.
   resources: [
     {
       group: 'Block 1, learning by guessing',
