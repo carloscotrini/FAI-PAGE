@@ -146,7 +146,10 @@ export const day: Day = {
       time: '16:20',
       title: 'Wrap-up, questions and feedback',
       type: 'lecture',
-      links: [{ label: 'The yogurt cup game', url: viz('yogurt-cups') }],
+      links: [
+        { label: 'The yogurt cup game', url: viz('yogurt-cups') },
+        { label: 'The closing quiz', url: deck('closing-quiz.pdf') },
+      ],
     },
     // The homework sits at the end of the schedule as if it were another
     // block, on the lecturer's word of 25.09.2026, rather than only as a line
