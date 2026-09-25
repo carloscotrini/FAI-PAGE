@@ -54,7 +54,7 @@ export const HOMEWORK = `${import.meta.env.BASE_URL}homework/`;
  * the answer key and stay in that private repository.
  */
 export const NOTEBOOK =
-  'https://colab.research.google.com/github/uzh-fai-hs26/uzh-fai-hs26.github.io/blob/main/public/homework/first-neural-network.ipynb';
+  'https://colab.research.google.com/github/uzh-fai-hs26/uzh-fai-hs26.github.io/blob/main/public/homework/house-prices.ipynb';
 
 export const day: Day = {
   title: 'Foundations of AI',
@@ -273,7 +273,7 @@ export const day: Day = {
       group: 'After the day',
       label: 'The homework: your first neural network',
       url: NOTEBOOK,
-      note: 'About an hour, in Google Colab. You build a small neural network, train it, and test it on flowers it has never seen. Five places need your input and everything else is written for you. No installation, and no experience.',
+      note: 'About an hour, in Google Colab. You build a small neural network and train it to price houses, then test it on forty it has never seen. Five places need your input and everything else is written for you. No installation, and no experience.',
     },
     {
       group: 'After the day',
