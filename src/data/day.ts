@@ -149,6 +149,7 @@ export const day: Day = {
       links: [
         { label: 'The yogurt cup game', url: viz('yogurt-cups') },
         { label: 'The closing quiz', url: deck('closing-quiz.pdf') },
+        { label: 'The closing quiz: answers', url: deck('closing-quiz-answers.pdf') },
       ],
     },
     // The homework sits at the end of the schedule as if it were another
