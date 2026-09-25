@@ -46,14 +46,15 @@ export const HOMEWORK = `${import.meta.env.BASE_URL}homework/`;
 
 /**
  * The homework notebook, opened straight in Google Colab. Colab reads the file
- * from GitHub, so this address serves whatever is on `main` in THIS repository:
- * pushing here publishes a change to the notebook, and the Pages deploy has
- * nothing to do with it. The original is fai-hs26-private/materials/homework/
+ * from GitHub, so this address serves whatever is on `main` of the ORG copy,
+ * uzh-fai-hs26/uzh-fai-hs26.github.io. Pushing there publishes a change to the
+ * notebook, and no Pages deploy is involved. Both copies of this site point at
+ * the org repository, so the link a participant clicks never says carloscotrini. The original is fai-hs26-private/materials/homework/
  * notebook/, built by build_notebook.py; the solution and the solved HTML are
  * the answer key and stay in that private repository.
  */
 export const NOTEBOOK =
-  'https://colab.research.google.com/github/carloscotrini/FAI-PAGE/blob/main/public/homework/first-neural-network.ipynb';
+  'https://colab.research.google.com/github/uzh-fai-hs26/uzh-fai-hs26.github.io/blob/main/public/homework/first-neural-network.ipynb';
 
 export const day: Day = {
   title: 'Foundations of AI',
@@ -154,6 +155,16 @@ export const day: Day = {
       title: 'Wrap-up, questions and feedback',
       type: 'lecture',
       links: [{ label: 'The yogurt cup game', url: viz('yogurt-cups') }],
+    },
+    // The homework sits at the end of the schedule as if it were another
+    // block, on the lecturer's word of 25.09.2026, rather than only as a line
+    // under Materials. "At home" stands in for a clock time: it is the one row
+    // that is not on Saturday.
+    {
+      time: 'At home',
+      title: 'The project: your first neural network',
+      type: 'project',
+      links: [{ label: 'Open it in Colab', url: NOTEBOOK }],
     },
   ],
 
