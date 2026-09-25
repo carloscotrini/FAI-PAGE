@@ -37,14 +37,6 @@ export const SPY_GAME = 'https://eth-bmai-hs26.github.io/BMAI-PAGE/viz/we2/spy-g
 export const PLAYGROUND = 'https://playground.tensorflow.org';
 
 /**
- * The homework round, from `public/homework/`. A copy of
- * fai-hs26-private/materials/homework/index.html, which is the original; the
- * Python that reads the completion codes back stays in that private repository,
- * because it holds the answer key. Copy the page again whenever it changes there.
- */
-export const HOMEWORK = `${import.meta.env.BASE_URL}homework/`;
-
-/**
  * The homework notebook, opened straight in Google Colab. Colab reads the file
  * from GitHub, so this address serves whatever is on `main` of the ORG copy,
  * uzh-fai-hs26/uzh-fai-hs26.github.io. Pushing there publishes a change to the
@@ -266,20 +258,15 @@ export const day: Day = {
     },
 
     // The notebook is THE homework since 25.09.2026, on the lecturer's word,
-    // and it replaced the twelve question round in that job. The round stays
-    // listed under it as an optional self check, because it is built and costs
-    // nothing; remove these four lines if he would rather it went.
+    // and the ONLY one: "remove the homework from the website, it is only the
+    // neural network thingy" (25.09.2026). The twelve question round that used
+    // to sit under this as an optional self check is withdrawn, page and all,
+    // and lives on only in the private repository.
     {
       group: 'After the day',
       label: 'The homework: your first neural network',
       url: NOTEBOOK,
       note: 'About an hour, in Google Colab. You build a small neural network and train it to price houses, then test it on forty it has never seen. Five places need your input and everything else is written for you. No installation, and no experience.',
-    },
-    {
-      group: 'After the day',
-      label: 'A quick self check, if you want one',
-      url: HOMEWORK,
-      note: 'Twelve questions, about half an hour. Four of them you answer by opening a page from the day and looking. It marks itself and explains every answer. Optional.',
     },
   ],
 };

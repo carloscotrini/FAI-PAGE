@@ -99,9 +99,13 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   The project is also a row at the end of `sessions`, with "At home" where a
   clock time goes, as if it were a fifth block. It appears twice on purpose,
   there and under Materials, like every game.
-  The twelve question round, `public/homework/index.html`, is still served and
-  still listed, relabelled as an optional self check: the notebook replaced it
-  as the homework. Four lines in `day.ts` remove it if he would rather it went.
+  **The twelve question round is withdrawn**, page and all, on the lecturer's
+  word of 25.09.2026: "remove the homework from the website, it is only the
+  neural network thingy". `public/homework/index.html` was removed with
+  `git rm`, its `HOMEWORK` constant is gone from `day.ts`, and nothing here
+  serves or names it. It still exists in the private repository at
+  `materials/homework/`, with its checkers and its verifier, if it is ever
+  wanted again. The notebook is the only homework.
 - `public/viz/` holds copies of `fai-hs26-private/materials/viz/`, runtime files
   only. The rsync command in `README.md` refreshes them. Each page is browser
   only with vendored libraries, so it works from this subpath as it does from a
