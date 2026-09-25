@@ -79,17 +79,26 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   the 10:30 lecture's chip, and `viz('two-grasshoppers')` joined the other
   three games on the 11:30 hands-on. Only the chip placement moved; the
   Materials list and both games' notes are unchanged.
-- **The homework is a Colab notebook since 25.09.2026**, on the lecturer's
-  word: `public/homework/first-neural-network.ipynb`, a copy of
-  `fai-hs26-private/materials/homework/notebook/first-neural-network.ipynb`,
-  which is built there by `build_notebook.py` and must never be edited by hand.
-  Its Materials link is the `NOTEBOOK` constant in `day.ts`, which opens it in
-  Colab through `colab.research.google.com/github/carloscotrini/FAI-PAGE/blob/main/...`.
-  **That address reads the file from this repository's `main` branch**, so a
-  push here publishes a change to the notebook and the Pages deploy has nothing
-  to do with it. The **solution notebook and the solved HTML are the answer key
-  and are NOT here**; they stay in the private repository until the lecturer
-  says otherwise.
+- **The project is a Colab notebook since 25.09.2026**, on the lecturer's word,
+  and since the same afternoon it is about **house prices, not iris flowers**,
+  because block 1 is house prices and iris appears nowhere in the day. The live
+  file is `public/homework/house-prices.ipynb`, a copy of
+  `fai-hs26-private/materials/homework/notebook/house-prices.ipynb`, built there
+  by `build_houses.py` and never edited by hand.
+  `first-neural-network.ipynb`, the iris version, is still served here and
+  listed nowhere: one line in `day.ts` brings it back.
+  The `NOTEBOOK` constant in `day.ts` opens the live one in Colab through
+  `colab.research.google.com/github/uzh-fai-hs26/uzh-fai-hs26.github.io/blob/main/...`,
+  **the ORG repository**, so the address a participant clicks carries the
+  university's name. Colab reads raw from GitHub, so what it serves is whatever
+  is on that repository's `main`: pushing to the `org` remote publishes a change
+  to the notebook, and no Pages deploy is involved.
+  The **solutions and the solved HTML are the answer key and are NOT in either
+  public repository**; they stay in the private one until the lecturer says
+  otherwise.
+  The project is also a row at the end of `sessions`, with "At home" where a
+  clock time goes, as if it were a fifth block. It appears twice on purpose,
+  there and under Materials, like every game.
   The twelve question round, `public/homework/index.html`, is still served and
   still listed, relabelled as an optional self check: the notebook replaced it
   as the homework. Four lines in `day.ts` remove it if he would rather it went.
@@ -117,6 +126,37 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   24.09.2026 the marble jar guessing page (`carloscotrini/fai-hs26`) and its
   shared sheet were linked the same way; they left the page with the ensembles
   block, and the guessing page is still live in that repository.
+
+## Two remotes, and both must be pushed
+
+Since 25.09.2026 this repository is served from **two places**, on the
+lecturer's word that the address should not start with his name:
+
+| Remote | Repository | Serves |
+|---|---|---|
+| `origin` | `carloscotrini/FAI-PAGE` | https://carloscotrini.github.io/FAI-PAGE/ |
+| `org` | `uzh-fai-hs26/uzh-fai-hs26.github.io` | https://uzh-fai-hs26.github.io/ |
+
+```bash
+git push origin main && git push org main
+```
+
+**Push both, every time.** A push to one only is how the two drift.
+
+**The old address is deliberately still live and must stay live through the
+day.** The block 1, 2 and 4 decks print and QR-encode
+`carloscotrini.github.io/FAI-PAGE/...` in four places (`square-root-show`,
+`grasshopper`, `yogurt-cups`, `un-games`), and **GitHub does not redirect Pages
+URLs after a repository transfer**, so moving rather than copying would have
+killed every one of those QR codes. Retire the old one only once those decks
+have been recompiled with new addresses.
+
+The org repository is named `uzh-fai-hs26.github.io` on purpose: a repository
+named after its owner is served at the Pages **root**, so the site has no
+`/FAI-PAGE/` path segment. Its Pages was created in `legacy` mode by GitHub and
+had to be switched with
+`gh api -X PUT repos/uzh-fai-hs26/uzh-fai-hs26.github.io/pages -f build_type=workflow`;
+until that was done it served the unbuilt `index.html` and the page was blank.
 
 ## Deploying
 
