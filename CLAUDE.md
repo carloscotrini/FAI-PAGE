@@ -43,22 +43,21 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   `fai-hs26-private/materials/viz/yogurt-cups/`), played in pairs in the
   middle of the lecture, so the schedule shows the lecture in two halves around
   it (15:00, 15:15, 15:35: the minute budget of the deck's speaker notes). The block 4 deck prints that address in a QR code.
-  The UN games, marble jar and forest pages stay in `public/viz/`, unlisted,
-  and nothing on the page links to them: the homework's question 8, which
-  pointed into the UN games, points at the yogurt cup game since the same
-  day. Withdraw them with `git rm` if they should go. The block 4 lecture
-  has **no Slides chip** until the lecturer asks for its slides to be
-  published: `public/slides/block-4-minimal.pdf` is still the ensembles cut,
-  and `ScheduleTable` does not render `SOON`, so a chip set to it would be a
-  dead link.
-- **The slides are the MINIMAL versions, published 23.09.2026 on the
-  lecturer's word.** `public/slides/block-N-minimal.pdf` are unchanged copies of
-  `fai-hs26-private/materials/minimal/block-N-minimal.pdf`, the manager-level
-  cut of each block. That folder is rebuilt only on his command, so copy it
-  again, or publish the full decks instead, only when he says so. The
-  procedure is in `README.md`. **They are linked from the schedule**, as a
-  "Slides" chip on each of the four lectures, and on his word they are not
-  listed under Materials.
+  Later that day the lecturer asked for "all the materials on the website":
+  the UN games, marble jar and forest pages are listed again under a last
+  Materials group, **More to explore**, as optional extras outside every
+  session, and the closing quiz's join page (`MENTI`, menti.com) is listed
+  under block 4. `ScheduleTable` does not render `SOON`: a chip set to it is a
+  dead link, so a deck that is not published gets no chip at all.
+- **The slides are the FULL decks since 24.09.2026, on the lecturer's word**
+  ("put all the materials on the website"). `public/slides/block-N.pdf` are
+  unchanged copies of `fai-hs26-private/materials/block-N/slides/block-N.pdf`,
+  the PDFs projected in the room, linked as the "Slides" chip of each lecture.
+  Blocks 1 to 3 keep the MINIMAL versions of 23.09.2026 beside them as a
+  "Short version" chip: `public/slides/block-N-minimal.pdf`, copies of
+  `materials/minimal/`, which is rebuilt only on his command. Block 4's minimal
+  cut was the retired ensembles block and was withdrawn. The procedure is in
+  `README.md`. On his word the slides are not listed under Materials.
 - **One link, one place.** Since the evening of 23.09.2026 the schedule
   carries nothing but those Slides chips, and every game, visualization and
   outside page is listed once, under Materials, with its note. Until then each

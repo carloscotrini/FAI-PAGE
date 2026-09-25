@@ -36,6 +36,9 @@ export const SPY_GAME = 'https://eth-bmai-hs26.github.io/BMAI-PAGE/viz/we2/spy-g
 
 export const PLAYGROUND = 'https://playground.tensorflow.org';
 
+/** The closing quiz runs on Mentimeter; the room joins with the code shown on screen. */
+export const MENTI = 'https://www.menti.com/';
+
 /**
  * The homework round, from `public/homework/`. A copy of
  * fai-hs26-private/materials/homework/index.html, which is the original; the
@@ -55,22 +58,23 @@ export const day: Day = {
   summary:
     'One day, four blocks. It starts from the oldest idea in the field, learning by guessing and correcting, and follows it through gradient descent and neural networks to statistical learning theory, language models and agents, then ends with embeddings and retrieval: how a text becomes a list of numbers, and how a language model finds a company\'s own documents and answers from them. Every block has a hands-on part that runs in the browser, with nothing to install.',
 
-  // Each lecture's "Slides" chip is the MINIMAL, manager-level version of its
-  // block, published 23.09.2026 on the lecturer's word: public/slides/, copied
-  // unchanged from fai-hs26-private/materials/minimal/block-N-minimal.pdf. That
-  // folder is rebuilt only on his command; copy again only when he says so.
-  // Block 4 was replaced on 24.09.2026: ensembles went (Day 1 teaches them) and
-  // embeddings and RAG came in. Its minimal deck in public/slides/ is still the
-  // ensembles one, so block 4 carries no Slides chip until he asks for the new
-  // slides to go up. (ScheduleTable does not render SOON, so a chip set to SOON
-  // would be a dead link.)
-  // The yogurt cup game is played in the middle of that lecture, as at BMAI.
+  // Since 24.09.2026, on the lecturer's word ("put all the materials on the
+  // website"), each lecture's "Slides" chip is the FULL deck projected in the
+  // room: public/slides/block-N.pdf, copied unchanged from
+  // fai-hs26-private/materials/block-N/slides/block-N.pdf. Blocks 1 to 3 also
+  // keep their "Short version", the minimal manager-level cut published on
+  // 23.09.2026 (public/slides/block-N-minimal.pdf, from materials/minimal/,
+  // rebuilt only on his command). Block 4 was replaced on 24.09.2026 and has no
+  // short version. The yogurt cup game is played in the middle of that lecture.
   sessions: [
     {
       time: '08:30',
       title: 'Learning by guessing: Popper, Robbins-Monro and house prices',
       type: 'lecture',
-      links: [{ label: 'Slides', url: deck('block-1-minimal.pdf') }],
+      links: [
+        { label: 'Slides', url: deck('block-1.pdf') },
+        { label: 'Short version', url: deck('block-1-minimal.pdf') },
+      ],
     },
     {
       time: '09:30',
@@ -82,7 +86,10 @@ export const day: Day = {
       time: '10:30',
       title: 'Gradient descent and neural networks',
       type: 'lecture',
-      links: [{ label: 'Slides', url: deck('block-2-minimal.pdf') }],
+      links: [
+        { label: 'Slides', url: deck('block-2.pdf') },
+        { label: 'Short version', url: deck('block-2-minimal.pdf') },
+      ],
     },
     {
       time: '11:30',
@@ -94,7 +101,10 @@ export const day: Day = {
       time: '13:00',
       title: 'Statistical learning theory and agentic AI',
       type: 'lecture',
-      links: [{ label: 'Slides', url: deck('block-3-minimal.pdf') }],
+      links: [
+        { label: 'Slides', url: deck('block-3.pdf') },
+        { label: 'Short version', url: deck('block-3-minimal.pdf') },
+      ],
     },
     {
       time: '14:00',
@@ -106,6 +116,7 @@ export const day: Day = {
       time: '15:00',
       title: 'Embeddings and retrieval augmented generation',
       type: 'lecture',
+      links: [{ label: 'Slides', url: deck('block-4.pdf') }],
     },
     {
       time: '15:15',
@@ -193,6 +204,35 @@ export const day: Day = {
       label: 'The yogurt cup game',
       url: viz('yogurt-cups'),
       note: 'Two players and only words between them. The sender sees five pictures, on a phone if you like; the receiver finds them, in order, on the laptop. Your score is the time.',
+    },
+    {
+      group: 'Block 4, embeddings and retrieval',
+      label: 'Back to Square One, the closing quiz',
+      url: MENTI,
+      note: 'At 16:20, on your phone: open menti.com and type the code shown on the screen.',
+    },
+
+    // The pages of the ensembles block, retired from the day on 24.09.2026
+    // because Day 1 teaches its topics. Listed again the same day on the
+    // lecturer's word, "put all the materials on the website", as optional
+    // extras. Not part of any session.
+    {
+      group: 'More to explore',
+      label: 'The UN games',
+      url: viz('un-games'),
+      note: "You are the UN's new forecaster. Eleven scenes: a model that memorises the countries it saw, one built from nonsense that scores perfectly on them, and two models that predict about equally well and disagree about what mattered.",
+    },
+    {
+      group: 'More to explore',
+      label: 'The marble jar',
+      url: viz('marble-jar', 'wisdom-of-crowds.html'),
+      note: 'How many marbles are in the jar? A crowd of guesses, averaged, against every single guess.',
+    },
+    {
+      group: 'More to explore',
+      label: 'The forest grows',
+      url: viz('random-forest-deepdive'),
+      note: 'A tree cannot draw a spiral. A hundred of them, each grown on a resample and averaged, can.',
     },
 
     {

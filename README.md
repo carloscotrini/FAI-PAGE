@@ -31,24 +31,32 @@ publishes `dist/` to GitHub Pages.
 | `src/data/calendar.ts` | The day as one calendar event (times in UTC) |
 | `src/pages/HomePage.tsx` | The one page: hero, schedule, materials, "before you come" |
 | `public/viz/` | Copies of the day's games and visualizations, runtime files only |
-| `public/slides/` | The four minimal decks, `block-N-minimal.pdf`, published 23.09.2026 |
+| `public/slides/` | The four full decks, `block-N.pdf` (24.09.2026), and the short versions of blocks 1 to 3, `block-N-minimal.pdf` (23.09.2026) |
 
 ## Publishing the slides
 
-Since 23.09.2026 the page serves the MINIMAL version of each block, the
-manager-level cut in `materials/minimal/` of the private repository
-`carloscotrini/fai-hs26-private`. That folder is rebuilt only on the lecturer's
-command, and so is this copy. When he says so, copy again from the site root:
+Since 24.09.2026 the page serves the FULL deck of each block, the PDF that is
+projected, on the lecturer's word ("put all the materials on the website").
+After a deck changes in the private repository `carloscotrini/fai-hs26-private`,
+copy it again from the site root and push:
 
 ```bash
-cp ../fai-hs26-private/materials/minimal/block-*-minimal.pdf public/slides/
+for n in 1 2 3 4; do cp ../fai-hs26-private/materials/block-$n/slides/block-$n.pdf public/slides/; done
 ```
 
-then push. Each lecture in the schedule links its deck as a "Slides" chip,
-`deck('block-N-minimal.pdf')` in `src/data/day.ts`; on the lecturer's word the
-slides are not listed under Materials. To publish a full deck instead, copy
-`materials/block-N/slides/block-N.pdf` and point that chip at
-`deck('block-N.pdf')`.
+Blocks 1 to 3 also keep the MINIMAL version published on 23.09.2026, the
+manager-level cut in `materials/minimal/`, as a "Short version" chip. That folder
+is rebuilt only on the lecturer's command, and so is this copy:
+
+```bash
+cp ../fai-hs26-private/materials/minimal/block-[123]-minimal.pdf public/slides/
+```
+
+Block 4's minimal cut was the retired ensembles block and was withdrawn on
+24.09.2026. Each lecture in the schedule links its deck as a "Slides" chip,
+`deck('block-N.pdf')` in `src/data/day.ts`, and blocks 1 to 3 a "Short version"
+chip beside it; on the lecturer's word the slides are not listed under
+Materials.
 
 ## Refreshing a visualization
 
