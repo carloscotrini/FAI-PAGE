@@ -36,9 +36,6 @@ export const SPY_GAME = 'https://eth-bmai-hs26.github.io/BMAI-PAGE/viz/we2/spy-g
 
 export const PLAYGROUND = 'https://playground.tensorflow.org';
 
-/** The closing quiz runs on Mentimeter; the room joins with the code shown on screen. */
-export const MENTI = 'https://www.menti.com/';
-
 /**
  * The homework round, from `public/homework/`. A copy of
  * fai-hs26-private/materials/homework/index.html, which is the original; the
@@ -61,21 +58,25 @@ export const day: Day = {
   // Since 24.09.2026, on the lecturer's word ("put all the materials on the
   // website"), each lecture's "Slides" chip is the FULL deck projected in the
   // room: public/slides/block-N.pdf, copied unchanged from
-  // fai-hs26-private/materials/block-N/slides/block-N.pdf. Blocks 1 to 3 also
-  // keep their "Short version", the minimal manager-level cut published on
-  // 23.09.2026 (public/slides/block-N-minimal.pdf, from materials/minimal/,
-  // rebuilt only on his command). Block 4 was replaced on 24.09.2026 and has no
-  // short version. The yogurt cup game is played in the middle of that lecture.
+  // fai-hs26-private/materials/block-N/slides/block-N.pdf.
   //
   // Since 25.09.2026 every game is ALSO chipped on its own session, on the
   // lecturer's word ("I need chips also in the schedule for the games"). This
   // reverses the "One link, one place" decision of 23.09.2026: a game now
   // shows twice, once here and once under Materials, on purpose. Each chip
   // below reuses the exact {label, url} pair of its Materials entry, so the
-  // two never drift apart; only the note stays Materials-only. The session
-  // split for blocks 1 to 3 is the lecturer's own original arrangement, from
-  // before the 23.09.2026 dedup (One grasshopper, then two on the 10:30
-  // lecture; the other four hands-on games at 11:30).
+  // two never drift apart; only the note stays Materials-only.
+  //
+  // Also since 25.09.2026, on the lecturer's word: the "Short version" chip
+  // (the 23.09.2026 minimal cut) is gone from every block; only the full deck
+  // is published now, and public/slides/block-N-minimal.pdf were deleted.
+  // The Grasshopper and One-grasshopper-then-two chips were swapped between
+  // the 10:30 lecture and the 11:30 hands-on (his own correction of the split
+  // restored the day before). Block 4 was collapsed from four rows to two,
+  // because "the fourth block looks very fragmented": one lecture row with
+  // just its Slides chip, and the yogurt cup game's chip moved onto the
+  // 16:20 wrap-up row, its only chip. The closing quiz (Mentimeter) is
+  // unpublished ("I did not have time to finish it") and dropped everywhere.
   sessions: [
     {
       time: '08:30',
@@ -83,7 +84,6 @@ export const day: Day = {
       type: 'lecture',
       links: [
         { label: 'Slides', url: deck('block-1.pdf') },
-        { label: 'Short version', url: deck('block-1-minimal.pdf') },
         { label: 'SQUARE ONE, the opening show', url: viz('square-root-show') },
       ],
     },
@@ -104,8 +104,7 @@ export const day: Day = {
       type: 'lecture',
       links: [
         { label: 'Slides', url: deck('block-2.pdf') },
-        { label: 'Short version', url: deck('block-2-minimal.pdf') },
-        { label: 'One grasshopper, then two', url: viz('two-grasshoppers') },
+        { label: 'Grasshopper', url: viz('grasshopper', 'cx_grasshopper.html') },
       ],
     },
     {
@@ -113,7 +112,7 @@ export const day: Day = {
       title: 'The grasshopper, and a network that bends',
       type: 'lab',
       links: [
-        { label: 'Grasshopper', url: viz('grasshopper', 'cx_grasshopper.html') },
+        { label: 'One grasshopper, then two', url: viz('two-grasshoppers') },
         { label: 'Ramps, bumps, anything', url: viz('universal-approximation') },
         { label: 'The curve and the landscape', url: viz('nn-fit-landscape') },
         { label: 'TensorFlow Playground', url: PLAYGROUND },
@@ -124,10 +123,7 @@ export const day: Day = {
       time: '13:00',
       title: 'Statistical learning theory and agentic AI',
       type: 'lecture',
-      links: [
-        { label: 'Slides', url: deck('block-3.pdf') },
-        { label: 'Short version', url: deck('block-3-minimal.pdf') },
-      ],
+      links: [{ label: 'Slides', url: deck('block-3.pdf') }],
     },
     {
       time: '14:00',
@@ -143,21 +139,10 @@ export const day: Day = {
       links: [{ label: 'Slides', url: deck('block-4.pdf') }],
     },
     {
-      time: '15:15',
-      title: 'The yogurt cup game, in pairs',
-      type: 'lab',
-      links: [{ label: 'The yogurt cup game', url: viz('yogurt-cups') }],
-    },
-    {
-      time: '15:35',
-      title: 'From embeddings to answers: chunks, clusters and RAG',
-      type: 'lecture',
-    },
-    {
       time: '16:20',
       title: 'Wrap-up, questions and feedback',
       type: 'lecture',
-      links: [{ label: 'Back to Square One, the closing quiz', url: MENTI }],
+      links: [{ label: 'The yogurt cup game', url: viz('yogurt-cups') }],
     },
   ],
 
@@ -233,12 +218,6 @@ export const day: Day = {
       label: 'The yogurt cup game',
       url: viz('yogurt-cups'),
       note: 'Two players and only words between them. The sender sees five pictures, on a phone if you like; the receiver finds them, in order, on the laptop. Your score is the time.',
-    },
-    {
-      group: 'Block 4, embeddings and retrieval',
-      label: 'Back to Square One, the closing quiz',
-      url: MENTI,
-      note: 'At 16:20, on your phone: open menti.com and type the code shown on the screen.',
     },
 
     // The pages of the ensembles block, retired from the day on 24.09.2026

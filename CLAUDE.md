@@ -41,23 +41,29 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   came in. Its one Materials entry is the yogurt cup game,
   `public/viz/yogurt-cups/`, a copy of the BMAI course site's page (through
   `fai-hs26-private/materials/viz/yogurt-cups/`), played in pairs in the
-  middle of the lecture, so the schedule shows the lecture in two halves around
-  it (15:00, 15:15, 15:35: the minute budget of the deck's speaker notes). The block 4 deck prints that address in a QR code.
+  middle of the lecture. The block 4 deck prints that address in a QR code.
   Later that day the lecturer asked for "all the materials on the website":
   the UN games, marble jar and forest pages are listed again under a last
   Materials group, **More to explore**, as optional extras outside every
-  session, and the closing quiz's join page (`MENTI`, menti.com) is listed
-  under block 4. `ScheduleTable` does not render `SOON`: a chip set to it is a
+  session. `ScheduleTable` does not render `SOON`: a chip set to it is a
   dead link, so a deck that is not published gets no chip at all.
-- **The slides are the FULL decks since 24.09.2026, on the lecturer's word**
-  ("put all the materials on the website"). `public/slides/block-N.pdf` are
-  unchanged copies of `fai-hs26-private/materials/block-N/slides/block-N.pdf`,
-  the PDFs projected in the room, linked as the "Slides" chip of each lecture.
-  Blocks 1 to 3 keep the MINIMAL versions of 23.09.2026 beside them as a
-  "Short version" chip: `public/slides/block-N-minimal.pdf`, copies of
-  `materials/minimal/`, which is rebuilt only on his command. Block 4's minimal
-  cut was the retired ensembles block and was withdrawn. The procedure is in
-  `README.md`. On his word the slides are not listed under Materials.
+- **Block 4 was collapsed to two rows on 25.09.2026** ("the fourth block
+  looks very fragmented"): one lecture row, 15:00, titled "Embeddings and
+  retrieval augmented generation", with only its Slides chip; no separate
+  row for the yogurt cup game or for a lecture continuation. Its chip moved
+  onto the 16:20 wrap-up row instead, which carries only that one chip. The
+  closing quiz on Mentimeter was never finished ("I did not have time to
+  finish it") and its resource entry, its `MENTI` constant and its session
+  chip are all removed; nothing on the page names it.
+- **The slides are the FULL decks only, since 25.09.2026, on the lecturer's
+  word.** `public/slides/block-N.pdf` are unchanged copies of
+  `fai-hs26-private/materials/block-N/slides/block-N.pdf`, the PDFs projected
+  in the room, linked as the "Slides" chip of each lecture. The MINIMAL cut
+  published 23.09.2026 as a "Short version" chip was removed the same way
+  block 4's was: "remove all the short versions, we keep now the full
+  versions." `public/slides/block-N-minimal.pdf` are deleted for all four
+  blocks; nothing in `day.ts` references `materials/minimal/` any more. On
+  his word the slides are not listed under Materials.
 - **Games are chipped twice, on purpose, since 25.09.2026.** From the evening
   of 23.09.2026 to 25.09.2026 the schedule carried only the Slides chips, and
   every game was listed once, under Materials, with its note ("one link, one
@@ -68,6 +74,11 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   drift apart; only the note stays Materials-only. Add a new page in BOTH
   places: a `links` entry on its session in `sessions`, and an entry in
   `resources` with its group and note.
+- **The two grasshopper games swapped sessions on 25.09.2026**, the lecturer's
+  own correction: `viz('grasshopper', ...)` (the single valley game) is now
+  the 10:30 lecture's chip, and `viz('two-grasshoppers')` joined the other
+  three games on the 11:30 hands-on. Only the chip placement moved; the
+  Materials list and both games' notes are unchanged.
 - `public/viz/` holds copies of `fai-hs26-private/materials/viz/`, runtime files
   only. The rsync command in `README.md` refreshes them. Each page is browser
   only with vendored libraries, so it works from this subpath as it does from a

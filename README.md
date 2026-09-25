@@ -31,7 +31,7 @@ publishes `dist/` to GitHub Pages.
 | `src/data/calendar.ts` | The day as one calendar event (times in UTC) |
 | `src/pages/HomePage.tsx` | The one page: hero, schedule, materials, "before you come" |
 | `public/viz/` | Copies of the day's games and visualizations, runtime files only |
-| `public/slides/` | The four full decks, `block-N.pdf` (24.09.2026), and the short versions of blocks 1 to 3, `block-N-minimal.pdf` (23.09.2026) |
+| `public/slides/` | The four full decks only, `block-N.pdf` (24.09.2026). No minimal cut is published since 25.09.2026 |
 
 ## Publishing the slides
 
@@ -44,18 +44,13 @@ copy it again from the site root and push:
 for n in 1 2 3 4; do cp ../fai-hs26-private/materials/block-$n/slides/block-$n.pdf public/slides/; done
 ```
 
-Blocks 1 to 3 also keep the MINIMAL version published on 23.09.2026, the
-manager-level cut in `materials/minimal/`, as a "Short version" chip. That folder
-is rebuilt only on the lecturer's command, and so is this copy:
-
-```bash
-cp ../fai-hs26-private/materials/minimal/block-[123]-minimal.pdf public/slides/
-```
-
-Block 4's minimal cut was the retired ensembles block and was withdrawn on
-24.09.2026. Each lecture in the schedule links its deck as a "Slides" chip,
-`deck('block-N.pdf')` in `src/data/day.ts`, and blocks 1 to 3 a "Short version"
-chip beside it; on the lecturer's word the slides are not listed under
+**No "Short version" chip since 25.09.2026.** Blocks 1 to 3 briefly kept the
+23.09.2026 manager-level cut (`materials/minimal/`) beside the full deck; the
+lecturer withdrew it the same way block 4's had been ("remove all the short
+versions, we keep now the full versions"). `block-N-minimal.pdf` is deleted
+from `public/slides/` for all four blocks, and `day.ts` links only
+`deck('block-N.pdf')`. Each lecture in the schedule links its deck as a
+"Slides" chip; on the lecturer's word the slides are not listed under
 Materials.
 
 ## Refreshing a visualization
