@@ -81,6 +81,14 @@ export const day: Day = {
   // just its Slides chip, and the yogurt cup game's chip moved onto the
   // 16:20 wrap-up row, its only chip. The closing quiz (Mentimeter) is
   // unpublished ("I did not have time to finish it") and dropped everywhere.
+  //
+  // Since 26.09.2026, on the lecturer's word: every lecture also has a
+  // "Handout" chip BESIDE its "Slides" chip, never instead of it ("the
+  // handouts are next to the actual slides on the website, do not replace
+  // those"). public/slides/block-N-handout.pdf is one page per frame, the
+  // frame's last click, copied unchanged from fai-hs26-private
+  // materials/block-N/slides/block-N-handout.pdf, which
+  // materials/handouts/build_handouts.py cuts out of the same deck PDFs.
   sessions: [
     {
       time: '08:30',
@@ -88,6 +96,7 @@ export const day: Day = {
       type: 'lecture',
       links: [
         { label: 'Slides', url: deck('block-1.pdf') },
+        { label: 'Handout', url: deck('block-1-handout.pdf') },
         { label: 'SQUARE ONE, the opening show', url: viz('square-root-show') },
       ],
     },
@@ -108,6 +117,7 @@ export const day: Day = {
       type: 'lecture',
       links: [
         { label: 'Slides', url: deck('block-2.pdf') },
+        { label: 'Handout', url: deck('block-2-handout.pdf') },
         { label: 'Grasshopper', url: viz('grasshopper', 'cx_grasshopper.html') },
       ],
     },
@@ -127,7 +137,10 @@ export const day: Day = {
       time: '13:00',
       title: 'Statistical learning theory and agentic AI',
       type: 'lecture',
-      links: [{ label: 'Slides', url: deck('block-3.pdf') }],
+      links: [
+        { label: 'Slides', url: deck('block-3.pdf') },
+        { label: 'Handout', url: deck('block-3-handout.pdf') },
+      ],
     },
     {
       time: '14:00',
@@ -140,7 +153,10 @@ export const day: Day = {
       time: '15:00',
       title: 'Embeddings and retrieval augmented generation',
       type: 'lecture',
-      links: [{ label: 'Slides', url: deck('block-4.pdf') }],
+      links: [
+        { label: 'Slides', url: deck('block-4.pdf') },
+        { label: 'Handout', url: deck('block-4-handout.pdf') },
+      ],
     },
     {
       time: '16:20',
