@@ -31,7 +31,7 @@ publishes `dist/` to GitHub Pages.
 | `src/data/calendar.ts` | The day as one calendar event (times in UTC) |
 | `src/pages/HomePage.tsx` | The one page: hero, schedule, materials, "before you come" |
 | `public/viz/` | Copies of the day's games and visualizations, runtime files only |
-| `public/slides/` | The four full decks only, `block-N.pdf` (24.09.2026). No minimal cut is published since 25.09.2026 |
+| `public/slides/` | The four full decks `block-N.pdf` (24.09.2026), each with its handout and the lecturer's annotated copy (26.09.2026), plus the closing quiz, its answers and its annotated copy. No minimal cut is published since 25.09.2026 |
 
 ## Publishing the slides
 
@@ -52,6 +52,15 @@ from `public/slides/` for all four blocks, and `day.ts` links only
 `deck('block-N.pdf')`. Each lecture in the schedule links its deck as a
 "Slides" chip; on the lecturer's word the slides are not listed under
 Materials.
+
+**Annotated copies since 26.09.2026.** The lecturer's iPad exports of the decks
+with his handwriting are published beside the clean decks as
+`block-N-annotated.pdf` and `closing-quiz-annotated.pdf`, each an "Annotated
+slides" chip right after "Slides" in `day.ts`. They arrive in `~/Downloads`
+under the Mac's duplicate names and are copied byte for byte under the
+published name. The export damages their fonts and drops the clickable links,
+so the clean deck stays the primary chip. `CLAUDE.md` has the page tables and
+the details.
 
 ## Refreshing a visualization
 

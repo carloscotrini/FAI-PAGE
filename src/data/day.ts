@@ -89,6 +89,15 @@ export const day: Day = {
   // frame's last click, copied unchanged from fai-hs26-private
   // materials/block-N/slides/block-N-handout.pdf, which
   // materials/handouts/build_handouts.py cuts out of the same deck PDFs.
+  //
+  // Also since 26.09.2026, on the lecturer's word ("Slides annotated landed.
+  // Put them on the website"): an "Annotated slides" chip sits right after
+  // each lecture's "Slides" chip, ahead of its "Handout", and never instead of
+  // either. public/slides/block-N-annotated.pdf are his own iPad exports of the
+  // deck with his handwriting from the day, copied byte for byte from
+  // ~/Downloads (CLAUDE.md lists the sheets he inserted and the damaged fonts
+  // of the export). The closing quiz's copy is a chip of its own on the wrap-up
+  // row, beside the quiz it annotates.
   sessions: [
     {
       time: '08:30',
@@ -96,6 +105,7 @@ export const day: Day = {
       type: 'lecture',
       links: [
         { label: 'Slides', url: deck('block-1.pdf') },
+        { label: 'Annotated slides', url: deck('block-1-annotated.pdf') },
         { label: 'Handout', url: deck('block-1-handout.pdf') },
         { label: 'SQUARE ONE, the opening show', url: viz('square-root-show') },
       ],
@@ -117,6 +127,7 @@ export const day: Day = {
       type: 'lecture',
       links: [
         { label: 'Slides', url: deck('block-2.pdf') },
+        { label: 'Annotated slides', url: deck('block-2-annotated.pdf') },
         { label: 'Handout', url: deck('block-2-handout.pdf') },
         { label: 'Grasshopper', url: viz('grasshopper', 'cx_grasshopper.html') },
       ],
@@ -139,6 +150,7 @@ export const day: Day = {
       type: 'lecture',
       links: [
         { label: 'Slides', url: deck('block-3.pdf') },
+        { label: 'Annotated slides', url: deck('block-3-annotated.pdf') },
         { label: 'Handout', url: deck('block-3-handout.pdf') },
       ],
     },
@@ -155,6 +167,7 @@ export const day: Day = {
       type: 'lecture',
       links: [
         { label: 'Slides', url: deck('block-4.pdf') },
+        { label: 'Annotated slides', url: deck('block-4-annotated.pdf') },
         { label: 'Handout', url: deck('block-4-handout.pdf') },
       ],
     },
@@ -165,6 +178,7 @@ export const day: Day = {
       links: [
         { label: 'The yogurt cup game', url: viz('yogurt-cups') },
         { label: 'The closing quiz', url: deck('closing-quiz.pdf') },
+        { label: 'The closing quiz: annotated', url: deck('closing-quiz-annotated.pdf') },
         { label: 'The closing quiz: answers', url: deck('closing-quiz-answers.pdf') },
       ],
     },

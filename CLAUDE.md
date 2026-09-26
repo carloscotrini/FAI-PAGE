@@ -64,6 +64,17 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   versions." `public/slides/block-N-minimal.pdf` are deleted for all four
   blocks; nothing in `day.ts` references `materials/minimal/` any more. On
   his word the slides are not listed under Materials.
+- **Handouts and annotated slides sit BESIDE the Slides chip, never instead of
+  it (26.09.2026).** A lecture row now reads Slides, Annotated slides, Handout,
+  then its games. `public/slides/block-N-handout.pdf` is one page per frame at
+  its last click, an unchanged copy of
+  `fai-hs26-private/materials/block-N/slides/block-N-handout.pdf`, which that
+  repository's `materials/handouts/build_handouts.py` cuts out of the same deck
+  PDFs ("the handouts are next to the actual slides on the website, do not
+  replace those"). The annotated copies are the lecturer's own iPad exports,
+  published on his word "Slides annotated landed. Put them on the website":
+  see **The annotated slides** below. Like the slides, neither is listed under
+  Materials.
 - **Games are chipped twice, on purpose, since 25.09.2026.** From the evening
   of 23.09.2026 to 25.09.2026 the schedule carried only the Slides chips, and
   every game was listed once, under Materials, with its note ("one link, one
@@ -130,6 +141,59 @@ links work under the `/FAI-PAGE/` subpath. Both are load bearing.
   24.09.2026 the marble jar guessing page (`carloscotrini/fai-hs26`) and its
   shared sheet were linked the same way; they left the page with the ensembles
   block, and the guessing page is still live in that repository.
+
+## The annotated slides
+
+Five files, `public/slides/block-1-annotated.pdf` to `block-4-annotated.pdf` and
+`closing-quiz-annotated.pdf`: the decks as the lecturer wrote on them during the
+day, exported from his iPad. They landed in `~/Downloads` at 18:10 on 26.09.2026
+under the Mac's duplicate names (`block-1 (1) 2.pdf`, `block-2 (1).pdf`,
+`block-3 2.pdf`, `block-4 2.pdf`, `closing-quiz 2.pdf`), were copied here BYTE
+FOR BYTE under the deck's published name plus `-annotated`, and are never
+rebuilt; the originals stay in Downloads. Each lecture row chips its copy as
+"Annotated slides" right after "Slides"; the wrap-up row chips the quiz's as
+"The closing quiz: annotated".
+
+| File | Pages, annotated / clean | Inserted by the lecturer | Slides with ink | Broken fonts |
+|---|---|---|---|---|
+| `block-1-annotated.pdf` | 84 / 80 | 47 (a duplicated slide); sheets 58, 72, 73 | 41, 46, 57, 61 | 327 |
+| `block-2-annotated.pdf` | 193 / 184 | sheets 13, 40, 105, 106, 122, 157 to 160 | 114, 115, 143, 147, 153 | 777 |
+| `block-3-annotated.pdf` | 228 / 223 | sheets 10, 11, 90, 91, 225 | 20, 59, 68, 127 | 964 |
+| `block-4-annotated.pdf` | 134 / 130 | sheets 57 to 60 | none, all the writing is on the sheets | 631 |
+| `closing-quiz-annotated.pdf` | 17 / 15 | sheets 5, 6 | 7, 12, 13, 14, 16 | 63 |
+
+Page numbers are PDF pages of the annotated file; the footer numbers printed on
+the slides count differently. A "sheet" is a page of the iPad's own squared
+paper, 1224 x 792 pt against the slides' 453.5 x 255.1 pt, so a reader zooming
+through a copy meets pages of another size.
+
+- **Same build as the clean decks.** `check_annotated.py`, which lives in the
+  BMAI checkout (`git_bmai/2026hs/w2-lecture-material/annotated/`, run as
+  `python3 check_annotated.py ANNOTATED.pdf CLEAN.pdf`), aligned every page of
+  each clean deck with a page of its copy, in order, and no page has fewer
+  painting operations than its clean twin, so nothing of the deck (a QR code, a
+  figure) went missing. If a clean deck is rebuilt on a page that carries ink,
+  its copy no longer matches: ask for a re-export.
+- **The fonts are damaged.** Every copy carries `Producer: iOS Version 18.7.8
+  (Build 22H352) Quartz PDFContext`, and that export re-encodes the embedded
+  Libertinus subsets and breaks them: the counts in the table, against none in
+  the clean decks (`pdffonts FILE 2>&1 >/dev/null | grep -c 'may be invalid'`).
+  A reader sees a substituted typeface and the `fi` and `ff` ligatures dropped
+  with the letters around them, "five" printing as "!ve" (the quiz's page 12).
+  They are published anyway, as on the BMAI course site, with the clean deck
+  the primary chip. The glyphs are absent from the files, so no tool
+  downstream repairs it; the fix is a better export from the annotation app,
+  one that keeps the original PDF (see `w1-lecture-material/annotated/CLAUDE.md`
+  in the BMAI checkout).
+- **No links, no annotation objects.** The ink is flattened into the page
+  content, and every clickable link of the clean deck is gone (9, 24, 61, 25
+  and 3 links in the clean decks, none in the copies). QR codes still scan, but
+  a citation or an address has to be opened from the clean "Slides" chip. The
+  export also carries a searchable text layer of the handwriting, with the
+  mistakes of handwriting recognition ("sewer" for "server").
+- **To republish after a re-export,** copy the new file over the one of the same
+  name, build, commit, push BOTH remotes, and check the live file by size at
+  both addresses.
 
 ## Two remotes, and both must be pushed
 
